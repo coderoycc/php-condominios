@@ -1,0 +1,5 @@
+/.vscode/
+/app/config/database.php
+/public/domain/
+/tcpdf/
+/public/*

@@ -1,0 +1,169 @@
+.buttons-head {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.suggestions {
+  display: none;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.suggestions ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestions li {
+  padding: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+.callout {
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+}
+
+.callout h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+.callout code {
+  border-radius: 3px;
+}
+
+.callout+.bs-callout {
+  margin-top: -5px;
+}
+
+.callout-default {
+  border-left-color: #777;
+}
+
+.callout-default h4 {
+  color: #777;
+}
+
+.callout-primary {
+  border-left-color: #428bca;
+}
+
+.callout-primary h4 {
+  color: #428bca;
+}
+
+.callout-success {
+  border-left-color: #5cb85c;
+}
+
+.callout-success h4 {
+  color: #5cb85c;
+}
+
+.callout-danger {
+  border-left-color: #d9534f;
+}
+
+.callout-danger h4 {
+  color: #d9534f;
+}
+
+.callout-warning {
+  border-left-color: #f0ad4e;
+}
+
+.callout-warning h4 {
+  color: #f0ad4e;
+}
+
+.callout-info {
+  border-left-color: #5bc0de;
+}
+
+.callout-info h4 {
+  color: #5bc0de;
+}
+
+.callout-bdc {
+  border-left-color: #29527a;
+}
+
+.callout-bdc h4 {
+  color: #29527a;
+}
+
+.image-container {
+  width: 170px;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#recordButton {
+  font-size: 60px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 15px 20px;
+}
+
+#recordButton:hover {
+  cursor: pointer;
+  background-color: beige;
+}
+
+#recordButton.pushed {
+  position: relative;
+  box-shadow: 0 0 0 0 #3a9cc8;
+  cursor: pointer;
+  background: #4489cc;
+  animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes pulse {
+  to {
+    box-shadow: 0 0 0 20px rgba(90, 0, 141, 0);
+  }
+}
+
+.canvas_firma {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#draw_picture {
+  border: 2px dashed #c0c0c0;
+}
+
+#bg-transparent {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 69px;
+  background-color: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 10;
+}
