@@ -9,8 +9,6 @@ class Usuario {
   public string $usuario;
   public string $rol;
   public string $password;
-  public int $idLugar; // lugar asignado al usuario
-  public string $lugar; // Valor join tblLugar
   public string $color; // color de menu
   public function __construct($idUsuario = null) {
     if ($idUsuario != null) {
@@ -34,9 +32,7 @@ class Usuario {
     $this->nombre = 'Invitado';
     $this->usuario = '';
     $this->rol = '';
-    $this->idLugar = 0;
     $this->password = '';
-    $this->lugar = '';
     $this->color = '#212529';
   }
   public function resetPass() {
@@ -67,7 +63,7 @@ class Usuario {
       $con = Database::getInstace();
       if ($this->idUsuario == 0) { //insert
         $sql = "INSERT INTO tblUsuario (usuario, nombre, rol, idLugar, color, password) VALUES (:usuario, :nombre, :rol, :idLugar, :color, :password)";
-        $params = ['usuario' => $this->usuario, 'nombre' => $this->nombre, 'rol' => $this->rol, 'color' => '#212529', 'idLugar' => $this->idLugar, 'password' => $this->password];
+        $params = ['usuario' => $this->usuario, 'nombre' => $this->nombre, 'rol' => $this->rol, 'color' => '#212529', 'password' => $this->password];
         $stmt = $con->prepare($sql);
         $res = $stmt->execute($params);
         if ($res) {
@@ -76,7 +72,7 @@ class Usuario {
         }
       } else { // update
         $sql = "UPDATE tblUsuario SET usuario = :usuario, nombre = :nombre, rol = :rol, color = :color, idLugar = :idLugar WHERE idUsuario = :idUsuario";
-        $params = ['usuario' => $this->usuario, 'nombre' => $this->nombre, 'rol' => $this->rol, 'color' => $this->color, 'idLugar' => $this->idLugar, 'idUsuario' => $this->idUsuario];
+        $params = ['usuario' => $this->usuario, 'nombre' => $this->nombre, 'rol' => $this->rol, 'color' => $this->color, 'idUsuario' => $this->idUsuario];
         $stmt = $con->prepare($sql);
         $stmt->execute($params);
         $res = 1;
@@ -95,8 +91,6 @@ class Usuario {
     $this->rol = $row['rol'];
     $this->color = $row['color'];
     $this->password = $row['password'];
-    $this->idLugar = $row['idLugar'];
-    $this->lugar = $row['lugar'];
   }
   public function delete() {
     try {
@@ -111,7 +105,7 @@ class Usuario {
   }
   public static function exist($usuario, $pass): Usuario {
     $con = Database::getInstace();
-    $sql = "SELECT u.*, l.lugar FROM tblUsuario u JOIN tblLugar l ON u.idLugar = l.idLugar WHERE u.usuario = :usuario AND u.password = :password";
+    $sql = "SELECT * FROM tblUsuario WHERE usuario = :usuario AND password = :password";
     $passHash = hash('sha256', $pass);
     $stmt = $con->prepare($sql);
     $stmt->execute(['usuario' => $usuario, 'password' => $passHash]);

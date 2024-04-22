@@ -1,13 +1,15 @@
 <?php
+
 namespace App;
 // session_start();
 include_once 'autoload.php';
-use App\Config\Accesos;
 
+use App\Config\Accesos;
+use Helpers\Middlewares\AuthMiddleware;
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 // var_dump($url); # users/getAll
-$parts = explode('/', $url);  
+$parts = explode('/', $url);
 // print_r($parts);
 $method = $_SERVER['REQUEST_METHOD'];
 $controller = $parts[0];
@@ -15,15 +17,19 @@ $action = $parts[1];
 $controllerClass = "App\\Controllers\\" . $controller . "Controller";
 try {
   if (!class_exists($controllerClass)) {
+    http_response_code(404);
     echo json_encode(array('error' => 'Controlador no encontrado'));
     exit;
   }
   if (!method_exists($controllerClass, $action)) {
+    http_response_code(404);
     echo json_encode(array('error' => 'Metodo no encontrado'));
     exit;
   }
   $controller = new $controllerClass();
-  $accesos = new Accesos('Cambio de valores'); 
+
+  AuthMiddleware::check_jwt($url);
+
   switch ($method) {
     case 'GET':
       $controller->$action($_GET);
@@ -42,8 +48,6 @@ try {
     default:
       echo json_encode(array('error' => 'Metodo no permitido'));
   }
-
 } catch (\Throwable $th) {
   echo json_encode(array('error' => $th->getMessage()));
 }
-

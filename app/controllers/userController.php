@@ -12,7 +12,6 @@ class UsuarioController {
     $usuario->password = hash('sha256', $data['usuario']);
     // print_r($usuario);
     $usuario->rol = $data['rol'];
-    $usuario->idLugar = $data['idLugar'];
     $usuario->nombre = $data['nombre'];
     $res = $usuario->save();
     // echo $res . '-----';
@@ -123,7 +122,6 @@ class UsuarioController {
       $usuario->usuario = $user;
       $usuario->rol = $rol;
       $usuario->nombre = $data['nombre'];
-      $usuario->idLugar = $data['idLugar'];
       $res = $usuario->save();
       if ($res > 0) {
         echo json_encode(array('status' => 'success', 'message' => 'El usuario fue actualizado exitosamente'));
