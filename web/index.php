@@ -1,11 +1,16 @@
 <?php
 
-namespace App;
+# Obtener condominios
+# Obtener departamentos del condominio
+# Obtener codigo promocional
+# Registrar usuario (Residente)
+
+
+namespace Web;
 
 session_start();
 date_default_timezone_set('America/La_Paz');
 require_once 'config/database.php';
-require_once 'config/accesos.php';
 
 include_once 'autoload.php';
 $url = isset($_GET['url']) ? $_GET['url'] : '';

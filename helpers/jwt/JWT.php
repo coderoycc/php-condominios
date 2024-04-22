@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth\Middleware;
+namespace Helpers\JWT;
 
 require_once(__DIR__ . '/../config/secrets.keys.php');
 

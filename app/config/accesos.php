@@ -5,6 +5,10 @@ namespace App\Config;
 use App\Config\Database;
 
 class Accesos {
+  public string $dbName = 'Este valor';
+  public function __construct($val){
+    $this->dbName = $val;
+  }
   /**
    * @param string target indica el valor para comparar en la base de datos y encontrar las credenciales
    * @param bool xPin indica si target debe ser comparado por pin o por digest << 0 = comparar por digest>> | << 1 = comparar por pin >> (Default = 0)
