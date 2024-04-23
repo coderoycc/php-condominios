@@ -9,7 +9,7 @@ use Helpers\JWT\JWT;
 class AuthMiddleware {
 
   static array $free_routes = ['auth/login_app'];
-  public static function check_jwt($route) { //iniciamos sesion o retornamos error el codigo
+  public static function check_jwt($route) {
     if (!in_array($route, self::$free_routes)) {
       if (isset($_COOKIE['jwt']))
         $token = $_COOKIE['jwt'];
@@ -29,6 +29,7 @@ class AuthMiddleware {
       } else {
         return $response;
       }
-    }
+    }else
+      return null;
   }
 }

@@ -4,7 +4,7 @@ namespace App;
 // session_start();
 include_once 'autoload.php';
 
-use App\Config\Accesos;
+use App\Config\Database;
 use Helpers\Middlewares\AuthMiddleware;
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
@@ -28,8 +28,11 @@ try {
   }
   $controller = new $controllerClass();
 
-  AuthMiddleware::check_jwt($url);
-
+  $payload = AuthMiddleware::check_jwt($url);
+  if($payload){
+    
+  }
+  
   switch ($method) {
     case 'GET':
       $controller->$action($_GET);

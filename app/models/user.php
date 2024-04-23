@@ -3,7 +3,7 @@ namespace App\Models;
 
 use App\Config\Database;
 
-class Usuario {
+class User {
   public int $idUsuario;
   public string $nombre;
   public string $usuario;
@@ -103,20 +103,22 @@ class Usuario {
       return -1;
     }
   }
-  public static function exist($usuario, $pass): Usuario {
-    $con = Database::getInstace();
-    $sql = "SELECT * FROM tblUsuario WHERE usuario = :usuario AND password = :password";
-    $passHash = hash('sha256', $pass);
-    $stmt = $con->prepare($sql);
-    $stmt->execute(['usuario' => $usuario, 'password' => $passHash]);
-    $row = $stmt->fetch();
-    $usuario = new Usuario();
-    if ($row) {
-      $usuario->load($row);
-      return $usuario;
-    } else {
-      return $usuario;
-    }
+  public static function exist($usuario, $pass, $pin): User {
+    $user = new User();
+    $con = Database::getInstanceX($pin);
+    if($con){
+      $sql = "SELECT * FROM tblUsuraio WHERE usuario = :usuario AND password = :password";
+      $passHash = hash('sha256', $pass);
+      $stmt = $con->prepare($sql);
+      $stmt->execute(['usuario' => $usuario, 'password' => $passHash]);
+      $row = $stmt->fetch();
+      if ($row) {
+        $user->load($row);
+        return $user;
+      } else {
+        return $user;
+      }
+    }else return $user;
   }
 
   public static function getAllUsers() {

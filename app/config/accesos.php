@@ -87,4 +87,18 @@ class Accesos {
     }
     return $domain;
   }
+
+  public static function getCondominio($pin){
+    $res = [];
+    try {
+      $con = Database::getInstaceCondominios();
+      $sql = "SELECT * FROM tblCondominiosData WHERE pin = '$pin';";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $res = $stmt->fetch();
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
+    return $res;
+  }
 }

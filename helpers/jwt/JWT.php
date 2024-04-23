@@ -7,7 +7,7 @@ require_once(__DIR__ . '/../secrets.keys.php');
 use Auth\Config\KEY;
 
 class JWT {
-  public static function encode($payload) {
+  public static function encode(array $payload) {
     try {
       $header = [
         'typ' => 'JWT',

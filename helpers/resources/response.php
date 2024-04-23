@@ -3,28 +3,16 @@
 namespace Helpers\Resources;
 
 class Response {
-  public int $statusCode;
-  public bool $status;
-  public mixed $data;
-  public string $message;
-
-  public string $html = '';
-
-  public function __construct($status = false, int $statusCode = 200, mixed $data = [], string $message = '') {
-    $this->statusCode = $statusCode;
-    $this->data = $data;
-    $this->message = $message;
-    $this->status = $status;
-  }
-  public function response_json() {
-    http_response_code($this->statusCode);
-    echo json_encode([
-      'statusCode' => $this->statusCode,
-      'data' => $this->data,
-      'message' => $this->message
-    ]);
+  
+  public static function success_json(array $data, $statusCode = 200) {
+    http_response_code($statusCode);
+    echo json_encode([...$data, 'success' => true]); 
     die();
   }
-  public function response_html() {
+
+  public static function error_json(array $data, $statusCode = 400) {
+    http_response_code($statusCode);
+    echo json_encode([...$data, 'success' => false]);
+    die();
   }
 }
