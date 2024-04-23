@@ -6,7 +6,7 @@ use App\Config\Database;
 
 class Accesos {
   public string $dbName = 'Este valor';
-  public function __construct($val){
+  public function __construct($val) {
     $this->dbName = $val;
   }
   /**
@@ -48,13 +48,6 @@ class Accesos {
       return -1;
     }
   }
-  public static function getPermisosCookies() {
-    return $_COOKIE['permisos'];
-  }
-
-  public static function getNombresCookies() {
-    return json_decode($_COOKIE['_emp']);
-  }
   public static function delAccesos() {
     unset($_COOKIE['base']);
     unset($_COOKIE['permisos']);
@@ -67,15 +60,7 @@ class Accesos {
     session_destroy();
   }
   public static function base() {
-    if (isset($_COOKIE['base'])) {
-      // echo 'EXISTE BASE?????? ' . $_COOKIE['base'];
-      $base = $_COOKIE['base'];
-    } else if (isset($_SESSION['base'])) {
-      $base = $_SESSION['base'];
-    } else {
-      $base = null;
-    }
-    return $base;
+    // if()
   }
   public static function dominio() {
     if (isset($_COOKIE['dominio'])) {
@@ -88,7 +73,7 @@ class Accesos {
     return $domain;
   }
 
-  public static function getCondominio($pin){
+  public static function getCondominio($pin) {
     $res = [];
     try {
       $con = Database::getInstaceCondominios();

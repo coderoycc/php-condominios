@@ -1,21 +1,27 @@
-<?php // propietario -> usuario principal
+<?php // propietario -> user principal
 namespace App\Models;
 
 use App\Config\Database;
 
 class User {
-  public int $idUsuario;
-  public string $nombre;
-  public string $usuario;
-  public string $rol;
+  public int $id_user;
+  public string $first_name;
+  public string $last_name;
+  public string $user;
+  public string $role;
   public string $password;
-  public string $color; // color de menu
-  public function __construct($idUsuario = null) {
-    if ($idUsuario != null) {
+  public string $device_id;
+  public string $created_at;
+  public string $cellphone;
+  public string $genre;
+
+  // public string $color; // color de menu
+  public function __construct($id_user = null) {
+    if ($id_user != null) {
       $con = Database::getInstace();
-      $sql = "SELECT u.*, l.lugar FROM tblUsuario u JOIN tblLugar l ON u.idLugar = l.idLugar WHERE u.idUsuario = :idUsuario";
+      $sql = "SELECT * FROM tblUsers WHERE id_user = :id_user";
       $stmt = $con->prepare($sql);
-      $stmt->execute(['idUsuario' => $idUsuario]);
+      $stmt->execute(['id_user' => $id_user]);
       $row = $stmt->fetch();
       if ($row) {
         $this->load($row);
@@ -28,20 +34,23 @@ class User {
   }
 
   public function objectNull() {
-    $this->idUsuario = 0;
-    $this->nombre = 'Invitado';
-    $this->usuario = '';
-    $this->rol = '';
+    $this->id_user = 0;
+    $this->first_name = '';
+    $this->last_name = '';
+    $this->user = '';
+    $this->role = '';
     $this->password = '';
-    $this->color = '#212529';
+    $this->device_id = '';
+    $this->created_at = '';
+    $this->cellphone = '';
   }
   public function resetPass() {
     try {
       $con = Database::getInstace();
-      $sql = "UPDATE tblUsuario SET password = :password WHERE idUsuario = :idUsuario";
+      $sql = "UPDATE tblUsers SET password = :password WHERE id_user = :id_user";
       $stmt = $con->prepare($sql);
-      $pass = hash('sha256', $this->usuario);
-      return $stmt->execute(['password' => $pass, 'idUsuario' => $this->idUsuario]);
+      $pass = hash('sha256', $this->user);
+      return $stmt->execute(['password' => $pass, 'id_user' => $this->id_user]);
     } catch (\Throwable $th) {
       return -1;
     }
@@ -49,10 +58,10 @@ class User {
   public function newPass($newPass) { /// cambio de password
     try {
       $con = Database::getInstace();
-      $sql = "UPDATE tblUsuario SET password = :password WHERE idUsuario = :idUsuario";
+      $sql = "UPDATE tblUsers SET password = :password WHERE id_user = :id_user";
       $stmt = $con->prepare($sql);
       $pass = hash('sha256', $newPass);
-      $stmt->execute(['password' => $pass, 'idUsuario' => $this->idUsuario]);
+      $stmt->execute(['password' => $pass, 'id_user' => $this->id_user]);
       return 1;
     } catch (\Throwable $th) {
       return -1;
@@ -61,18 +70,18 @@ class User {
   public function save() {
     try {
       $con = Database::getInstace();
-      if ($this->idUsuario == 0) { //insert
-        $sql = "INSERT INTO tblUsuario (usuario, nombre, rol, idLugar, color, password) VALUES (:usuario, :nombre, :rol, :idLugar, :color, :password)";
-        $params = ['usuario' => $this->usuario, 'nombre' => $this->nombre, 'rol' => $this->rol, 'color' => '#212529', 'password' => $this->password];
+      if ($this->id_user == 0) { //insert
+        $sql = "INSERT INTO tblUsers (user, first_name, last_name, role, password, device_id, cellphone) VALUES (:user, :first_name, :last_name, :role, :password, :device_id, :cellphone)";
+        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'role' => $this->role, 'password' => $this->password, 'device_id' => $this->device_id, 'cellphone' => $this->cellphone];
         $stmt = $con->prepare($sql);
         $res = $stmt->execute($params);
         if ($res) {
-          $this->idUsuario = $con->lastInsertId();
-          $res = $this->idUsuario;
+          $this->id_user = $con->lastInsertId();
+          $res = $this->id_user;
         }
       } else { // update
-        $sql = "UPDATE tblUsuario SET usuario = :usuario, nombre = :nombre, rol = :rol, color = :color, idLugar = :idLugar WHERE idUsuario = :idUsuario";
-        $params = ['usuario' => $this->usuario, 'nombre' => $this->nombre, 'rol' => $this->rol, 'color' => $this->color, 'idUsuario' => $this->idUsuario];
+        $sql = "UPDATE tblUsers SET user = :user, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone WHERE id_user = :id_user";
+        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'id_user' => $this->id_user];
         $stmt = $con->prepare($sql);
         $stmt->execute($params);
         $res = 1;
@@ -85,32 +94,52 @@ class User {
   }
 
   public function load($row) {
-    $this->idUsuario = $row['idUsuario'];
-    $this->nombre = $row['nombre'];
-    $this->usuario = $row['usuario'];
-    $this->rol = $row['rol'];
-    $this->color = $row['color'];
+    $this->id_user = $row['id_user'];
+    $this->first_name = $row['first_name'];
+    $this->last_name = $row['last_name'];
+    $this->user = $row['user'];
+    $this->role = $row['role'];
     $this->password = $row['password'];
+    $this->device_id = $row['device_id'];
+    $this->created_at = $row['created_at'];
   }
   public function delete() {
     try {
       $con = Database::getInstace();
-      $sql = "DELETE FROM tblUsuario WHERE idUsuario = :idUsuario";
+      $sql = "DELETE FROM tblUsers WHERE id_user = :id_user";
       $stmt = $con->prepare($sql);
-      $stmt->execute(['idUsuario' => $this->idUsuario]);
+      $stmt->execute(['id_user' => $this->id_user]);
       return 1;
     } catch (\Throwable $th) {
       return -1;
     }
   }
-  public static function exist($usuario, $pass, $pin): User {
+
+  public function verifySubscription() {
+    if ($this->id_user == 0)
+      return null;
+    $subscriptionInfo = [];
+    try {
+      if ($this->role == 'RESIDENT') {
+      } else {
+        $subscriptionInfo['expiration_date'] = '2080-12-31';
+        $subscriptionInfo['subscription_type'] = 'ADMIN';
+        $subscriptionInfo['quantity'] = 1;
+      }
+      return $subscriptionInfo;
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+  }
+
+  public static function exist($user_login, $pass, $pin): User {
     $user = new User();
     $con = Database::getInstanceX($pin);
-    if($con){
-      $sql = "SELECT * FROM tblUsuraio WHERE usuario = :usuario AND password = :password";
+    if ($con) {
+      $sql = "SELECT * FROM tblUsers WHERE user = :user AND password = :password";
       $passHash = hash('sha256', $pass);
       $stmt = $con->prepare($sql);
-      $stmt->execute(['usuario' => $usuario, 'password' => $passHash]);
+      $stmt->execute(['user' => $user_login, 'password' => $passHash]);
       $row = $stmt->fetch();
       if ($row) {
         $user->load($row);
@@ -118,15 +147,6 @@ class User {
       } else {
         return $user;
       }
-    }else return $user;
-  }
-
-  public static function getAllUsers() {
-    $con = Database::getInstace();
-    $sql = "SELECT u.*, l.lugar FROM tblUsuario u JOIN tblLugar l ON u.idLugar = l.idLugar";
-    $stmt = $con->prepare($sql);
-    $stmt->execute();
-    $rows = $stmt->fetchAll();
-    return $rows;
+    } else return $user;
   }
 }

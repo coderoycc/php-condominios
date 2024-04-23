@@ -4,7 +4,6 @@ namespace App;
 // session_start();
 include_once 'autoload.php';
 
-use App\Config\Database;
 use Helpers\Middlewares\AuthMiddleware;
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
@@ -29,10 +28,9 @@ try {
   $controller = new $controllerClass();
 
   $payload = AuthMiddleware::check_jwt($url);
-  if($payload){
-    
-  }
-  
+  // if ($payload) {
+  // }
+
   switch ($method) {
     case 'GET':
       $controller->$action($_GET);
@@ -52,5 +50,6 @@ try {
       echo json_encode(array('error' => 'Metodo no permitido'));
   }
 } catch (\Throwable $th) {
-  echo json_encode(array('error' => $th->getMessage()));
+  http_response_code(500);
+  echo json_encode(array('error' => $th->getMessage(), 'detail' => $th->getFile() . ' 1##-->&&<--##' . $th->getLine()));
 }
