@@ -6,8 +6,8 @@ use App\Config\Database;
 
 class Resident extends User {
   public int $department_id;
-  public Department | null $department = null;
-  public Subscription | null $subscription = null;
+  public object $department;
+  public object $subscription;
   public string $phone;
   public string $details;
   public function __construct($id_user = null) {
@@ -23,12 +23,38 @@ class Resident extends User {
       $this->objectNull();
     }
   }
+  public function save($pin = null) {
+    $resp = parent::save($pin);
+    if ($resp > 0) {
+      try {
+        if ($pin != null) $con = Database::getInstanceByPin($pin);
+        else $con = Database::getInstace();
+        $con->beginTransaction();
+        $sql = "INSERT INTO tblResidents(user_id, department_id, phone, details) VALUES (?, ?, ?, ?);";
+        $stmt = $con->prepare($sql);
+        $rr = $stmt->execute([$this->id_user, $this->department_id, $this->phone, $this->details]);
+        if ($rr) {
+          $con->commit();
+          $resp = $this->id_user;
+        } else {
+          parent::delete();
+          $con->rollBack();
+          $resp = -1;
+        }
+      } catch (\Throwable $th) {
+        $con->rollBack();
+        $resp = -1;
+      }
+    }
+    return $resp;
+  }
 
   public function objectNull() {
     parent::objectNull();
     $this->department_id = 0;
     $this->phone = "";
     $this->details = "";
+    $this->role = "resident";
   }
   public function load($row) {
     parent::load($row);
@@ -40,8 +66,5 @@ class Resident extends User {
     if ($this->department_id) {
       $this->department = new Department($this->department_id);
     }
-  }
-
-  public function subscription() {
   }
 }

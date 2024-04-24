@@ -1,6 +1,7 @@
 <?php // propietario -> user principal
 namespace App\Models;
 
+use App\Config\Accesos;
 use App\Config\Database;
 
 class User {
@@ -13,7 +14,9 @@ class User {
   public string $device_id;
   public string $created_at;
   public string $cellphone;
-  public string $genre;
+  public string $gender;
+  public int $status;
+  public object $suscription;
 
   // public string $color; // color de menu
   public function __construct($id_user = null) {
@@ -43,6 +46,8 @@ class User {
     $this->device_id = '';
     $this->created_at = '';
     $this->cellphone = '';
+    $this->gender = '';
+    $this->status = 0;
   }
   public function resetPass() {
     try {
@@ -67,28 +72,41 @@ class User {
       return -1;
     }
   }
-  public function save() {
+  public function save($pin = null) {
     try {
-      $con = Database::getInstace();
+      $resp = 0;
+      if ($pin != null) $con = Database::getInstanceByPin($pin);
+      else $con = Database::getInstace();
+      $con->beginTransaction();
       if ($this->id_user == 0) { //insert
-        $sql = "INSERT INTO tblUsers (user, first_name, last_name, role, password, device_id, cellphone) VALUES (:user, :first_name, :last_name, :role, :password, :device_id, :cellphone)";
-        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'role' => $this->role, 'password' => $this->password, 'device_id' => $this->device_id, 'cellphone' => $this->cellphone];
+        $sql = "INSERT INTO tblUsers (user, first_name, last_name, role, password, device_id, cellphone, gender, status) VALUES (:user, :first_name, :last_name, :role, :password, :device_id, :cellphone, :gender, :status)";
+        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'role' => $this->role, 'password' => $this->password, 'device_id' => $this->device_id, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status];
         $stmt = $con->prepare($sql);
         $res = $stmt->execute($params);
         if ($res) {
+          $con->commit();
           $this->id_user = $con->lastInsertId();
-          $res = $this->id_user;
+          $resp = $this->id_user;
+        } else {
+          $resp = -1;
+          $con->rollBack();
         }
       } else { // update
-        $sql = "UPDATE tblUsers SET user = :user, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone WHERE id_user = :id_user";
-        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'id_user' => $this->id_user];
+        $sql = "UPDATE tblUsers SET user = :user, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone, gender = :gender, status = :status WHERE id_user = :id_user";
+        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status, 'id_user' => $this->id_user];
         $stmt = $con->prepare($sql);
-        $stmt->execute($params);
-        $res = 1;
+        if ($stmt->execute($params)) {
+          $con->commit();
+          $resp = $this->id_user;
+        } else {
+          $con->rollBack();
+          $resp = -1;
+        }
       }
-      return $res;
+      return $resp;
     } catch (\Throwable $th) {
       print_r($th);
+      $con->rollBack();
       return -1;
     }
   }
@@ -96,21 +114,27 @@ class User {
   public function load($row) {
     $this->id_user = $row['id_user'];
     $this->first_name = $row['first_name'];
-    $this->last_name = $row['last_name'];
+    $this->last_name = $row['last_name'] ?? '';
     $this->user = $row['user'];
     $this->role = $row['role'];
     $this->password = $row['password'];
-    $this->device_id = $row['device_id'];
+    $this->device_id = $row['device_id'] ?? '';
     $this->created_at = $row['created_at'];
+    $this->gender = $row['gender'] ?? 'O';
+    $this->cellphone = $row['cellphone'] ?? '000';
+    $this->status = $row['status'] ?? 0;
   }
   public function delete() {
     try {
       $con = Database::getInstace();
+      $con->beginTransaction();
       $sql = "DELETE FROM tblUsers WHERE id_user = :id_user";
       $stmt = $con->prepare($sql);
       $stmt->execute(['id_user' => $this->id_user]);
+      $con->commit();
       return 1;
     } catch (\Throwable $th) {
+      $con->rollBack();
       return -1;
     }
   }
@@ -136,10 +160,10 @@ class User {
     $user = new User();
     $con = Database::getInstanceX($pin);
     if ($con) {
-      $sql = "SELECT * FROM tblUsers WHERE user = :user AND password = :password";
+      $sql = "SELECT * FROM tblUsers WHERE tblUsers.[user] = ? AND tblUsers.[password] = ?";
       $passHash = hash('sha256', $pass);
       $stmt = $con->prepare($sql);
-      $stmt->execute(['user' => $user_login, 'password' => $passHash]);
+      $stmt->execute([$user_login, $passHash]);
       $row = $stmt->fetch();
       if ($row) {
         $user->load($row);

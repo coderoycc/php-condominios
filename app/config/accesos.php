@@ -3,6 +3,7 @@
 namespace App\Config;
 
 use App\Config\Database;
+use Helpers\Resources\Response;
 
 class Accesos {
   public string $dbName = 'Este valor';
@@ -60,7 +61,18 @@ class Accesos {
     session_destroy();
   }
   public static function base() {
-    // if()
+    if (isset($GLOBALS['payload'])) {
+      $data = $GLOBALS['payload'];
+      if (isset($data['credential'])) {
+        return $data['credential'];
+      } else {
+        Response::error_json(['message' => 'Ocurrió un error, subservicio base'], 500);
+      }
+    } else if (isset($_SESSION['credentials'])) {
+      return $_SESSION['credentials'];
+    } else {
+      Response::error_json(['message' => 'Ocurrió un error, conexión con un subservicio base'], 500);
+    }
   }
   public static function dominio() {
     if (isset($_COOKIE['dominio'])) {
