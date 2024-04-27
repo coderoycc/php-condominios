@@ -2,47 +2,46 @@
 
 namespace App\Models;
 
-use App\Config\Database;
 
 class Resident extends User {
+  private $con;
   public int $department_id;
   public object $department;
   public object $subscription;
   public string $phone;
   public string $details;
-  public function __construct($id_user = null) {
-    if ($id_user) {
-      $con = Database::getInstace();
-      $sql = "SELECT * FROM tblUsers a INNER JOIN tblResidents b ON a.id_user = b.user_id WHERE a.id_user = $id_user;";
-      $stmt = $con->prepare($sql);
-      $stmt->execute();
-      $row = $stmt->fetch();
-      if ($row) $this->load($row);
-      else $this->objectNull();
-    } else {
-      $this->objectNull();
+  public function __construct($db = null, $id_user = null) {
+    $this->objectNull();
+    if ($db) {
+      parent::__construct($db);
+      $this->con = $db;
+      if ($id_user) {
+        $sql = "SELECT * FROM tblUsers a INNER JOIN tblResidents b ON a.id_user = b.user_id WHERE a.id_user = $id_user;";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetch();
+        if ($row) $this->load($row);
+      }
     }
   }
-  public function save($pin = null) {
-    $resp = parent::save($pin);
+  public function save() {
+    $resp = parent::save();
     if ($resp > 0) {
       try {
-        if ($pin != null) $con = Database::getInstanceByPin($pin);
-        else $con = Database::getInstace();
-        $con->beginTransaction();
+        $this->con->beginTransaction();
         $sql = "INSERT INTO tblResidents(user_id, department_id, phone, details) VALUES (?, ?, ?, ?);";
-        $stmt = $con->prepare($sql);
+        $stmt = $this->con->prepare($sql);
         $rr = $stmt->execute([$this->id_user, $this->department_id, $this->phone, $this->details]);
         if ($rr) {
-          $con->commit();
+          $this->con->commit();
           $resp = $this->id_user;
         } else {
           parent::delete();
-          $con->rollBack();
+          $this->con->rollBack();
           $resp = -1;
         }
       } catch (\Throwable $th) {
-        $con->rollBack();
+        $this->con->rollBack();
         $resp = -1;
       }
     }

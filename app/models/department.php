@@ -12,7 +12,7 @@ class Department {
   public string $description;
   public function __construct($id_department = null) {
     if ($id_department) {
-      $con = Database::getInstace();
+      $con = Database::getInstance();
       $sql = "SELECT * FROM tblDepartments WHERE id_department = :id_department";
       $stmt = $con->prepare($sql);
       $stmt->execute(['id_department' => $id_department]);
@@ -47,7 +47,7 @@ class Department {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
       }
     } else {
-      $con = Database::getInstace();
+      $con = Database::getInstance();
       if ($con) {
         $sql = "SELECT * FROM tblDepartments WHERE dep_number LIKE '%$q%' OR description LIKE '%$q%';";
         $stmt = $con->prepare($sql);

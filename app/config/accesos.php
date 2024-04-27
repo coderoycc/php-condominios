@@ -6,10 +6,6 @@ use App\Config\Database;
 use Helpers\Resources\Response;
 
 class Accesos {
-  public string $dbName = 'Este valor';
-  public function __construct($val) {
-    $this->dbName = $val;
-  }
   /**
    * @param string target indica el valor para comparar en la base de datos y encontrar las credenciales
    * @param bool xPin indica si target debe ser comparado por pin o por digest << 0 = comparar por digest>> | << 1 = comparar por pin >> (Default = 0)
@@ -33,21 +29,6 @@ class Accesos {
       print_r($th);
     }
     return [];
-  }
-  public static function setAccesos($pin) { // seteamos las cookies para un nuevo ingreso login
-    $empresa = self::getCredentialsEmp($pin, 1);
-    if ($empresa) {
-      $_SESSION['base'] = $empresa['base'];
-      $_SESSION['dominio'] = json_encode($empresa['permisos']);
-      $_SESSION['permisos'] = $empresa['permisos'];
-      session_write_close();
-      setcookie('base', $empresa['base'], time() + 64800, '/', false);
-      setcookie('permisos', json_encode($empresa['permisos']), time() + 64800, '/', false);
-      setcookie('_emp', json_encode(array('dominio' => $empresa['dominio'], 'nombre' => $empresa['nombre'], 'digest' => $empresa['digest'])), time() + 64800, '/', false);
-      return 1;
-    } else { // no existe el PIN
-      return -1;
-    }
   }
   public static function delAccesos() {
     unset($_COOKIE['base']);

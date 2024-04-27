@@ -22,29 +22,6 @@ class UserController {
     }
   }
 
-  public function logout() {
-    try {
-      Accesos::delAccesos();
-      setcookie('user_obj', '', time() - 64800, '/', false);
-      unset($_COOKIE['user_obj']);
-      echo json_encode(array('status' => 'success'));
-    } catch (\Throwable $th) {
-      echo json_encode(array('status' => 'error', 'message' => $th->getMessage()));
-    }
-  }
-
-  // public function getallUsers() {
-  //   if (!isset($_COOKIE['user_obj'])) {
-  //     echo json_encode(array('status' => 'error', 'message' => 'Cookies de sesion necesarias'));
-  //   } else {
-  //     try {
-  //       $users = User::getAllUsers();
-  //       echo json_encode(array('status' => 'success', 'data' => json_encode($users)));
-  //     } catch (\Throwable $th) {
-  //       print_r($th);
-  //     }
-  //   }
-  // }
   public function changepass($data, $files = null) {
     $id = $data['idUsuario'];
     $pass = $data['pass'];

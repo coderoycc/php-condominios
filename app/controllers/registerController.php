@@ -10,13 +10,19 @@ use Helpers\Resources\Response;
 
 class RegisterController {
   public function searchCondominiums($query) {
-    $condominiums = Condominius::search($query['q'] ?? '');
-    Response::success_json(['data' => $condominiums], 200);
+    $q = $query['q'] ?? '';
+    $condominiums = Condominius::search($q);
+    Response::success_json("Datos Condominios con $q", $condominiums, 200);
   }
   public function searchDepartments($query) {
-    $departments = Department::search($query['q'] ?? '', $query['bname']);
-    Response::success_json(['data' => $departments], 200);
+    if (!Request::required(['bname'], $query))
+      Response::error_json(['message' => 'Campos requeridos [bname]'], 400);
+    $q = $query['q'] ?? '';
+    $departments = Department::search($q, $query['bname']);
+    Response::success_json('Datos departamento ', $departments, 200);
   }
+
+
   public function resident($data, $files = null) {
     $required = ['name', 'gender', 'cellphone', 'password', 'depa_id', 'pin'];
     if (!Request::required($required, $data))

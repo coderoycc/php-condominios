@@ -7,7 +7,6 @@ require_once(__DIR__ . '/../jwt/JWT.php');
 use Helpers\JWT\JWT;
 
 class AuthMiddleware {
-
   static array $free_routes = ['auth/login_app', 'register/searchCondominiums', 'register/searchDepartments', 'register/resident', 'subscription/types'];
   public static function check_jwt($route) {
     if (!in_array($route, self::$free_routes)) {
