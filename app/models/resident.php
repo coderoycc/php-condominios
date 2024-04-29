@@ -58,8 +58,8 @@ class Resident extends User {
   public function load($row) {
     parent::load($row);
     $this->department_id = $row["department_id"];
-    $this->phone = $row["phone"];
-    $this->details = $row["details"];
+    $this->phone = $row["phone"] ?? '0';
+    $this->details = $row["details"] ?? '';
   }
   public function department() {
     if ($this->department_id) {

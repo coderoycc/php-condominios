@@ -5,14 +5,16 @@ namespace Helpers\Middlewares;
 require_once(__DIR__ . '/../jwt/JWT.php');
 
 use Helpers\JWT\JWT;
+use Helpers\Resources\Response;
 
 class AuthMiddleware {
   static array $free_routes = [
-    'auth/login_app', 
-    'register/searchCondominiums', 
-    'register/searchDepartments', 
-    'register/resident', 
-    'subscription/types'
+    'auth/login_app',
+    'register/searchCondominiums',
+    'register/searchDepartments',
+    'register/resident',
+    'subscription/types',
+    'register/usernameExist'
   ];
   public static function check_jwt($route) {
     if (!in_array($route, self::$free_routes)) {
@@ -28,9 +30,7 @@ class AuthMiddleware {
       }
       $response = JWT::decode($token);
       if (isset($response['error'])) {
-        http_response_code(401);
-        echo json_encode(['error' => $response['error']]);
-        die();
+        Response::error_json(['message' => $response['error']]);
       } else {
         return $response;
       }

@@ -7,6 +7,7 @@ use App\Config\Database;
 use App\Models\Condominius;
 use App\Models\Department;
 use App\Models\Resident;
+use App\Models\Subscription;
 use App\Models\User;
 use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
@@ -26,30 +27,44 @@ class RegisterController {
     $departments = Department::search($q, $query['bname']);
     Response::success_json('Datos departamento ', $departments, 200);
   }
-  public function userExist($data){
-    if(!Request::required(['user', 'pin'], $data))
+  public function usernameExist($data) {
+    if (!Request::required(['user', 'pin'], $data))
       Response::error_json(['message' => 'Campos requeridos [user, pin]'], 400);
-    
-    if(User::userExist($data['user'], $data['pin'])){
+
+    if (User::usernameExist($data['user'], $data['pin'])) {
       Response::error_json(['message' => '¡Usuario existente! Inicie sesión con su usuario.', 'user' => $data['user']], 400);
-    }else{
+    } else {
       Response::success_json('[OK] El usuario no está registrado', [], 200);
     }
   }
 
   public function resident($data, $files = null) {
-    $required = ['name', 'gender', 'cellphone', 'password', 'depa_id', 'pin'];
+    $required = ['name', 'gender', 'cellphone', 'password', 'depa_id', 'pin', 'check'];
     if (!Request::required($required, $data))
-      Response::error_json(['message' => 'Campos requeridos [name, gender, cellphone, password, depa_id, pin]'], 400);
+      Response::error_json(['message' => 'Campos requeridos [name, gender, cellphone, password, depa_id, pin, check]'], 400);
     try {
       $database = Accesos::getCondominio($data['pin']);
-      if(!isset($database['dbname'])) Response::error_json(['message' => 'Pin no válido'], 400);
-      
+      if (!isset($database['dbname'])) Response::error_json(['message' => 'Pin no válido'], 400);
+
+      if (User::usernameExist($data['cellphone'], $data['pin']))
+        Response::error_json(['message' => '¡Usuario existente! Inicie sesión con su usuario.', 'user' => $data['cellphone']], 400);
+
       $con = Database::getInstanceX($database['dbname']);
+
+      if ($data['check']) { // existe un codigo, asociar a suscripcion?  
+        $code = $data['code'] ?? 'ABCDEF';
+        $code_subs = Subscription::getSubscriptionByCode($con, $code);
+        if (!$code_subs['valid']) {
+          Response::error_json(['message' => 'Código de suscripción no válido']);
+        } else if ($code_subs['limit_reached']) {
+          Response::error_json(['message' => 'Limite alcanzado para el código de suscripción']);
+        }
+      }
+
       $resident = new Resident($con, null);
       $resident->first_name = $data['name'];
       $resident->gender = $data['gender'];
-      $resident->user = $data['cellphone'];
+      $resident->username = $data['cellphone'];
       $resident->cellphone = $data['cellphone'];
       $hash = hash('sha256', $data['password']);
       $resident->password = $hash;
@@ -58,23 +73,25 @@ class RegisterController {
       $resident->department_id = $data['depa_id'];
       $resp = $resident->save();
       if ($resp > 0) {
+        if ($data['check']) { // suscripción usuario con
+          $r = Subscription::addUserSubscription($con, $resp, $code_subs['subs_id']);
+          if (!$r)
+            Response::error_json(['message' => 'Error al suscribir usuario']);
+        }
         $auth = new AuthProvider($data['pin'], null);
         $data_login = $auth->auth($data['cellphone'], $data['password']);
         $user = $data_login['user'];
         if ($user->id_user > 0) { // existe el usuario        
           if (!$data_login['expired']) {
             $validez = time() + 3600 * 24;
-            $payload = ['user_id' => $user->id_user, 'user' => $user->user, 'exp' => $validez, 'credential' => $database['dbname']];
+            $payload = ['user_id' => $user->id_user, 'user' => $user->username, 'exp' => $validez, 'credential' => $database['dbname']];
             $token = JWT::encode($payload);
             $data_login['token'] = $token;
             Response::success_json('Login Correcto', $data_login);
-          } else {
+          } else
             Response::error_json(['message' => 'Su suscripción ha expirado', 'data' => $data_login], 401);
-          }
-        } else { // no existe el usuario
+        } else  // no existe el usuario
           Response::error_json(['message' => 'Credenciales incorrectas'], 401);
-        }
-
       } else {
         Response::error_json(['message' => 'Registro fallido'], 500);
       }

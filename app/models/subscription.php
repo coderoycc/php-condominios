@@ -7,7 +7,7 @@ require_once __DIR__ . '/subscriptiontype.php';
 use App\Models\Subscriptiontype;
 
 class Subscription {
-  public $con;
+  private $con;
   public int $id_subscription;
   public int $type_id;
   public string $paid_in;
@@ -18,6 +18,8 @@ class Subscription {
   public int $department_id;
   public string $expires_in;
   public int $valid;
+  public int $limit;
+  public string $code;
   public Subscriptiontype $type;
   public Department $department;
 
@@ -46,8 +48,9 @@ class Subscription {
     $this->department_id = $row['department_id'];
     $this->expires_in = $row['expires_in'];
     $this->valid = $row['valid'];
+    $this->code = $row['code'];
+    $this->limit = $row['limit'];
   }
-
   public function objectNull() {
     $this->id_subscription = 0;
     $this->type_id = 0;
@@ -59,19 +62,19 @@ class Subscription {
     $this->department_id = 0;
     $this->expires_in = "1970-01-01 00:00:00";
     $this->valid = 0;
+    $this->code = "";
+    $this->limit = 0;
   }
   public function type() {
     if ($this->con) {
       $this->type = new Subscriptiontype($this->con, $this->type_id);
     }
   }
-
+  public function genCode() {
+    return strtoupper(substr(uniqid(), -6));
+  }
   public static function getTypes($pin) {
     return Subscriptiontype::getTypes($pin);
-  }
-  public static function getSuscription($con) {
-    if ($con) {
-    }
   }
   public static function getSusbscriptionUser($con = null, $id_user): Subscription {
     $subscription = new Subscription();
@@ -85,5 +88,32 @@ class Subscription {
       }
     }
     return $subscription;
+  }
+  public static function getSubscriptionByCode($con = null, $code): array {
+    $resp = ['valid' => false, 'limit_reached' => true, 'subs_id' => 0];
+    if ($con) {
+      $sql = "SELECT * FROM tblSubscriptions a INNER JOIN tblUsersSubscribed b ON a.id_subscription = b.subscription_id WHERE a.code = '$code';";
+      $stmt = $con->query($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      if ($rows) {
+        $row = $rows[0];
+        $resp['valid'] = true;
+        $resp['subs_id'] = $row['id_subscription'];
+        if (count($rows) < $row['limit']) {
+          $resp['limit_reached'] = false;
+        }
+      }
+    }
+    return $resp;
+  }
+  public static function addUserSubscription($con = null, $id_user, $id_subscription) {
+    if ($con) {
+      $sql = "INSERT INTO tblUsersSubscribed (user_id, subscription_id) VALUES ($id_user, $id_subscription);";
+      $stmt = $con->prepare($sql);
+      $res = $stmt->execute();
+      return $res;
+    }
+    return false;
   }
 }

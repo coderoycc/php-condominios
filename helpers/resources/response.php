@@ -5,6 +5,7 @@ namespace Helpers\Resources;
 class Response {
 
   public static function success_json(string $message, array $data, $statusCode = 200) {
+    header('Content-Type: application/json');
     http_response_code($statusCode);
     $arr = ['success' => true, 'data' => $data, 'message' => $message];
     echo json_encode($arr);
@@ -12,6 +13,7 @@ class Response {
   }
 
   public static function error_json(array $data, $statusCode = 400) {
+    header('Content-Type: application/json');
     http_response_code($statusCode);
     $arr = ['success' => false];
     $data = array_merge($arr, $data);

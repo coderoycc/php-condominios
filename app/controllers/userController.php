@@ -8,7 +8,7 @@ use App\Models\User;
 class UserController {
   public function create($data, $files) {
     $usuario = new User();
-    $usuario->user = $data['user'];
+    $usuario->username = $data['user'];
     $usuario->password = hash('sha256', $data['usuario']);
     // print_r($usuario);
     $usuario->role = $data['rol'];
@@ -80,7 +80,7 @@ class UserController {
     if ($usuario->id_user == 0) {
       echo json_encode(array('status' => 'error', 'message' => 'No existe el usuario | idUsuario incorrecto'));
     } else {
-      $usuario->user = $user;
+      $usuario->username = $user;
       $usuario->role = $rol;
       $usuario->first_name = $data['nombre'];
       $res = $usuario->save();
@@ -98,7 +98,7 @@ class UserController {
     if ($usuario->id_user == 0) {
       echo json_encode(array('status' => 'error', 'message' => 'No existe el usuario | id_user incorrecto'));
     } else {
-      $usuario->password = hash('sha256', $usuario->user);
+      $usuario->password = hash('sha256', $usuario->username);
       $res = $usuario->save();
       if ($res > 0) {
         echo json_encode(array('status' => 'success', 'message' => 'La contraseña fue cambiada exitosamente'));

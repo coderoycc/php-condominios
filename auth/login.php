@@ -1,8 +1,5 @@
 <?php
-if (isset($_COOKIE['user_obj'])) {
-  header('Location: ../');
-  die();
-}
+require_once('../helpers/resources/loginWeb.php');
 ?>
 <!DOCTYPE html>
 <html lang="es">

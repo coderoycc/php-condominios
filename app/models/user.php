@@ -9,7 +9,7 @@ class User {
   public int $id_user;
   public string $first_name;
   public string $last_name;
-  public string $user;
+  public string $username;
   public string $role;
   public string $password;
   public string $device_id;
@@ -18,7 +18,7 @@ class User {
   public string $gender;
   public int $status;
   public object $suscription;
-  
+
   // public string $color; // color de menu
   public function __construct($db = null, $id_user = null) {
     $this->objectNull();
@@ -41,7 +41,7 @@ class User {
     $this->id_user = 0;
     $this->first_name = '';
     $this->last_name = '';
-    $this->user = '';
+    $this->username = '';
     $this->role = '';
     $this->password = '';
     $this->device_id = '';
@@ -56,7 +56,7 @@ class User {
     try {
       $sql = "UPDATE tblUsers SET password = :password WHERE id_user = :id_user";
       $stmt = $this->con->prepare($sql);
-      $pass = hash('sha256', $this->user);
+      $pass = hash('sha256', $this->username);
       return $stmt->execute(['password' => $pass, 'id_user' => $this->id_user]);
     } catch (\Throwable $th) {
       return false;
@@ -81,8 +81,8 @@ class User {
       $resp = 0;
       $this->con->beginTransaction();
       if ($this->id_user == 0) { //insert
-        $sql = "INSERT INTO tblUsers (user, first_name, last_name, role, password, device_id, cellphone, gender, status) VALUES (:user, :first_name, :last_name, :role, :password, :device_id, :cellphone, :gender, :status)";
-        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'role' => $this->role, 'password' => $this->password, 'device_id' => $this->device_id, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status];
+        $sql = "INSERT INTO tblUsers (username, first_name, last_name, role, password, device_id, cellphone, gender, status) VALUES (:user, :first_name, :last_name, :role, :password, :device_id, :cellphone, :gender, :status)";
+        $params = ['user' => $this->username, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'role' => $this->role, 'password' => $this->password, 'device_id' => $this->device_id, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status];
         $stmt = $this->con->prepare($sql);
         $res = $stmt->execute($params);
         if ($res) {
@@ -94,8 +94,8 @@ class User {
           $this->con->rollBack();
         }
       } else { // update
-        $sql = "UPDATE tblUsers SET user = :user, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone, gender = :gender, status = :status WHERE id_user = :id_user";
-        $params = ['user' => $this->user, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status, 'id_user' => $this->id_user];
+        $sql = "UPDATE tblUsers SET username = :username, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone, gender = :gender, status = :status WHERE id_user = :id_user";
+        $params = ['username' => $this->username, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status, 'id_user' => $this->id_user];
         $stmt = $this->con->prepare($sql);
         if ($stmt->execute($params)) {
           $this->con->commit();
@@ -117,7 +117,7 @@ class User {
     $this->id_user = $row['id_user'];
     $this->first_name = $row['first_name'];
     $this->last_name = $row['last_name'] ?? '';
-    $this->user = $row['user'];
+    $this->username = $row['username'];
     $this->role = $row['role'];
     $this->password = $row['password'];
     $this->device_id = $row['device_id'] ?? '';
@@ -142,12 +142,12 @@ class User {
     }
   }
 
-  public static function userExist($user, $pin=null): bool {
+  public static function usernameExist($user, $pin = null): bool {
     if ($pin) {
       $con = Database::getInstanceByPin($pin);
-      $sql = "SELECT * FROM tblUsers WHERE tblUsers.[user] = ? OR tblUsers.[cellphone] = ?;";
+      $sql = "SELECT * FROM tblUsers WHERE username = ? OR cellphone = ?;";
       $stmt = $con->prepare($sql);
-      $stmt->execute([$user,$user]);
+      $stmt->execute([$user, $user]);
       $row = $stmt->fetch();
       if ($row) {
         return true;
@@ -159,16 +159,17 @@ class User {
   public static function exist($user_login, $pass, $con): User {
     $user = new User($con, null);
     if ($con) {
-      $sql = "SELECT * FROM tblUsers a WHERE tblUsers.[user] = ? AND tblUsers.[password] = ?";
+      $sql = "SELECT * FROM tblUsers a LEFT JOIN tblResidents b ON a.id_user = b.user_id 
+        WHERE a.username = ? AND a.password = ?;";
       $passHash = hash('sha256', $pass);
       $stmt = $con->prepare($sql);
       $stmt->execute([$user_login, $passHash]);
       $row = $stmt->fetch();
       if ($row) {
-        if($row['role'] == 'resident'){
+        if ($row['role'] == 'resident') {
           $user = new Resident($con, null);
           $user->load($row);
-        }else{
+        } else {
           $user->load($row);
         }
         return $user;
