@@ -18,7 +18,7 @@ class HandleDates {
       if ($today->getTimestamp() > $expire->getTimestamp()) {
         $message = 'La suscripción ha expirado';
       }
-    } else if ($days > 16) {
+    } else if ($days < 16) {
       $message = 'Faltan ' . $days . ' días para que expire la suscripción';
     }
     return $message;

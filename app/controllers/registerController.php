@@ -2,11 +2,16 @@
 
 namespace App\Controllers;
 
+use App\Config\Accesos;
+use App\Config\Database;
 use App\Models\Condominius;
 use App\Models\Department;
 use App\Models\Resident;
+use App\Models\User;
+use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
+use App\Providers\AuthProvider;
 
 class RegisterController {
   public function searchCondominiums($query) {
@@ -21,14 +26,27 @@ class RegisterController {
     $departments = Department::search($q, $query['bname']);
     Response::success_json('Datos departamento ', $departments, 200);
   }
-
+  public function userExist($data){
+    if(!Request::required(['user', 'pin'], $data))
+      Response::error_json(['message' => 'Campos requeridos [user, pin]'], 400);
+    
+    if(User::userExist($data['user'], $data['pin'])){
+      Response::error_json(['message' => '¡Usuario existente! Inicie sesión con su usuario.', 'user' => $data['user']], 400);
+    }else{
+      Response::success_json('[OK] El usuario no está registrado', [], 200);
+    }
+  }
 
   public function resident($data, $files = null) {
     $required = ['name', 'gender', 'cellphone', 'password', 'depa_id', 'pin'];
     if (!Request::required($required, $data))
       Response::error_json(['message' => 'Campos requeridos [name, gender, cellphone, password, depa_id, pin]'], 400);
     try {
-      $resident = new Resident();
+      $database = Accesos::getCondominio($data['pin']);
+      if(!isset($database['dbname'])) Response::error_json(['message' => 'Pin no válido'], 400);
+      
+      $con = Database::getInstanceX($database['dbname']);
+      $resident = new Resident($con, null);
       $resident->first_name = $data['name'];
       $resident->gender = $data['gender'];
       $resident->user = $data['cellphone'];
@@ -38,10 +56,25 @@ class RegisterController {
       $resident->status = 1;
       $resident->device_id = $data['device_id'] ?? '00';
       $resident->department_id = $data['depa_id'];
-      if ($resident->save() > 0) {
-        $login = new AuthController();
-        $login->login_app(['user' => $resident->user, 'password' => $data['password'], 'pin' => $data['pin']]);
-        // Response::success_json(['message' => 'Registro exitoso'], 200);
+      $resp = $resident->save();
+      if ($resp > 0) {
+        $auth = new AuthProvider($data['pin'], null);
+        $data_login = $auth->auth($data['cellphone'], $data['password']);
+        $user = $data_login['user'];
+        if ($user->id_user > 0) { // existe el usuario        
+          if (!$data_login['expired']) {
+            $validez = time() + 3600 * 24;
+            $payload = ['user_id' => $user->id_user, 'user' => $user->user, 'exp' => $validez, 'credential' => $database['dbname']];
+            $token = JWT::encode($payload);
+            $data_login['token'] = $token;
+            Response::success_json('Login Correcto', $data_login);
+          } else {
+            Response::error_json(['message' => 'Su suscripción ha expirado', 'data' => $data_login], 401);
+          }
+        } else { // no existe el usuario
+          Response::error_json(['message' => 'Credenciales incorrectas'], 401);
+        }
+
       } else {
         Response::error_json(['message' => 'Registro fallido'], 500);
       }

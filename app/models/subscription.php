@@ -57,7 +57,7 @@ class Subscription {
     $this->period = 0;
     $this->nit = "";
     $this->department_id = 0;
-    $this->expires_in = "";
+    $this->expires_in = "1970-01-01 00:00:00";
     $this->valid = 0;
   }
   public function type() {

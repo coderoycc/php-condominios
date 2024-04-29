@@ -18,7 +18,7 @@ class User {
   public string $gender;
   public int $status;
   public object $suscription;
-
+  
   // public string $color; // color de menu
   public function __construct($db = null, $id_user = null) {
     $this->objectNull();
@@ -142,16 +142,35 @@ class User {
     }
   }
 
+  public static function userExist($user, $pin=null): bool {
+    if ($pin) {
+      $con = Database::getInstanceByPin($pin);
+      $sql = "SELECT * FROM tblUsers WHERE tblUsers.[user] = ? OR tblUsers.[cellphone] = ?;";
+      $stmt = $con->prepare($sql);
+      $stmt->execute([$user,$user]);
+      $row = $stmt->fetch();
+      if ($row) {
+        return true;
+      } else {
+        return false;
+      }
+    } else return false;
+  }
   public static function exist($user_login, $pass, $con): User {
-    $user = new User($con);
+    $user = new User($con, null);
     if ($con) {
-      $sql = "SELECT * FROM tblUsers WHERE tblUsers.[user] = ? AND tblUsers.[password] = ?";
+      $sql = "SELECT * FROM tblUsers a WHERE tblUsers.[user] = ? AND tblUsers.[password] = ?";
       $passHash = hash('sha256', $pass);
       $stmt = $con->prepare($sql);
       $stmt->execute([$user_login, $passHash]);
       $row = $stmt->fetch();
       if ($row) {
-        $user->load($row);
+        if($row['role'] == 'resident'){
+          $user = new Resident($con, null);
+          $user->load($row);
+        }else{
+          $user->load($row);
+        }
         return $user;
       } else {
         return $user;

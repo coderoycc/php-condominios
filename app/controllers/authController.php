@@ -21,7 +21,7 @@ class AuthController {
       $data = $auth->auth($data['user'], $data['password']);
 
       $user = $data['user'];
-      if (isset($data['subscription'])) { // no existe el usuario        
+      if ($user->id_user > 0) { // existe el usuario        
         if (!$data['expired']) {
           $validez = time() + 3600 * 24;
           $payload = ['user_id' => $user->id_user, 'user' => $user->user, 'exp' => $validez, 'credential' => $condominioData['dbname']];
@@ -31,7 +31,7 @@ class AuthController {
         } else {
           Response::error_json(['message' => 'Su suscripción ha expirado', 'data' => $data], 401);
         }
-      } else {
+      } else { // no existe el usuario
         Response::error_json(['message' => 'Credenciales incorrectas'], 401);
       }
     } else {

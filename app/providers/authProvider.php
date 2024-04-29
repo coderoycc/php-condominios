@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Config\Accesos;
 use App\Config\Database;
 use App\Models\Subscription;
 use App\Models\User;
@@ -29,6 +28,7 @@ class AuthProvider {
     try {
       $user = User::exist($user, $password, $this->con);
       unset($user->password);
+      unset($user->con);
       $data['user'] = $user;
       if ($user->id_user > 0) {
         $subscription = Subscription::getSusbscriptionUser($this->con, $user->id_user);
