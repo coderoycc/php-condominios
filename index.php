@@ -1,5 +1,6 @@
 <?php
-if (!isset($_COOKIE['user_obj'])) {
+session_start();
+if (!isset($_SESSION['user'])) {
   header('Location: ./auth/login.php');
   die();
 } else {

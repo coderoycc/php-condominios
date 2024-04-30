@@ -45,6 +45,20 @@ class AuthProvider {
     }
     return $data;
   }
-  public function suscription($id_user) {
+  public function auth_web($user, $password){
+    $data = ['user' => null, 'admin' => 0];
+    try {
+      $user = User::exist($user, $password, $this->con);
+      unset($user->password);
+      if($user->id_user > 0){
+        $data['user'] = $user;
+        if($user->role == 'admin'){
+          $data['admin'] = 1;
+        }
+      }
+      return $data;
+    }catch (\Throwable $th){
+      Response::error_json(['message' => 'Error Auth Provider names NULL']);
+    }
   }
 }

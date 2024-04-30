@@ -1,5 +1,5 @@
 <?php
-require_once('../helpers/resources/loginWeb.php');
+require_once('../helpers/middlewares/web_login.php');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -59,28 +59,39 @@ require_once('../helpers/resources/loginWeb.php');
     $(document).on('submit', '#form_login', async (e) => {
       e.preventDefault();
       const data = $("#form_login").serialize();
-      const res = await $.ajax({
-        url: '../app/usuario/login',
-        type: 'POST',
-        data: data,
-        dataType: 'json'
-      });
-      if (res.status == 'success') {
-        $("#btn_logg").attr('disabled', 'disabled')
-        $.toast({
-          heading: 'INGRESO CORRECTO',
-          text: 'Redireccionando a la pagina principal',
-          showHideTransition: 'slide',
-          icon: 'success'
+      try {
+        const res = await $.ajax({
+          url: '../app/auth/login_web',
+          type: 'POST',
+          data: data,
+          dataType: 'json'
         });
-        setTimeout(() => {
-          window.location.href = '../';
-        }, 1800)
-      } else {
-        console.warn(res)
+        if (res.success) {
+          $("#btn_logg").attr('disabled', 'disabled')
+          $.toast({
+            heading: 'INGRESO CORRECTO',
+            text: 'Redireccionando a la pagina principal',
+            showHideTransition: 'slide',
+            icon: 'success'
+          });
+          setTimeout(() => {
+            window.location.href = '../';
+          }, 1800)
+        } else {
+          console.warn(res)
+          $.toast({
+            heading: 'INGRESO ERRONEO',
+            text: res.message,
+            showHideTransition: 'slide',
+            icon: 'error',
+            hideAfter: 5000
+          })
+        }
+      } catch (error) {
+        console.log(error)
         $.toast({
           heading: 'INGRESO ERRONEO',
-          text: res.message,
+          text: 'xxxx',
           showHideTransition: 'slide',
           icon: 'error',
           hideAfter: 5000

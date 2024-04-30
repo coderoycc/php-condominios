@@ -14,7 +14,8 @@ class AuthMiddleware {
     'register/searchDepartments',
     'register/resident',
     'subscription/types',
-    'register/usernameExist'
+    'register/usernameExist',
+    'auth/login_web'
   ];
   public static function check_jwt($route) {
     if (!in_array($route, self::$free_routes)) {
