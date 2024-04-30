@@ -28,8 +28,6 @@ try {
   $controller = new $controllerClass();
 
   $payload = AuthMiddleware::check_jwt($url);
-  // if ($payload) {
-  // }
 
   switch ($method) {
     case 'GET':

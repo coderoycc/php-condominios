@@ -1,10 +1,5 @@
 <?php
-if (isset($_COOKIE['user_obj'])) {
-  $user = json_decode($_COOKIE['user_obj']);
-} else {
-  header('Location: ../auth/login.php');
-  die();
-}
+require_once("../helpers/middlewares/web_auth.php");
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -14,7 +9,7 @@ if (isset($_COOKIE['user_obj'])) {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>DASHBOARD</title>
-  <link rel="stylesheet" href="../assets/datatables/datatables.bootstrap5.min.css">
+  <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
   <link href="../css/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/jquery/jqueryToast.min.css">
   <link rel="stylesheet" href="../css/custom.css">
@@ -23,10 +18,10 @@ if (isset($_COOKIE['user_obj'])) {
   <script src="../assets/jquery/jqueryToast.min.js"></script>
 </head>
 
-<body>
-  <?php include("../common/header.php"); ?>
+<body class="sb-nav-fixed">
+  <?php include("../partials/header.php"); ?>
   <div id="layoutSidenav"> <!-- contenedor -->
-    <?php include("../common/sidebar.php"); ?>
+    <?php include("../partials/sidebar.php"); ?>
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">

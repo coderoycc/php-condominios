@@ -41,25 +41,25 @@ class AuthController {
   public function login_web($data, $files = null) {
     if (!Request::required(['user', 'password', 'pin'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
-    
+
     $condominioData = Accesos::getCondominio($data['pin']);
-    if(!empty($condominioData)){
+    if (!empty($condominioData)) {
       $auth = new AuthProvider(null, $condominioData['dbname']);
       $res_auth = $auth->auth_web($data['user'], $data['password']);
-      if($res_auth['admin']){
-        if($res_auth['user']){
+      if ($res_auth['user']) {
+        if ($res_auth['admin']) {
           session_start();
           $_SESSION['user'] = json_encode($res_auth['user']);
           $_SESSION['credentials'] = json_encode($condominioData);
           session_write_close();
           Response::success_json('Login Correcto', []);
-        }else{
-          Response::error_json(['message' => 'Credenciales incorrectas'], 401);
-        }       
-      }else{
-        Response::error_json(['message' => 'Credenciales incorrectas [ADMIN ONLY]'], 401);
+        } else {
+          Response::error_json(['message' => 'Credenciales incorrectas [ADMIN ONLY]'], 401);
+        }
+      } else {
+        Response::error_json(['message' => 'Credenciales incorrectas'], 401);
       }
-    }else{
+    } else {
       Response::error_json(['message' => 'Pin incorrecto'], 401);
     }
   }

@@ -1,36 +1,34 @@
-window.addEventListener('DOMContentLoaded', event => {
-
+$(document).ready(() => {
   // Toggle the side navigation
   const sidebarToggle = document.body.querySelector('#sidebarToggle');
+
   if (sidebarToggle) {
-    // Uncomment Below to persist sidebar toggle between refreshes
-    // if (localStorage.getItem('sb|sidebar-toggle') === 'true') {
-    //     document.body.classList.toggle('sb-sidenav-toggled');
-    // }
     sidebarToggle.addEventListener('click', event => {
       event.preventDefault();
       document.body.classList.toggle('sb-sidenav-toggled');
       localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
     });
   }
-
-  const color = localStorage.color != undefined && localStorage.color != '' ? localStorage.color : '#212529';
-  console.log('El color es: ' + color)
-
-  $('#top_nav').css('background-color', color);
-  $('#sidenavAccordion').css('background-color', color);
-  $(".sb-sidenav-footer").css('background-color', `${color}`)
-
-  let baseurl = location.pathname.split('/');
-  baseurl = baseurl[baseurl.length - 2];
-  console.log(baseurl)
-  $page = $(`a[data-bs-target="#${baseurl}Collapse"]`);
-  if ($page) {
-    $page.addClass('active');
-    $page.removeClass('collapsed');
-    $(`#${baseurl}Collapse`).addClass('show')
-  }
+  activateRoute();
 });
+
+function activateRoute() {
+  const strLocation = location.pathname.substring(1);
+  if (strLocation.length == 0) return;
+  // $(`a[data-route='${strLocation}']`).addClass('active');
+  const arrLocation = strLocation.split('/');
+  arrLocation.shift(); // eliminamos la ruta inicial (xampp)
+  console.log(arrLocation);
+  if (arrLocation.length > 1) {
+    $parent = $(`a[data-route='${arrLocation[0]}']`);
+    $parent.addClass('active');
+    $parent.removeClass('collapsed');
+    const idCollapse = $parent.attr('data-bs-target');
+    $(idCollapse).addClass('show');
+  } else {
+    $(`a[data-route='${strLocation}']`).addClass('active');
+  }
+}
 
 $(document).on('click', '#idLogout', async () => {
   const res = await $.ajax({

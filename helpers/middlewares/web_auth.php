@@ -6,3 +6,5 @@ if (!isset($_SESSION['user'])) {
 }
 $user = json_decode($_SESSION['user']);
 $condominio = json_decode($_SESSION['credentials']);
+// var_dump($user);
+// var_dump($condominio);

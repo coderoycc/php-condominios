@@ -34,7 +34,7 @@ require_once('../helpers/middlewares/web_login.php');
                       <label for="inputPin">PIN</label>
                     </div>
                     <div class="form-floating mb-3">
-                      <input class="form-control" id="inputEmail" type="text" placeholder="Usuario Alias" name="usuario" required />
+                      <input class="form-control" id="inputEmail" type="text" placeholder="Usuario Alias" name="user" required />
                       <label for="inputEmail">Usuario</label>
                     </div>
                     <div class="form-floating mb-3">
@@ -77,24 +77,16 @@ require_once('../helpers/middlewares/web_login.php');
           setTimeout(() => {
             window.location.href = '../';
           }, 1800)
-        } else {
-          console.warn(res)
-          $.toast({
-            heading: 'INGRESO ERRONEO',
-            text: res.message,
-            showHideTransition: 'slide',
-            icon: 'error',
-            hideAfter: 5000
-          })
         }
       } catch (error) {
-        console.log(error)
+        const resJson = error.responseJSON;
+        // console.log(error.responseJSON)
         $.toast({
           heading: 'INGRESO ERRONEO',
-          text: 'xxxx',
+          text: resJson.message,
           showHideTransition: 'slide',
           icon: 'error',
-          hideAfter: 5000
+          hideAfter: 6000
         })
       }
     })

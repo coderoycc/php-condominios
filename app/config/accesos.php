@@ -50,7 +50,11 @@ class Accesos {
         Response::error_json(['message' => 'Ocurrió un error, subservicio base'], 500);
       }
     } else if (isset($_SESSION['credentials'])) {
-      return $_SESSION['credentials'];
+      $data = json_decode($_SESSION['credentials']);
+      if (isset($data->dbname)) {
+        return $_SESSION['credentials'];
+      } else
+        Response::error_json(['message' => 'Credenciales necesarios']);
     } else {
       Response::error_json(['message' => 'Ocurrió un error, conexión con un subservicio base'], 500);
     }

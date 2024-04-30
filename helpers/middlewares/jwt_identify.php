@@ -8,17 +8,20 @@ use Helpers\JWT\JWT;
 use Helpers\Resources\Response;
 
 class AuthMiddleware {
-  static array $free_routes = [
-    'auth/login_app',
-    'register/searchCondominiums',
-    'register/searchDepartments',
-    'register/resident',
-    'subscription/types',
-    'register/usernameExist',
-    'auth/login_web'
+  // static array $routes = [
+  //   'auth/login_app',
+  //   'register/searchCondominiums',
+  //   'register/searchDepartments',
+  //   'register/resident',
+  //   'subscription/types',
+  //   'register/usernameExist',
+  //   'auth/login_web'
+  // ];
+  static array $routes = [
+    'user/create'
   ];
   public static function check_jwt($route) {
-    if (!in_array($route, self::$free_routes)) {
+    if (in_array($route, self::$routes)) {
       if (isset($_COOKIE['jwt']))
         $token = $_COOKIE['jwt'];
       else { // headers

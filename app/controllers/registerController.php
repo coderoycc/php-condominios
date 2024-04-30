@@ -78,20 +78,8 @@ class RegisterController {
           if (!$r)
             Response::error_json(['message' => 'Error al suscribir usuario']);
         }
-        $auth = new AuthProvider($data['pin'], null);
-        $data_login = $auth->auth($data['cellphone'], $data['password']);
-        $user = $data_login['user'];
-        if ($user->id_user > 0) { // existe el usuario        
-          if (!$data_login['expired']) {
-            $validez = time() + 3600 * 24;
-            $payload = ['user_id' => $user->id_user, 'user' => $user->username, 'exp' => $validez, 'credential' => $database['dbname']];
-            $token = JWT::encode($payload);
-            $data_login['token'] = $token;
-            Response::success_json('Login Correcto', $data_login);
-          } else
-            Response::error_json(['message' => 'Su suscripción ha expirado', 'data' => $data_login], 401);
-        } else  // no existe el usuario
-          Response::error_json(['message' => 'Credenciales incorrectas'], 401);
+        unset($resident->password);
+        Response::success_json('Registro exitoso', ['user' => $resident], 200);
       } else {
         Response::error_json(['message' => 'Registro fallido'], 500);
       }
