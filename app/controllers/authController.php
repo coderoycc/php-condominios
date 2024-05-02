@@ -3,15 +3,16 @@
 namespace App\Controllers;
 
 use App\Config\Accesos;
-use App\Config\Database;
+use App\Providers\DBWebProvider;
 use Helpers\Resources\Response;
-use App\Models\User;
 use App\Providers\AuthProvider;
 use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
 
-class AuthController {
-  public function login_app($data, $files = null) {
+class AuthController
+{
+  public function login_app($data, $files = null)
+  {
     if (!Request::required(['user', 'password', 'pin'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
@@ -38,7 +39,7 @@ class AuthController {
       Response::error_json(['message' => 'Pin incorrecto'], 401);
     }
   }
-  public function login_web($data, $files = null) {
+  public function login_web($data, $files = null){
     if (!Request::required(['user', 'password', 'pin'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
@@ -48,10 +49,7 @@ class AuthController {
       $res_auth = $auth->auth_web($data['user'], $data['password']);
       if ($res_auth['user']) {
         if ($res_auth['admin']) {
-          session_start();
-          $_SESSION['user'] = json_encode($res_auth['user']);
-          $_SESSION['credentials'] = json_encode($condominioData);
-          session_write_close();
+          DBWebProvider::start_session($res_auth['user'], $condominioData);
           Response::success_json('Login Correcto', []);
         } else {
           Response::error_json(['message' => 'Credenciales incorrectas [ADMIN ONLY]'], 401);
@@ -62,5 +60,14 @@ class AuthController {
     } else {
       Response::error_json(['message' => 'Pin incorrecto'], 401);
     }
+  }
+  public function logout(){
+    try {
+      DBWebProvider::session_end();
+      Response::success_json('Logout Correcto', []);
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    Response::error_json(['message' => 'Logout incorrecto'], 401);
   }
 }

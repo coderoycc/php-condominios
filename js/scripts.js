@@ -15,35 +15,40 @@ $(document).ready(() => {
 function activateRoute() {
   const strLocation = location.pathname.substring(1);
   if (strLocation.length == 0) return;
-  // $(`a[data-route='${strLocation}']`).addClass('active');
   const arrLocation = strLocation.split('/');
   arrLocation.shift(); // eliminamos la ruta inicial (xampp)
-  console.log(arrLocation);
+  console.log(arrLocation.join('/'));
+  $(`a[data-route="${arrLocation.join('/')}"]`).addClass('active');
   if (arrLocation.length > 1) {
     $parent = $(`a[data-route='${arrLocation[0]}']`);
     $parent.addClass('active');
     $parent.removeClass('collapsed');
     const idCollapse = $parent.attr('data-bs-target');
     $(idCollapse).addClass('show');
+    if(arrLocation[1] == ''){ // index
+      $(`a[data-route='${arrLocation[0]}/index']`).addClass('active');
+    }
   } else {
     $(`a[data-route='${strLocation}']`).addClass('active');
   }
 }
 
 $(document).on('click', '#idLogout', async () => {
-  const res = await $.ajax({
-    url: '../app/usuario/logout',
-    data: {},
-    type: 'POST',
-    dataType: 'json',
-  })
-  if (res.status == 'success') {
-    setTimeout(() => {
-      window.location.href = '../auth/login.php';
-    }, 1000);
-  } else {
-    console.log(res)
-    // alert('Error al cerrar sesión');
+  try {
+    const res = await $.ajax({
+      url: '../app/auth/logout',
+      data: {},
+      type: 'POST',
+      dataType: 'json',
+    })
+    if (res.success) {
+      setTimeout(() => {
+        window.location.href = '../auth/login.php';
+      }, 1000);
+    }
+  } catch (error) {
+    console.log(error)
+
   }
 })
 

@@ -172,6 +172,7 @@ class User {
         } else {
           $user->load($row);
         }
+        $user->con = null;
         return $user;
       } else {
         return $user;

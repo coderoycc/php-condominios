@@ -9,6 +9,7 @@ require_once('../helpers/middlewares/web_login.php');
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Login</title>
+  <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
   <link href="../css/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/jquery/jqueryToast.min.css">
   <script src="../assets/jquery/jquery.js"></script>
@@ -42,7 +43,7 @@ require_once('../helpers/middlewares/web_login.php');
                       <label for="inputPassword">Contraseña</label>
                     </div>
                     <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                      <button type="submit" class="btn btn-primary" id="btn_logg">Ingresar</button>
+                      <button type="submit" class="btn btn-primary text-white" id="btn_logg">Ingresar</button>
                     </div>
                   </form>
                 </div>
@@ -54,7 +55,6 @@ require_once('../helpers/middlewares/web_login.php');
     </div>
   </div>
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-  <script src="../js/scripts.js"></script>
   <script>
     $(document).on('submit', '#form_login', async (e) => {
       e.preventDefault();

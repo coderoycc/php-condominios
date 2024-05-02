@@ -8,7 +8,7 @@ require_once("../helpers/middlewares/web_auth.php");
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>Residentes</title>
+  <title>Suscripciones</title>
   <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
   <link href="../css/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/jquery/jqueryToast.min.css">
@@ -25,11 +25,7 @@ require_once("../helpers/middlewares/web_auth.php");
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
-          <h2 class="mt-4">RESIDENTES</h2>
-          <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active">Lista</li>
-          </ol>
-
+          <h2 class="mt-4">Suscripciones de usuarios</h2>
           <div class="row">
 
           </div>

@@ -3,20 +3,26 @@
     <div class="sb-sidenav-menu">
       <div class="nav">
         <div class="sb-sidenav-menu-heading">ADMINISTRACIÓN</div>
-        <a class="nav-link" href="/users" data-route="users">
+        <a class="nav-link" href="../users" data-route="users">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-user-shield"></i></div>
           Usuarios del Sistema
         </a>
         <div class="sb-sidenav-menu-heading">RESIDENTES</div>
-        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_residents" aria-expanded="false" aria-controls="collapse_residents" data-route="residents">
+        <a class="nav-link" href="../residents"  data-route="residents">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-people-group"></i></div>
           Residentes
+        </a>
+
+        <div class="sb-sidenav-menu-heading">SUSCRIPCIONES</div>
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_subscriptions" aria-expanded="false" aria-controls="collapse_subscriptions" data-route="subscriptions">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-people-group"></i></div>
+          Suscripciones
           <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
         </a>
-        <div class="collapse" id="collapse_residents" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+        <div class="collapse" id="collapse_subscriptions" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
           <nav class="sb-sidenav-menu-nested nav">
-            <a class="nav-link" href="../residents" data-route="residents">Lista de residentes</a>
-            <a class="nav-link" href="../residents/subscribed" data-route="residents/subscribed">Suscritos</a>
+            <a class="nav-link" href="../subscriptions/types.php" data-route="subscriptions/types.php">Planes suscripción</a>
+            <a class="nav-link" href="../subscriptions" data-route="subscriptions/index">Usuarios suscritos</a>
           </nav>
         </div>
 

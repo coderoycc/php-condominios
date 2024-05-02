@@ -20,4 +20,15 @@ class Response {
     echo json_encode($data);
     die();
   }
+
+  public static function html(string $html, $statusCode = 200) {
+    header('Content-Type: text/html');
+    http_response_code($statusCode);
+    // if(strpos($html, 'Notice: ') !== false && strpos($html, 'Warning: ') !== false){
+    //   echo $html;
+    //   die();
+    // }
+    echo $html;
+    die();
+  }
 }
