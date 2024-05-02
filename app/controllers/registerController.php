@@ -44,7 +44,8 @@ class RegisterController {
       Response::error_json(['message' => 'Campos requeridos [name, gender, cellphone, password, depa_id, pin, check]'], 400);
     try {
       $database = Accesos::getCondominio($data['pin']);
-      if (!isset($database['dbname'])) Response::error_json(['message' => 'Pin no válido'], 400);
+      if (!isset($database['dbname']))
+        Response::error_json(['message' => 'Pin no válido'], 400);
 
       if (User::usernameExist($data['cellphone'], $data['pin']))
         Response::error_json(['message' => '¡Usuario existente! Inicie sesión con su usuario.', 'user' => $data['cellphone']], 400);

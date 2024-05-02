@@ -1,6 +1,8 @@
 <?php
 
 namespace App;
+
+require_once 'vendor/autoload.php';
 include_once 'load_core.php';
 
 use Helpers\Middlewares\AuthMiddleware;

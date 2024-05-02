@@ -51,6 +51,36 @@ class Subscription {
     $this->code = $row['code'];
     $this->limit = $row['limit'];
   }
+
+  public function insert($user_id) {
+    try {
+      $this->con->beginTransaction();
+      $sql = "INSERT INTO tblSubscriptions (type_id, paid_by, paid_by_name, period, nit, department_id, expires_in, valid, code, limit) VALUES (?,?,?,?,?,?,?,?,?,?)";
+      $stmt = $this->con->prepare($sql);
+      $res = $stmt->execute([$this->type_id, $this->paid_by, $this->paid_by_name, $this->period, $this->nit, $this->department_id, $this->expires_in, $this->valid, $this->code, $this->limit]);
+      if ($res) {
+        $this->id_subscription = $this->con->lastInsertId();
+        $sqlSubsUser = "INSERT INTO tblUsersSubscribed (user_id, subscription_id) VALUES (?, ?)";
+        $stmtSubsUser = $this->con->prepare($sqlSubsUser);
+        $resSubsUser = $stmtSubsUser->execute([$user_id, $this->id_subscription]);
+        if ($resSubsUser) {
+          $this->con->commit();
+          return $this->id_subscription;
+        } else {
+          $this->con->rollBack();
+          return -1;
+        }
+      } else {
+        $this->con->rollBack();
+        return -1;
+      }
+    } catch (\Throwable $th) {
+      $this->con->rollBack();
+      var_dump($th);
+    }
+    return -1;
+  }
+
   public function objectNull() {
     $this->id_subscription = 0;
     $this->type_id = 0;
@@ -113,6 +143,31 @@ class Subscription {
       $stmt = $con->prepare($sql);
       $res = $stmt->execute();
       return $res;
+    }
+    return false;
+  }
+  public static function verify_subscription_free($con, $type_id, $resident) {
+    try {
+      $max = 3;
+      if ($resident->id_user) {
+        $year = date('Y');
+        // Todos las suscripciones de tipo 'gratuito <TYPE_ID>' que sean de este año que esten asociados al departamento del usuario que solicita la suscripcion gratuita, tambien el usuario debe estar activo (1)
+        $sql = "SELECT COUNT(*) as cantidad FROM tblUsersSubscribed a INNER JOIN tblUsers b 
+          ON a.user_id = b.id_user
+          WHERE a.subscription_id IN (
+            SELECT id_subscription FROM tblSubscriptions WHERE type_id = $type_id AND YEAR(expires_in) >= $year AND department_id = $resident->department_id
+          ) AND b.status = 1";
+        $stmt = $con->prepare($sql);
+        $stmt->execute();
+        $cantidad = $stmt->fetch()['cantidad'];
+        if ($max > $cantidad)
+          return true;
+        else
+          return false;
+      } else
+        return false;
+    } catch (\Throwable $th) {
+      var_dump($th);
     }
     return false;
   }
