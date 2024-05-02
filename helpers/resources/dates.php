@@ -28,4 +28,10 @@ class HandleDates {
     $expire = new \DateTime($date);
     return $today->getTimestamp() > $expire->getTimestamp();
   }
+  public static function date_expire_month($months): string {
+    $current = time();
+    $with_n_months = intval($months) * 2592000; // 30*24*60*60
+    $date_expire = date('Y-m-d', $current + $with_n_months) . 'T23:59:59';
+    return $date_expire;
+  }
 }

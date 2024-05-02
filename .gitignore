@@ -1,5 +1,6 @@
 /.vscode/
 /app/config/database.php
+/app/vendor/*
 /public/domain/
 /tcpdf/
 /public/*
