@@ -64,7 +64,7 @@ class SubscriptionController {
         $subscription->valid = 1;
         $subscription->code = $subscription->genCode();
         $subscription->limit = 1;
-        if ($subscription->insert($resident->id_user) > 0) {
+        if ($subscription->insert() > 0) {
           Response::success_json('Suscripción realizada', ['subscription' => $subscription]);
         } else {
           Response::error_json(['message' => 'Error al suscribirse', 'error' => true], 200);

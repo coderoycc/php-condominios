@@ -12,7 +12,7 @@
  Target Server Version : 16001000
  File Encoding         : 65001
 
- Date: 30/04/2024 19:10:22
+ Date: 04/05/2024 16:58:51
 */
 
 
@@ -124,7 +124,9 @@ CREATE TABLE [dbo].[tblPayments] (
   [bussinessCode] varchar(10) COLLATE Modern_Spanish_CI_AS  NULL,
   [transaction_response] varchar(2048) COLLATE Modern_Spanish_CI_AS  NULL,
   [confirmed] bit DEFAULT 0 NULL,
-  [created_at] datetime DEFAULT getdate() NULL
+  [created_at] datetime DEFAULT getdate() NULL,
+  [id_qr] int  NULL,
+  [expiration_qr] datetime  NULL
 )
 GO
 
@@ -187,6 +189,20 @@ EXEC sp_addextendedproperty
 'COLUMN', N'confirmed'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'En caso de ser qr, aqui se almacena el id del qr',
+'SCHEMA', N'dbo',
+'TABLE', N'tblPayments',
+'COLUMN', N'id_qr'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Fecha de expiracion del QR',
+'SCHEMA', N'dbo',
+'TABLE', N'tblPayments',
+'COLUMN', N'expiration_qr'
+GO
+
 
 -- ----------------------------
 -- Records of tblPayments
@@ -194,9 +210,36 @@ GO
 SET IDENTITY_INSERT [dbo].[tblPayments] ON
 GO
 
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'2', N'BOB', N'90', N'Pago suscripcion Premium', N'QR', N'', N'050', N'3', N'050', NULL, N'0', N'2024-05-02 17:50:20.913', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'3', N'BOB', N'90', N'Pago suscripcion Premium', N'QR', N'a574d0ee-3855-45e2-a143-d04f33f6642b', N'050', N'3', N'050', NULL, N'0', N'2024-05-02 17:52:18.437', N'12882760', NULL)
+GO
+
 SET IDENTITY_INSERT [dbo].[tblPayments] OFF
 GO
 
+
+-- ----------------------------
+-- Table structure for tblPaymentSubscriptions
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[tblPaymentSubscriptions]') AND type IN ('U'))
+	DROP TABLE [dbo].[tblPaymentSubscriptions]
+GO
+
+CREATE TABLE [dbo].[tblPaymentSubscriptions] (
+  [payment_id] int  NOT NULL,
+  [subscription_id] int  NOT NULL
+)
+GO
+
+ALTER TABLE [dbo].[tblPaymentSubscriptions] SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+-- ----------------------------
+-- Records of tblPaymentSubscriptions
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for tblResidents
@@ -282,6 +325,18 @@ GO
 INSERT INTO [dbo].[tblResidents] ([user_id], [department_id], [phone], [details]) VALUES (N'20', N'4', N'', N'')
 GO
 
+INSERT INTO [dbo].[tblResidents] ([user_id], [department_id], [phone], [details]) VALUES (N'21', N'3', N'', N'')
+GO
+
+INSERT INTO [dbo].[tblResidents] ([user_id], [department_id], [phone], [details]) VALUES (N'22', N'3', N'', N'')
+GO
+
+INSERT INTO [dbo].[tblResidents] ([user_id], [department_id], [phone], [details]) VALUES (N'23', N'3', N'', N'')
+GO
+
+INSERT INTO [dbo].[tblResidents] ([user_id], [department_id], [phone], [details]) VALUES (N'24', N'3', N'', N'')
+GO
+
 
 -- ----------------------------
 -- Table structure for tblSubscriptions
@@ -352,6 +407,18 @@ SET IDENTITY_INSERT [dbo].[tblSubscriptions] ON
 GO
 
 INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [paid_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'1', N'1', N'2024-04-25 17:18:04.000', N'1', N'CHAMBI', N'1', N'44323246', N'4', N'2024-05-25 17:18:46.000', N'1', N'FFC09A', N'4')
+GO
+
+INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [paid_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'2', N'1', N'2024-05-02 13:47:22.753', N'1', N'Roberto Carlos', N'0', N'000', N'3', N'2024-01-06 23:59:59.000', N'1', N'AB6CB5', N'1')
+GO
+
+INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [paid_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'3', N'1', N'2024-05-02 14:09:17.950', N'3', N'Geminis', N'0', N'000', N'5', N'2024-06-01 23:59:59.000', N'1', N'DE6AB1', N'1')
+GO
+
+INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [paid_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'4', N'1', N'2024-05-02 14:33:09.037', N'3', N'Geminis', N'0', N'000', N'5', N'2024-06-01 23:59:59.000', N'1', N'508484', N'1')
+GO
+
+INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [paid_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'5', N'1', N'2024-05-02 14:39:14.820', N'3', N'Geminis', N'0', N'000', N'5', N'2024-06-01 23:59:59.000', N'1', N'2C815D', N'1')
 GO
 
 SET IDENTITY_INSERT [dbo].[tblSubscriptions] OFF
@@ -525,6 +592,18 @@ GO
 INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'20', N'Jiuseppe', N'', N'70578049', N'resident', N'0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', N'71dbb0a1-962b-47b3-a235-e0dec3695925', N'2024-04-30 16:23:59.293', N'70578049', N'M', N'1')
 GO
 
+INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'21', N'test 5', N'', N'77777775', N'resident', N'0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', N'', N'2024-05-03 13:04:33.897', N'77777775', N'M', N'1')
+GO
+
+INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'22', N'test 6', N'', N'77777776', N'resident', N'0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', N'71dbb0a1-962b-47b3-a235-e0dec3695925', N'2024-05-03 17:35:41.397', N'77777776', N'F', N'1')
+GO
+
+INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'23', N'test 7', N'', N'77777777', N'resident', N'0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', N'71dbb0a1-962b-47b3-a235-e0dec3695925', N'2024-05-03 17:39:46.947', N'77777777', N'M', N'1')
+GO
+
+INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'24', N'test 8', N'', N'77777778', N'resident', N'0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', N'71dbb0a1-962b-47b3-a235-e0dec3695925', N'2024-05-04 12:44:23.997', N'77777778', N'F', N'1')
+GO
+
 SET IDENTITY_INSERT [dbo].[tblUsers] OFF
 GO
 
@@ -553,7 +632,19 @@ GO
 INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'1', N'1', NULL)
 GO
 
+INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'1', N'2', N'2024-05-02 13:47:22.760')
+GO
+
 INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'7', N'1', N'2024-04-29 17:56:12.407')
+GO
+
+INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'3', N'3', N'2024-05-02 14:09:17.950')
+GO
+
+INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'3', N'4', N'2024-05-02 14:33:09.040')
+GO
+
+INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'3', N'5', N'2024-05-02 14:39:14.823')
 GO
 
 INSERT INTO [dbo].[tblUsersSubscribed] ([user_id], [subscription_id], [subscribed_in]) VALUES (N'8', N'1', N'2024-04-29 17:58:38.693')
@@ -598,7 +689,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblPayments
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblPayments]', RESEED, 1)
+DBCC CHECKIDENT ('[dbo].[tblPayments]', RESEED, 3)
 GO
 
 
@@ -623,7 +714,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblSubscriptions
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblSubscriptions]', RESEED, 1)
+DBCC CHECKIDENT ('[dbo].[tblSubscriptions]', RESEED, 5)
 GO
 
 
@@ -655,7 +746,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblUsers
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblUsers]', RESEED, 20)
+DBCC CHECKIDENT ('[dbo].[tblUsers]', RESEED, 24)
 GO
 
 
@@ -672,6 +763,16 @@ GO
 -- Foreign Keys structure for table tblPayments
 -- ----------------------------
 ALTER TABLE [dbo].[tblPayments] ADD CONSTRAINT [fk_user_payment] FOREIGN KEY ([app_user_id]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE CASCADE ON UPDATE NO ACTION
+GO
+
+
+-- ----------------------------
+-- Foreign Keys structure for table tblPaymentSubscriptions
+-- ----------------------------
+ALTER TABLE [dbo].[tblPaymentSubscriptions] ADD CONSTRAINT [fk_subscription_payment] FOREIGN KEY ([payment_id]) REFERENCES [dbo].[tblPayments] ([idPayment]) ON DELETE CASCADE ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[tblPaymentSubscriptions] ADD CONSTRAINT [fk_subscription_subscription] FOREIGN KEY ([subscription_id]) REFERENCES [dbo].[tblSubscriptions] ([id_subscription]) ON DELETE CASCADE ON UPDATE NO ACTION
 GO
 
 

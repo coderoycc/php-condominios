@@ -62,8 +62,10 @@ class Resident extends User {
     $this->details = $row["details"] ?? '';
   }
   public function department() {
-    if ($this->department_id) {
-      $this->department = new Department($this->department_id);
+    if ($this->con) {
+      if ($this->department_id) {
+        $this->department = new Department($this->con, $this->department_id);
+      }
     }
   }
 }

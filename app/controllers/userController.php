@@ -3,7 +3,11 @@
 namespace App\Controllers;
 
 use App\Config\Accesos;
+use App\Config\Database;
+use App\Models\Resident;
 use App\Models\User;
+use Helpers\Resources\Request;
+use Helpers\Resources\Response;
 
 class UserController {
   public function create($data, $files) {
@@ -105,6 +109,22 @@ class UserController {
       } else {
         echo json_encode(array('status' => 'error', 'message' => 'Ocurrió un error al cambiar la contraseña, intenta más tarde'));
       }
+    }
+  }
+  public function get_data_resident($data) {
+    if (!Request::required(['pin', 'user_id'], $data))
+      Response::error_json(['message' => 'Parametros faltantes']);
+
+
+    $condominio_data = Accesos::getCondominio($data['pin']);
+    if (isset($condominio_data['dbname'])) {
+      $con = Database::getInstanceX($condominio_data['dbname']);
+      $resident = new Resident($con, $data['user_id']);
+      $resident->department();
+      unset($resident->password);
+      Response::success_json('Usuario residente', ['residente' => $resident, 'condominio' => $condominio_data]);
+    } else {
+      Response::error_json(['message' => 'Pin incorrecto']);
     }
   }
 }

@@ -6,21 +6,22 @@ use App\Config\Accesos;
 use App\Config\Database;
 
 class Department {
+  private $con;
   public int $id_department;
   public string $dep_number;
   public int $bedrooms;
   public string $description;
-  public function __construct($id_department = null) {
-    if ($id_department) {
-      $con = Database::getInstance();
-      $sql = "SELECT * FROM tblDepartments WHERE id_department = :id_department";
-      $stmt = $con->prepare($sql);
-      $stmt->execute(['id_department' => $id_department]);
-      $row = $stmt->fetch();
-      if ($row) $this->load($row);
-      else  $this->objectNull();
-    } else {
-      $this->objectNull();
+  public function __construct($con = null, $id_department = null) {
+    $this->objectNull();
+    if ($con) {
+      $this->con = $con;
+      if ($id_department) {
+        $sql = "SELECT * FROM tblDepartments WHERE id_department = :id_department";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute(['id_department' => $id_department]);
+        $row = $stmt->fetch();
+        if ($row) $this->load($row);
+      }
     }
   }
   public function objectNull() {
@@ -36,24 +37,13 @@ class Department {
     $this->description = $row['description'];
   }
 
-  public static function search($q, $pin = null) {
-    if ($pin) {
-      $condominio = Accesos::getCondominio($pin);
-      if (isset($condominio['dbname'])) {
-        $con = Database::getInstanceX($condominio['dbname']);
-        $sql = "SELECT * FROM tblDepartments WHERE dep_number LIKE '%$q%' OR description LIKE '%$q%';";
-        $stmt = $con->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-      }
-    } else {
-      $con = Database::getInstance();
-      if ($con) {
-        $sql = "SELECT * FROM tblDepartments WHERE dep_number LIKE '%$q%' OR description LIKE '%$q%';";
-        $stmt = $con->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-      }
+  public static function search($con, $q) {
+    if ($con) {
+
+      $sql = "SELECT * FROM tblDepartments WHERE dep_number LIKE '%$q%' OR description LIKE '%$q%';";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
     return [];
   }

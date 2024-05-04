@@ -52,7 +52,7 @@ class Subscription {
     $this->limit = $row['limit'];
   }
 
-  public function insert($user_id) {
+  public function insert() {
     try {
       $this->con->beginTransaction();
       $sql = "INSERT INTO tblSubscriptions (type_id, paid_by, paid_by_name, period, nit, department_id, expires_in, valid, code, limit) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -62,7 +62,7 @@ class Subscription {
         $this->id_subscription = $this->con->lastInsertId();
         $sqlSubsUser = "INSERT INTO tblUsersSubscribed (user_id, subscription_id) VALUES (?, ?)";
         $stmtSubsUser = $this->con->prepare($sqlSubsUser);
-        $resSubsUser = $stmtSubsUser->execute([$user_id, $this->id_subscription]);
+        $resSubsUser = $stmtSubsUser->execute([$this->paid_by, $this->id_subscription]);
         if ($resSubsUser) {
           $this->con->commit();
           return $this->id_subscription;
@@ -107,7 +107,7 @@ class Subscription {
     return Subscriptiontype::getTypes($pin);
   }
   public static function getSusbscriptionUser($con = null, $id_user): Subscription {
-    $subscription = new Subscription();
+    $subscription = new Subscription($con);
     if ($con) {
       $sql = "SELECT TOP 1 * FROM tblUsersSubscribed a INNER JOIN tblSubscriptions b ON a.subscription_id = b.id_subscription WHERE a.user_id = $id_user ORDER BY b.expires_in DESC;";
       $stmt = $con->query($sql);

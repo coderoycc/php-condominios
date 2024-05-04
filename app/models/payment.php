@@ -30,7 +30,8 @@ class Payment {
         $stmt = $this->con->prepare($sql);
         if ($stmt->execute([$idPayment])) {
           $row = $stmt->fetch();
-          $this->load($row);
+          if ($row)
+            $this->load($row);
         }
       }
     }
@@ -97,6 +98,21 @@ class Payment {
         var_dump($th);
       }
       return -1;
+    }
+  }
+  public function update_by_callback() {
+    if ($this->con) {
+      try {
+        $sql = "UPDATE tblPayments SET transaction_response = ?, confirmed = ? WHERE idPayment = ?;";
+        $stmt = $this->con->prepare($sql);
+        $res = $stmt->execute([$this->transaction_response, $this->confirmed, $this->idPayment]);
+        if ($res)
+          return true;
+        return false;
+      } catch (\Throwable $th) {
+        var_dump($th);
+      }
+      return false;
     }
   }
 }

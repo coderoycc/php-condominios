@@ -31,6 +31,7 @@ class AuthProvider {
       $data['user'] = $user;
       if ($user->id_user > 0) {
         $subscription = Subscription::getSusbscriptionUser($this->con, $user->id_user);
+        $subscription->type();
         $data['subscription'] = $subscription;
         if ($user->role == 'resident') {
           $data['expired'] = HandleDates::expired($subscription->expires_in);
@@ -45,20 +46,20 @@ class AuthProvider {
     }
     return $data;
   }
-  public function auth_web($user, $password){
+  public function auth_web($user, $password) {
     $data = ['user' => null, 'admin' => 0];
     try {
       $user = User::exist($user, $password, $this->con);
       unset($user->password);
-      if($user->id_user > 0){
+      if ($user->id_user > 0) {
         $data['user'] = $user;
-        if($user->role == 'admin'){
+        if ($user->role == 'admin') {
           $data['admin'] = 1;
         }
       }
       return $data;
-    }catch (\Throwable $th){
-      Response::error_json(['message' => 'Error Auth Provider names NULL'.$th->getMessage()]);
+    } catch (\Throwable $th) {
+      Response::error_json(['message' => 'Error Auth Provider names NULL' . $th->getMessage()]);
     }
   }
 }

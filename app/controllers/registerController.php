@@ -24,7 +24,8 @@ class RegisterController {
     if (!Request::required(['bname'], $query))
       Response::error_json(['message' => 'Campos requeridos [bname]'], 400);
     $q = $query['q'] ?? '';
-    $departments = Department::search($q, $query['bname']);
+    $con = Database::getInstanceByPin($query['bname']);
+    $departments = Department::search($con, $q);
     Response::success_json('Datos departamento ', $departments, 200);
   }
   public function usernameExist($data) {

@@ -77,7 +77,7 @@ class Accesos {
       $sql = "SELECT * FROM tblCondominiosData WHERE pin = '$pin';";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $res = $stmt->fetch();
+      $res = $stmt->fetch(\PDO::FETCH_ASSOC);
     } catch (\Throwable $th) {
       //throw $th;
     }
