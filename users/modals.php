@@ -22,21 +22,10 @@
           <div class="mb-2">
             <div class="form-floating mb-3">
               <select class="form-select" name="rol" id="rol_u_nuevo">
-                <option value="ADMIN">ADMIN</option>
-                <option value="VENTANILLA">VENTANILLA</option>
-                <option value="ALMACEN">ALMACEN</option>
+                <option value="admin">ADMINISTRADOR</option>
+                <option value="conserje">CONSERJE</option>
               </select>
               <label for="rol_u_nuevo">Rol</label>
-            </div>
-          </div>
-          <div class="mb-2">
-            <div class="form-floating mb-3">
-              <select class="form-select" name="idLugar" id="lugar_user">
-                <?php foreach ($lugares as $lugar) : ?>
-                  <option value="<?= $lugar['idLugar'] ?>"><?= $lugar['lugar'] ?></option>
-                <?php endforeach; ?>
-              </select>
-              <label for="lugar_user">Lugar Asignado</label>
             </div>
           </div>
         </form>
@@ -71,26 +60,15 @@
           <div class="mb-2">
             <div class="form-floating mb-3">
               <select class="form-select" name="rol" id="rol_u_edit">
-                <option value="ADMIN">ADMIN</option>
-                <option value="VENTANILLA">VENTANILLA</option>
-                <option value="ALMACEN">ALMACEN</option>
+                <option value="admin">ADMINISTRADOR</option>
+                <option value="conserje">CONSERJE</option>
               </select>
               <label for="rol_u_edit">Rol</label>
             </div>
           </div>
-          <div class="mb-2">
-            <div class="form-floating mb-3">
-              <select class="form-select" name="idLugar" id="lugar_user_edit">
-                <?php foreach ($lugares as $lugar) : ?>
-                  <option value="<?= $lugar['idLugar'] ?>"><?= $lugar['lugar'] ?></option>
-                <?php endforeach; ?>
-              </select>
-              <label for="lugar_user_edit">Lugar Asignado</label>
-            </div>
-          </div>
         </form>
       </div>
-  
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="updateUser()">Guardar</button>

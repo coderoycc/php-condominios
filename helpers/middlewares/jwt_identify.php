@@ -18,7 +18,7 @@ class AuthMiddleware {
   //   'auth/login_web'
   // ];
   static array $routes = [
-    'user/create'
+    'user/number'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {

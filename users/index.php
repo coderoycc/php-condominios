@@ -1,17 +1,9 @@
 <?php
-if (isset($_COOKIE['user_obj'])) {
-  $user = json_decode($_COOKIE['user_obj']);
-} else {
-  header('Location: ../auth/login.php');
-  die();
-}
-require_once('../app/models/lugar.php');
+require_once("../helpers/middlewares/web_auth.php");
+
 require_once('../app/config/accesos.php');
 require_once('../app/config/database.php');
 
-use App\Models\Lugar;
-
-$lugares = Lugar::all();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -24,6 +16,7 @@ $lugares = Lugar::all();
   <link rel="stylesheet" href="../assets/datatables/datatables.bootstrap5.min.css">
   <link href="../css/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/jquery/jqueryToast.min.css">
   <script src="../assets/fontawesome/fontawesome6.min.js"></script>
   <script src="../assets/jquery/jquery.js"></script>
@@ -33,9 +26,9 @@ $lugares = Lugar::all();
 <body>
   <?php include('./modals.php');
   ?>
-  <?php include("../common/header.php"); ?>
+  <?php include("../partials/header.php"); ?>
   <div id="layoutSidenav"> <!-- contenedor -->
-    <?php include("../common/sidebar.php"); ?>
+    <?php include("../partials/sidebar.php"); ?>
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
@@ -43,7 +36,7 @@ $lugares = Lugar::all();
             <h1>Usuarios del sistema</h1>
           </div>
           <div class="buttons-head col-md-6 col-sm-12 mb-3">
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal_usuario_nuevo"><i class="fa fa-user-plus"></i> Crear Nuevo Usuario</button>
+            <button type="button" class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#modal_usuario_nuevo"><i class="fa fa-user-plus"></i> Crear Nuevo Usuario</button>
           </div>
           <div class="row" id="cards-usuarios">
             <div class="card mb-4 shadow">
@@ -62,15 +55,11 @@ $lugares = Lugar::all();
                       <th class="text-center">NOMBRE</th>
                       <th class="text-center">USUARIO</th>
                       <th class="text-center">ROL</th>
-                      <th class="text-center">LUGAR</th>
                       <th class="text-center">ACCIONES</th>
                     </tr>
                   </thead>
-                  <tbody id="tbl_users">
-
-                  </tbody>
+                  <tbody id="tbl_users"></tbody>
                 </table>
-
               </div>
             </div>
           </div>

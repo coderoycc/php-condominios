@@ -25,7 +25,6 @@ class User {
     if ($db) {
       $this->con = $db;
       if ($id_user != null) {
-        $this->con = Database::getInstance();
         $sql = "SELECT * FROM tblUsers WHERE id_user = :id_user";
         $stmt = $this->con->prepare($sql);
         $stmt->execute(['id_user' => $id_user]);
@@ -178,5 +177,17 @@ class User {
         return $user;
       }
     } else return $user;
+  }
+  public static function all_users($con) {
+    $res = [];
+    try {
+      $sql = "SELECT * FROM tblUsers WHERE role IN ('admin','conserje');";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return $res;
   }
 }

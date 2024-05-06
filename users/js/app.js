@@ -6,12 +6,12 @@ $(document).on('click', '#btn_modal_user', async () => {
   $(".alert-dismissible").remove()
   const data = $("#form_nuevo_user").serialize();
   const res = await $.ajax({
-    url: '../app/usuario/create',
+    url: '../app/user/create',
     data: data,
     type: 'POST',
     dataType: 'JSON'
   });
-  if (res.status == 'success') {
+  if (res.success) {
     $("#form_nuevo_user").append(`<div class="alert alert-success alert-dismissible fade show" role="alert">
       <strong>¡Registro exitoso!</strong> El nuevo usuario puede ingresar al sistema. <u>La contraseña es la misma que el usuario.</u> 
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -33,31 +33,30 @@ $(document).on('hide.bs.modal', '#modal_usuario_nuevo', () => {
 
 async function listarUsuarios() {
   const res = await $.ajax({
-    url: '../app/usuario/getallUsers',
+    url: '../app/user/get_admins',
     type: 'GET',
     dataType: 'JSON'
   });
 
-  if (res.status == 'success') {
-    const data = JSON.parse(res.data);
+  if (res.success) {
+    const data = res.data
     let htmlTable = '';
     $.each(data, (i, item) => {
       htmlTable += `<tr>
-        <td>${item.idUsuario}</td>
-        <td>${item.nombre.toUpperCase()}</td>
-        <td>${item.usuario}</td>
-        <td>${item.rol}</td>
-        <td class="text-center">${item.lugar}</td>
+        <td>${item.id_user}</td>
+        <td>${item.first_name.toUpperCase()} ${item.last_name.toUpperCase()}</td>
+        <td class="text-center">${item.username}</td>
+        <td class="text-center">${item.role.toUpperCase()}</td>
         <td>
           <div class="d-flex justify-content-around">
             <div>
-              <button class="btn btn-primary rounded-circle" type="button" data-bs-toggle="modal" data-bs-target="#modal_usuario_edit" data-usuario="${item.usuario}" data-rol="${item.rol}" data-nombre="${item.nombre}" data-id="${item.idUsuario}" data-idlugar=${item.idLugar}><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-primary rounded-circle" type="button" data-bs-toggle="modal" data-bs-target="#modal_usuario_edit" data-usuario="${item.username}" data-rol="${item.role}" data-nombre="${item.first_name.toUpperCase()} ${item.last_name.toUpperCase()}" data-id="${item.id_user}" ><i class="fa fa-pencil"></i></button>
             </div>
             <div>
-              <button class="btn btn-secondary rounded-circle" title="Restablecer contraseña" type="button" data-bs-toggle="modal" data-bs-target="#modal_reset_pass" data-id="${item.idUsuario}"><i class="fa fa-lock"></i></button>
+              <button class="btn btn-secondary rounded-circle" title="Restablecer contraseña" type="button" data-bs-toggle="modal" data-bs-target="#modal_reset_pass" data-id="${item.id_user}"><i class="fa fa-lock"></i></button>
             </div>
             <div>
-              <button class="btn btn-danger rounded-circle" title="eliminar usuario" type="button" data-bs-toggle="modal" data-bs-target="#modal_delete_usuario" data-id="${item.idUsuario}"><i class="fa fa-trash"></i></button>
+              <button class="btn btn-danger rounded-circle" title="eliminar usuario" type="button" data-bs-toggle="modal" data-bs-target="#modal_delete_usuario" data-id="${item.id_user}"><i class="fa fa-trash"></i></button>
             </div>
           </div>
         </td>
@@ -81,13 +80,13 @@ $(document).on('show.bs.modal', '#modal_usuario_edit', (e) => {
   $("#user_u_edit").val(usuario);
   $("#nombre_u_edit").val(nombre.toUpperCase());
   $("#id_usuario_edit").val(id);
-  $('#rol_u_edit option').each(function(_, element) {
-    if($(element).val() == rol){
+  $('#rol_u_edit option').each(function (_, element) {
+    if ($(element).val() == rol) {
       $(element).attr('selected', true);
     }
   });
-  $("#lugar_user_edit option").each((_,e) => {
-    if($(e).val() == idlugar){
+  $("#lugar_user_edit option").each((_, e) => {
+    if ($(e).val() == idlugar) {
       $(e).attr('selected', true)
     }
   })
@@ -105,12 +104,12 @@ $(document).on('hide.bs.modal', '#modal_usuario_edit', () => {
 async function updateUser() {
   const data = $("#form_edit_user").serialize();
   const res = await $.ajax({
-    url: '../app/usuario/update',
+    url: '../app/user/update',
     data,
     type: 'PUT',
     dataType: 'JSON'
   });
-  if (res.status == 'success') {
+  if (res.success) {
     $.toast({
       heading: 'ACTUALIZACIÓN CORRECTA',
       icon: 'success',

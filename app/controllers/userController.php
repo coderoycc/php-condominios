@@ -6,23 +6,31 @@ use App\Config\Accesos;
 use App\Config\Database;
 use App\Models\Resident;
 use App\Models\User;
+use App\Providers\DBWebProvider;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
 class UserController {
   public function create($data, $files) {
-    $usuario = new User();
-    $usuario->username = $data['user'];
-    $usuario->password = hash('sha256', $data['usuario']);
-    // print_r($usuario);
-    $usuario->role = $data['rol'];
-    $usuario->first_name = $data['nombre'];
-    $res = $usuario->save();
-    // echo $res . '-----';
-    if ($res) {
-      echo json_encode(array('status' => 'success'));
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $usuario = new User($con);
+      $usuario->username = $data['usuario'];
+      $usuario->password = hash('sha256', $data['usuario']);
+      // print_r($usuario);
+      $usuario->role = $data['rol'];
+      $usuario->first_name = $data['nombre'];
+      $usuario->status = 1;
+      $usuario->gender = 'O';
+      $res = $usuario->save();
+      if ($res) {
+        unset($usuario->password);
+        Response::success_json('Usuario creado correctamente', ['user' => $usuario]);
+      } else {
+        Response::error_json(['message' => 'Error al crear el usuario'], 200);
+      }
     } else {
-      echo json_encode(array('status' => 'error'));
+      Response::error_json(['message' => 'Error conexion instancia'], 200);
     }
   }
 
@@ -77,25 +85,27 @@ class UserController {
     }
   }
   public function update($data) {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con == null)
+      Response::error_json(['message' => 'Error conexion instancia'], 200);
     $idUsuario = $data['idUsuario'];
     $user = $data['usuario'];
     $rol = $data['rol'];
-    $usuario = new User($idUsuario);
+    $usuario = new User($con, $idUsuario);
     if ($usuario->id_user == 0) {
-      echo json_encode(array('status' => 'error', 'message' => 'No existe el usuario | idUsuario incorrecto'));
+      Response::error_json(['message' => 'No existe el usuario | idUsuario incorrecto'], 200);
     } else {
       $usuario->username = $user;
       $usuario->role = $rol;
       $usuario->first_name = $data['nombre'];
       $res = $usuario->save();
       if ($res > 0) {
-        echo json_encode(array('status' => 'success', 'message' => 'El usuario fue actualizado exitosamente'));
+        Response::success_json('Acutalizado correctamente', [], 200);
       } else {
-        echo json_encode(array('status' => 'error', 'message' => 'Ocurrió un error al actualizar el usuario, intenta más tarde'));
+        Response::error_json(['message' => 'Error al actualizar el usuario'], 200);
       }
     }
   }
-
   public function resetPass($data) {
     $id = $data['idUsuario'];
     $usuario = new User($id);
@@ -126,5 +136,12 @@ class UserController {
     } else {
       Response::error_json(['message' => 'Pin incorrecto']);
     }
+  }
+  public function get_admins($data) {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $admins = User::all_users($con);
+      Response::success_json('Administradores', $admins);
+    } else Response::error_json(['message' => 'Sin conexión a la base de datos'], 200);
   }
 }
