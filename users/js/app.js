@@ -136,12 +136,12 @@ $(document).on('show.bs.modal', '#modal_delete_usuario', (e) => {
 });
 async function deleteUser() {
   const res = await $.ajax({
-    url: '../app/cusuario/delete',
+    url: '../app/user/delete',
     type: 'DELETE',
     data: { idUsuario: $("#idUsuario_delete").val() },
     dataType: 'JSON'
   });
-  if (res.status == 'success') {
+  if (res.success) {
     $.toast({
       heading: 'USUARIO ELIMINADO',
       icon: 'success',
@@ -169,21 +169,18 @@ $(document).on('show.bs.modal', '#modal_reset_pass', (e) => {
 
 async function user_reset_pass() {
   const res = await $.ajax({
-    url: '../app/usuario/resetPass',
+    url: '../app/user/resetPass',
     type: 'PUT',
     data: { idUsuario: $("#idUsuario_reset_pass").val() },
     dataType: 'JSON'
   });
-  if (res.status == 'success') {
+  if (res.success) {
     $.toast({
       heading: 'CONTRASEÑA CAMBIADA',
       icon: 'success',
       position: 'top-right',
       hideAfter: 1100
     })
-    setTimeout(() => {
-      // window.location.reload();
-    }, 1109);
   } else {
     console.warn(res)
     $.toast({

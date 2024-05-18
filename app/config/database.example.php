@@ -39,6 +39,16 @@ class Database {
     }
     return self::$con;
   }
+  public static function getInstaceCondominiosExterno() {
+    $databaseName = 'condominios_master';
+    try {
+      self::$con = new \PDO("sqlsrv:Server=" . self::$serverName . ";Database=" . $databaseName . ";Encrypt=0;TrustServerCertificate=1", self::$username, self::$password);
+      self::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    } catch (\PDOException $e) {
+      self::$con = null;
+    }
+    return self::$con;
+  }
 
   public static function getInstanceByPin($pin) {
     try {
@@ -55,6 +65,23 @@ class Database {
       }
     } catch (\Throwable $th) {
       Response::error_json(['message' => '¡Error DB! Instance PIN', 'details' => $th->getMessage()], 500);
+    }
+  }
+  public static function getInstanceByPinExterno($pin) {
+    try {
+      $con = self::getInstaceCondominiosExterno();
+      $sql = "SELECT * FROM tblCondominiosData WHERE pin = '$pin';";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $res = $stmt->fetch();
+
+      if (isset($res['dbname'])) {
+        return self::getInstanceX($res['dbname']);
+      } else {
+        return null;
+      }
+    } catch (\Throwable $th) {
+      return null;
     }
   }
   public static function getInstanceX($databaseName) {

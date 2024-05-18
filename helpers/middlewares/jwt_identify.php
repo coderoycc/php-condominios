@@ -8,17 +8,12 @@ use Helpers\JWT\JWT;
 use Helpers\Resources\Response;
 
 class AuthMiddleware {
-  // static array $routes = [
-  //   'auth/login_app',
-  //   'register/searchCondominiums',
-  //   'register/searchDepartments',
-  //   'register/resident',
-  //   'subscription/types',
-  //   'register/usernameExist',
-  //   'auth/login_web'
-  // ];
   static array $routes = [
-    'user/number'
+    'user/number',
+    'notification/send_by_id',
+    'user/search_with_department',
+    'locker/add_content',
+    'locker/list_all'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {

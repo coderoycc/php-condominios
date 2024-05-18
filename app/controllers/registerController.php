@@ -71,7 +71,7 @@ class RegisterController {
       $hash = hash('sha256', $data['password']);
       $resident->password = $hash;
       $resident->status = 1;
-      $resident->device_id = $data['device_id'] ?? '00';
+      $resident->device_id = $data['device_id'] ?? '00-00-000';
       $resident->department_id = $data['depa_id'];
       $resp = $resident->save();
       if ($resp > 0) {

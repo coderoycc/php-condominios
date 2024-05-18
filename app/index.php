@@ -6,14 +6,15 @@ require_once 'vendor/autoload.php';
 include_once 'load_core.php';
 
 use Helpers\Middlewares\AuthMiddleware;
+use Helpers\Resources\Response;
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 // var_dump($url); # users/getAll
 $parts = explode('/', $url);
 // print_r($parts);
 $method = $_SERVER['REQUEST_METHOD'];
-$controller = $parts[0];
-$action = $parts[1];
+$controller = $parts[0] ?? 'x';
+$action = $parts[1] ?? 'y';
 $controllerClass = "App\\Controllers\\" . $controller . "Controller";
 try {
   if (!class_exists($controllerClass)) {
@@ -49,6 +50,5 @@ try {
       echo json_encode(array('error' => 'Metodo no permitido'));
   }
 } catch (\Throwable $th) {
-  http_response_code(500);
-  echo json_encode(array('error' => $th->getMessage(), 'detail' => $th->getFile() . ' 1##-->&&<--##' . $th->getLine()));
+  Response::error_json(array('error' => $th->getMessage(), 'detail' => $th->getFile() . ' 1##-->&&<--##' . $th->getLine()));
 }

@@ -4,9 +4,12 @@ namespace App\Controllers;
 
 use App\Config\Accesos;
 use App\Config\Database;
+use App\Models\Department;
 use App\Models\Resident;
 use App\Models\User;
+use App\Providers\DBAppProvider;
 use App\Providers\DBWebProvider;
+use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
@@ -33,7 +36,6 @@ class UserController {
       Response::error_json(['message' => 'Error conexion instancia'], 200);
     }
   }
-
   public function changepass($data, $files = null) {
     $id = $data['idUsuario'];
     $pass = $data['pass'];
@@ -70,18 +72,18 @@ class UserController {
   //   }
   // }
 
-  public function delete($data) {
+  public function delete($data) /* WEB */ {
     $id = $data['idUsuario'];
-    $usuario = new User($id);
+    $con = DBWebProvider::getSessionDataDB();
+    $usuario = new User($con, $id);
     if ($usuario->id_user == 0) {
-      echo json_encode(array('status' => 'error', 'message' => 'No existe el usuario | idUsuario incorrecto'));
+      Response::error_json(['message' => 'Usuario no encontrado'], 200);
     } else {
       $res = $usuario->delete();
       if ($res > 0) {
-        echo json_encode(array('status' => 'success', 'message' => 'El usuario fue eliminado exitosamente'));
-      } else {
-        echo json_encode(array('status' => 'error', 'message' => 'Ocurrió un error al eliminar el usuario, intenta más tarde'));
-      }
+        Response::success_json('El usuario fue eliminado exitosamente', []);
+      } else
+        Response::error_json(['message' => 'No se elimino el usuario'], 200);
     }
   }
   public function update($data) {
@@ -106,19 +108,17 @@ class UserController {
       }
     }
   }
-  public function resetPass($data) {
+  public function resetPass($data)/* WEB */ {
     $id = $data['idUsuario'];
-    $usuario = new User($id);
+    $con = DBWebProvider::getSessionDataDB();
+    $usuario = new User($con, $id);
     if ($usuario->id_user == 0) {
-      echo json_encode(array('status' => 'error', 'message' => 'No existe el usuario | id_user incorrecto'));
+      Response::error_json(['message' => 'Usuario no existente'], 200);
     } else {
-      $usuario->password = hash('sha256', $usuario->username);
-      $res = $usuario->save();
-      if ($res > 0) {
-        echo json_encode(array('status' => 'success', 'message' => 'La contraseña fue cambiada exitosamente'));
-      } else {
-        echo json_encode(array('status' => 'error', 'message' => 'Ocurrió un error al cambiar la contraseña, intenta más tarde'));
-      }
+      if ($usuario->resetPass()) {
+        Response::success_json('Contraseña actualizada', []);
+      } else
+        Response::error_json(['message' => 'No se realizó el cambio la contraseña'], 200);
     }
   }
   public function get_data_resident($data) {
@@ -143,5 +143,29 @@ class UserController {
       $admins = User::all_users($con);
       Response::success_json('Administradores', $admins);
     } else Response::error_json(['message' => 'Sin conexión a la base de datos'], 200);
+  }
+  public function search_with_department($query)/*protected*/ {
+    if (!Request::required(['q_user'], $query))
+      Response::error_json(['message' => 'Parametros faltantes']);
+
+    $con = DBAppProvider::get_conecction();
+    $depa_num = $query['depa_num'] ?? null;
+    if ($con) {
+      $rows_data = Resident::search_user_depa($con, $query['q_user'], $depa_num);
+      if ($rows_data) {
+        Response::success_json('Residentes ' . $query['q_user'], $rows_data);
+      } else {
+        Response::success_json('Sin resultados', $rows_data, 200);
+      }
+    } else {
+      Response::error_json(['message' => 'Error, token no detectado'], 500);
+    }
+  }
+  public function get_residents($query) {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $residents = Resident::all_residents($con);
+      Render::view('resident/list', ['residents' => $residents]);
+    }
   }
 }

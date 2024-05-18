@@ -26,8 +26,8 @@ require_once("../helpers/middlewares/web_auth.php");
       <main>
         <div class="container-fluid px-4">
           <div class="d-flex justify-content-between my-4 flex-wrap">
-            <h3>Planes de suscripción</h3>
-            <button class="btn text-white" style="--bs-btn-bg:var(--bs-blue);--btn-custom-bg-hover:var(--bs-complement);" type="button" data-bs-toggle="modal" data-bs-target="#modal_add_type"><i class="fa-solid fa-circle-plus"></i> Nuevo plan</button>
+            <h3> <i class="fa-solid fa-comments-dollar"></i> Planes de suscripción</h3>
+            <!-- <button class="btn text-white" style="--bs-btn-bg:var(--bs-blue);--btn-custom-bg-hover:var(--bs-complement);" type="button" data-bs-toggle="modal" data-bs-target="#modal_add_type"><i class="fa-solid fa-circle-plus"></i> Nuevo plan</button> -->
           </div>
           <div class="row" id="list_subscription_types"></div>
         </div>
@@ -40,25 +40,42 @@ require_once("../helpers/middlewares/web_auth.php");
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">Nuevo casillero</h1>
+          <h1 class="modal-title fs-5">Nuevo plan</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <div class="form-floating mb-3">
-            <input type="number" class="form-control" id="nro_locker" placeholder="numero"  step="1" min="1">
-            <label for="nro_locker">N° Casillero</label>
+        <form id="add_type_form" onsubmit="return false;">
+          <div class="modal-body">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="tag_add" name="tag" placeholder="Texto etiqueta">
+              <label for="tag_add">Etiqueta | Nombre</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="number" class="form-control" id="precio_add" name="precio" placeholder="numero" step="any" min="0">
+              <label for="precio_add">Precio</label>
+            </div>
+            <div class="form-floating mb-3">
+              <textarea class="form-control" placeholder="numero" name="descrip" style="height:120px;resize:none"></textarea>
+              <label for="tag_add">Descripción</label>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="CASILLERO" id="ver_servicios">
+                <label class="form-check-label" for="ver_servicios">
+                  Ver servicios
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="PERFIL" id="ver_casillero" checked>
+                <label class="form-check-label" for="ver_casillero">
+                  Ver casilleros
+                </label>
+              </div>
+            </div>
           </div>
-          <div class="form-floating">
-            <select class="form-select" id="detail_locker" placeholder="Detalle">
-              <option value="correspondencia">Solo correspondencia</option>
-              <option value="todo">Todo por defecto</option>
-            </select>
-            <label for="detail_locker">Categoría</label>
-          </div>
-        </div>
+        </form>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" onclick="addType()">Guardar</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addType()">Guardar</button>
         </div>
       </div>
     </div>
@@ -75,7 +92,7 @@ require_once("../helpers/middlewares/web_auth.php");
         </div>
         <div class="modal-footer d-flex justify-content-center">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger text-white" onclick="delete_type()">Eliminar</button>
+          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_type()">Eliminar</button>
         </div>
       </div>
     </div>

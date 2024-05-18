@@ -190,4 +190,18 @@ class User {
     }
     return $res;
   }
+  public static function all_residents($con, $params = []) {
+    $res = [];
+    try {
+      $sql = "SELECT * FROM tblUsers a LEFT JOIN tblResidents b ON a.id_user = b.user_id LEFT JOIN tblDepartments c ON b.department_id = c.id_department WHERE a.role = 'resident'";
+
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Throwable $th) {
+      //throw $th;
+      var_dump($th);
+    }
+    return $res;
+  }
 }

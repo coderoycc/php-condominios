@@ -12,6 +12,7 @@ require_once("../helpers/middlewares/web_auth.php");
   <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
   <link href="../css/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/jquery/jqueryToast.min.css">
+  <link rel="stylesheet" href="../assets/datatables/datatables.bootstrap5.min.css">
   <link rel="stylesheet" href="../css/custom.css">
   <script src="../assets/fontawesome/fontawesome6.min.js"></script>
   <script src="../assets/jquery/jquery.js"></script>
@@ -30,7 +31,7 @@ require_once("../helpers/middlewares/web_auth.php");
             <li class="breadcrumb-item active">Lista</li>
           </ol>
 
-          <div class="row">
+          <div class="row" id="content_table">
 
           </div>
         </div>
@@ -42,6 +43,7 @@ require_once("../helpers/middlewares/web_auth.php");
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>
   <script src="../assets/datatables/datatables.bootstrap5.min.js"></script>
+  <script src="./js/app.js"></script>
 </body>
 
 </html>

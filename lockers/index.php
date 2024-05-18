@@ -1,5 +1,5 @@
 <?php
-require_once ("../helpers/middlewares/web_auth.php");
+require_once("../helpers/middlewares/web_auth.php");
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,9 +19,9 @@ require_once ("../helpers/middlewares/web_auth.php");
 </head>
 
 <body class="sb-nav-fixed">
-  <?php include ("../partials/header.php"); ?>
+  <?php include("../partials/header.php"); ?>
   <div id="layoutSidenav">
-    <?php include ("../partials/sidebar.php"); ?>
+    <?php include("../partials/sidebar.php"); ?>
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
@@ -54,7 +54,7 @@ require_once ("../helpers/middlewares/web_auth.php");
         </div>
         <div class="modal-body">
           <div class="form-floating mb-3">
-            <input type="number" class="form-control" id="nro_locker" placeholder="numero"  step="1" min="1">
+            <input type="number" class="form-control" id="nro_locker" placeholder="numero" step="1" min="1">
             <label for="nro_locker">N° Casillero</label>
           </div>
           <div class="form-floating">
@@ -83,7 +83,7 @@ require_once ("../helpers/middlewares/web_auth.php");
         </div>
         <div class="modal-footer d-flex justify-content-center">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger text-white" onclick="delete_locker()">Eliminar</button>
+          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_locker()">Eliminar</button>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@
           Usuarios del Sistema
         </a>
         <div class="sb-sidenav-menu-heading">RESIDENTES</div>
-        <a class="nav-link" href="../residents"  data-route="residents">
+        <a class="nav-link" href="../residents" data-route="residents">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-people-group"></i></div>
           Residentes
         </a>
@@ -22,7 +22,8 @@
         <div class="collapse" id="collapse_subscriptions" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
           <nav class="sb-sidenav-menu-nested nav">
             <a class="nav-link" href="../subscriptions/types.php" data-route="subscriptions/types.php">Planes suscripción</a>
-            <a class="nav-link" href="../subscriptions" data-route="subscriptions/index">Usuarios suscritos</a>
+            <a class="nav-link" href="../subscriptions" data-route="subscriptions/index">Departamentos con suscripción</a>
+            <a class="nav-link" href="../subscriptions/reports.php" data-route="subscriptions/reports.php">Reportes</a>
           </nav>
         </div>
 
@@ -39,10 +40,27 @@
           <div class="sb-nav-link-icon"><i class="fa-solid fa-door-closed"></i></div>
           Casilleros
         </a>
-        <a class="nav-link" href="../ads" data-route="ads">
+        <a class="nav-link" href="../services/" data-route="services">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-cash-register"></i></div>
+          Administración de servicios
+        </a>
+
+        <div class="sb-sidenav-menu-heading">MASTER</div>
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_master" aria-expanded="false" aria-controls="collapse_master" data-route="master">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          Configuraciones
+          <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+        <div class="collapse" id="collapse_master" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+          <nav class="sb-sidenav-menu-nested nav">
+            <a class="nav-link" href="../master/nameservices.php" data-route="master/nameservices.php">Nombres de servicios</a>
+            <a class="nav-link" href="../master/ads.php" data-route="subscriptions/index">Publicidad</a>
+          </nav>
+        </div>
+        <!-- <a class="nav-link" href="../ads" data-route="ads">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-film"></i></div>
           Anuncios
-        </a>
+        </a> -->
 
         <!-- <div class="sb-sidenav-menu-heading">Interface</div>
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
@@ -71,7 +89,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><?= strtoupper($user->usuario);  ?></h5>
+        <h5 class="modal-title"><?= strtoupper($user->username);  ?></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

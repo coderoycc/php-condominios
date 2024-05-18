@@ -68,4 +68,44 @@ class Resident extends User {
       }
     }
   }
+  public function subscription_valid(): bool {
+    if ($this->con) {
+      $sql = "SELECT b.* FROM tblUsersSubscribed a 
+        INNER JOIN tblSubscriptions b 
+        ON a.subscription_id = b.id_subscription
+        WHERE a.user_id = ? AND b.expires_in > getdate();";
+      $stmt = $this->con->prepare($sql);
+      $stmt->execute([$this->id_user]);
+      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      if ($rows)
+        return true;
+    }
+    return false;
+  }
+  public static function search_user_depa($con, $name_u, $depa_num = null): array {
+    $sql = "SELECT * FROM tblUsers a INNER JOIN tblResidents b 
+      ON a.id_user = b.user_id
+      INNER JOIN tblDepartments c
+      ON b.department_id = c.id_department
+      WHERE a.role = 'resident' AND a.status = 1 AND (a.last_name LIKE '%$name_u%' OR a.first_name LIKE '%$name_u%')";
+    if ($depa_num) {
+      $sql .= " AND c.dep_number = '$depa_num'";
+    }
+    $stmt = $con->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+    $response = [];
+    foreach ($rows as $row) {
+      $resident = new Resident();
+      $resident->load($row);
+      unset($resident->password);
+      unset($resident->role);
+      unset($resident->created_at);
+      $depa = new Department();
+      $depa->load($row);
+      $resident->department = $depa;
+      $response[] = $resident;
+    }
+    return $response;
+  }
 }

@@ -9,10 +9,8 @@ use App\Providers\AuthProvider;
 use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
 
-class AuthController
-{
-  public function login_app($data, $files = null)
-  {
+class AuthController {
+  public function login_app($data, $files = null) {
     if (!Request::required(['user', 'password', 'pin'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
@@ -23,9 +21,13 @@ class AuthController
 
       $user = $data_login['user'];
       if ($user->id_user > 0) { // existe el usuario        
-        if (!$data_login['expired']) {
+        if (!$data_login['expired']) { //suscripcion no vencida
           $validez = time() + 3600 * 24;
-          $payload = ['user_id' => $user->id_user, 'user' => $user->username, 'exp' => $validez, 'credential' => $condominioData['dbname']];
+          $codicationdb = base64_encode(base64_encode($condominioData['dbname']));
+          $codificationPIN = base64_encode(base64_encode($data['pin']));
+          $sub = $data_login['subscription'];
+          $sub_data = base64_encode(base64_encode(json_encode(['id' => $sub->id_subscription, 'expires_in' => $sub->expires_in])));
+          $payload = ['user_id' => $user->id_user, 'user' => $user->username, 'exp' => $validez, 'credential' => $codicationdb, 'pin' => $codificationPIN, 'us_su' => $sub_data];
           $token = JWT::encode($payload);
           $data_login['token'] = $token;
           Response::success_json('Login Correcto', $data_login);
@@ -39,7 +41,7 @@ class AuthController
       Response::error_json(['message' => 'Pin incorrecto'], 401);
     }
   }
-  public function login_web($data, $files = null){
+  public function login_web($data, $files = null) {
     if (!Request::required(['user', 'password', 'pin'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
@@ -61,7 +63,7 @@ class AuthController
       Response::error_json(['message' => 'Pin incorrecto'], 401);
     }
   }
-  public function logout(){
+  public function logout() {
     try {
       DBWebProvider::session_end();
       Response::success_json('Logout Correcto', []);

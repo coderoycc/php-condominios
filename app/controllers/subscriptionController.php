@@ -9,6 +9,7 @@ use App\Models\Subscription;
 use App\Models\Subscriptiontype;
 use App\Providers\DBWebProvider;
 use Helpers\Resources\HandleDates;
+use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
@@ -73,5 +74,98 @@ class SubscriptionController {
         Response::error_json(['message' => 'Limite máximo de suscripciones gratuitas para el departamento', 'error' => true], 200);
       }
     }
+  }
+  public function report_all($data) {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $start = HandleDates::date_format_db($data['fecha_incio'] ?? null);
+      $end = HandleDates::date_format_db($data['fecha_final'] ?? null);
+      $suscripciones = Subscription::get_subscriptions_all($con, ['start' => $start, 'end' => $end]);
+      $total = intval(count($suscripciones));
+      $types = [];
+      foreach ($suscripciones as $sub) {
+        if (isset($types[$sub['name']])) {
+          $types[$sub['name']]['totalAmount'] += $sub['amount'] ?? 0;
+          $types[$sub['name']]['count'] += $sub['period'] == 0 ? 1 : intval($sub['period']); // son 0 en plan free
+        } else {
+          $types[$sub['name']] = ['totalAmount' => $sub['amount'] ?? 0, 'count' => $sub['period'] == 0 ? 1 : intval($sub['period']), 'price' => $sub['price']];
+        }
+      }
+      Render::view('reports/all_subs', ['total' => $total, 'types' => $types]);
+    }
+  }
+  public function report_by($data) {
+    $con = DBWebProvider::getSessionDataDB();
+    if (!Request::required(['id'], $data)) {
+      Render::view('error_html', ['message' => 'Parámetros faltantes <b>[ID]</b>', 'message_details' => 'Comunique al administrador e inténtelo más tarde']);
+    }
+    if ($con) {
+      $id = $data['id'];
+      $start = HandleDates::date_format_db($data['fecha_incio'] ?? null);
+      $end = HandleDates::date_format_db($data['fecha_final'] ?? null);
+      $suscripciones = Subscription::get_subscriptions_by_typeId($con, $id, ['start' => $start, 'end' => $end]);
+      $qty = count($suscripciones);
+      $estados = ['vencidos' => 0, 'vigentes' => 0];
+      $months_subs = [];
+      foreach ($suscripciones as $sub) {
+        $keyMonth = HandleDates::get_month_str($sub['subscribed_in']);
+        if (isset($months_subs[$keyMonth])) {
+          $months_subs[$keyMonth]['amount'] += $sub['amount'] ?? 0;
+          $months_subs[$keyMonth]['count']++;
+        } else {
+          $months_subs[$keyMonth] = ['amount' => $sub['amount'] ?? 0, 'count' => 1];
+        }
+        if (HandleDates::expired($sub['expires_in'])) {
+          $estados['vencidos']++;
+        } else {
+          $estados['vigentes']++;
+        }
+      }
+      Render::view('reports/subs_by_id', ['estados' => $estados, 'months_subs' => $months_subs, 'qty' => $qty, 'id' => $id, 'start' => $start, 'end' => $end]);
+    } else {
+      Render::view('error_html', ['message' => 'Error instancia de conexión', 'message_details' => 'Comunique al administrador e inténtelo más tarde']);
+    }
+  }
+  public function add_type($data, $files = null) {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $type = new Subscriptiontype($con, null);
+      $type->name = $data['tag'];
+      $type->price = $data['precio'];
+      $type->description = $data['descrip'];
+      $type->see_lockers = $data['verCasillero'];
+      $type->see_services = $data['verServicio'];
+      $type->months_duration = 6;
+      if ($type->save()) {
+        Response::success_json('Tipo de suscripción agregado', ['type' => $type]);
+      } else {
+        Response::error_json(['message' => 'Error al guardar tipo de suscripción', 'error' => true], 200);
+      }
+    } else {
+      Response::error_json(['message' => 'Error instancia de conexión', 'error' => true], 200);
+    }
+  }
+  public function delete_type($data) {
+    $con = DBWebProvider::getSessionDataDB();
+    if (!Request::required(['id'], $data)) {
+      Response::error_json(['message' => 'Parámetros faltantes', 'error' => true], 200);
+    }
+
+    if ($con) {
+      $exist = Subscriptiontype::dependency_exist($con, $data['id']);
+      if ($exist)
+        Response::error_json(['message' => 'Existen usuarios con esta suscripción', 'error' => true], 200);
+      else {
+        $type = new Subscriptiontype($con, $data['id']);
+        if ($type->id > 0) {
+          if ($type->delete())
+            Response::success_json('Tipo de suscripción eliminado', [], 200);
+          else
+            Response::error_json(['message' => 'Error al eliminar tipo de suscripción', 'error' => true], 200);
+        } else
+          Response::error_json(['message' => 'No existe ese tipo de suscripción', 'error' => true], 200);
+      }
+    } else
+      Response::error_json(['message' => 'Error instancia de conexión', 'error' => true], 200);
   }
 }

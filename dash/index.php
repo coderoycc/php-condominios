@@ -31,7 +31,7 @@ require_once("../helpers/middlewares/web_auth.php");
           </ol>
 
           <div class="row">
-            <?php if ($user->rol != 'ALMACEN') : ?>
+            <?php if ($user->role != 'ALMACEN') : ?>
               <div class="col-xl-3 col-md-6">
                 <div class="card bg-primary text-white mb-4 shadow">
                   <div class="card-body">

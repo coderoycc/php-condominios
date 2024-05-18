@@ -10,7 +10,7 @@ class Subscription {
   private $con;
   public int $id_subscription;
   public int $type_id;
-  public string $paid_in;
+  public string $subscribed_in;
   public int $paid_by;
   public string $paid_by_name;
   public int $period;
@@ -40,7 +40,7 @@ class Subscription {
   public function load($row) {
     $this->id_subscription = $row['id_subscription'];
     $this->type_id = $row['type_id'];
-    $this->paid_in = $row['paid_in'];
+    $this->subscribed_in = $row['subscribed_in'];
     $this->paid_by = $row['paid_by'];
     $this->paid_by_name = $row['paid_by_name'];
     $this->period = $row['period'];
@@ -84,7 +84,7 @@ class Subscription {
   public function objectNull() {
     $this->id_subscription = 0;
     $this->type_id = 0;
-    $this->paid_in = "";
+    $this->subscribed_in = "";
     $this->paid_by = 0;
     $this->paid_by_name = "";
     $this->period = 0;
@@ -104,7 +104,7 @@ class Subscription {
     return strtoupper(substr(uniqid(), -6));
   }
   public static function getTypes($pin) {
-    return Subscriptiontype::getTypes($pin);
+    return Subscriptiontype::getTypes($pin, null);
   }
   public static function getSusbscriptionUser($con = null, $id_user): Subscription {
     $subscription = new Subscription($con);
@@ -170,5 +170,45 @@ class Subscription {
       var_dump($th);
     }
     return false;
+  }
+  public static function get_subscriptions_all($con, array $filters) {
+    $data_rows = [];
+    try {
+      $start = $filters['start'] ?? date('Y') . "-01-01T00:00:00";
+      $end = $filters['end'] ?? date('Y') . "-12-31T00:00:00";
+      $sql = "SELECT a.name, a.price, a.see_lockers, a.see_services, b.*, d.amount, d.created_at, d.confirmed
+      FROM tblSubscriptionType a INNER JOIN 
+      tblSubscriptions b ON a.id_subscription_type = b.type_id
+      LEFT JOIN tblPaymentSubscriptions c ON c.subscription_id = b.id_subscription
+      LEFT JOIN tblPayments d ON c.payment_id = d.idPayment
+      WHERE b.subscribed_in BETWEEN ? AND ?;";
+      // echo $sql;
+      $stmt = $con->prepare($sql);
+      $stmt->execute([$start, $end]);
+      $data_rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Throwable $th) {
+      // var_dump($th);
+    }
+    return $data_rows;
+  }
+  public static function get_subscriptions_by_typeId($con, $id, array $filters) {
+    $data_rows = [];
+    try {
+      $start = $filters['start'] ?? date('Y') . "-01-01T00:00:00";
+      $end = $filters['end'] ?? date('Y') . "-12-31T00:00:00";
+
+      $sql = "SELECT a.name, a.price, a.see_lockers, a.see_services, b.*, d.amount, d.created_at, d.confirmed
+      FROM tblSubscriptionType a INNER JOIN 
+      tblSubscriptions b ON a.id_subscription_type = b.type_id
+      LEFT JOIN tblPaymentSubscriptions c ON c.subscription_id = b.id_subscription
+      LEFT JOIN tblPayments d ON c.payment_id = d.idPayment
+      WHERE b.type_id = ? AND b.subscribed_in BETWEEN '$start' AND '$end';";
+      $stmt = $con->prepare($sql);
+      $stmt->execute([$id]);
+      $data_rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return $data_rows;
   }
 }
