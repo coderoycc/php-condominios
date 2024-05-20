@@ -1,9 +1,15 @@
 <?php
 
 namespace App\Controllers;
+use Helpers\Resources\Request;
+use Helpers\Resources\Response;
 
 class ServicesController {
-  public function create_service() {
+  public function add_code_service($body, $files = null) /* protected */{
+    if(!Request::required(['service_name', 'code', 'id_sername'], $body))
+      Response::error_json(['message' => 'Campos faltantes [service_name, code, id_sername]']);
+
+    
   }
   public function update_service() {
   }

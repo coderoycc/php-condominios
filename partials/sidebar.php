@@ -54,7 +54,7 @@
         <div class="collapse" id="collapse_master" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
           <nav class="sb-sidenav-menu-nested nav">
             <a class="nav-link" href="../master/nameservices.php" data-route="master/nameservices.php">Nombres de servicios</a>
-            <a class="nav-link" href="../master/ads.php" data-route="subscriptions/index">Publicidad</a>
+            <a class="nav-link" href="../master/ads.php" data-route="master/ads.php">Publicidad</a>
           </nav>
         </div>
         <!-- <a class="nav-link" href="../ads" data-route="ads">

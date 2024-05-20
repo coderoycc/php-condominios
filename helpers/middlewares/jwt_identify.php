@@ -8,12 +8,13 @@ use Helpers\JWT\JWT;
 use Helpers\Resources\Response;
 
 class AuthMiddleware {
-  static array $routes = [
+  static array $routes = [ // rutas protegidas con JWT
     'user/number',
     'notification/send_by_id',
     'user/search_with_department',
     'locker/add_content',
-    'locker/list_all'
+    'locker/list_all',
+    'services/add_code'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {
