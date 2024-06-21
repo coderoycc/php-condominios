@@ -69,9 +69,10 @@ class DBAppProvider {
   }
   public static function get_sub(): Subscription {
     $sub_object = base64_decode($GLOBALS['payload']['us_su']);
-    $sub_object = base64_decode(json_decode($sub_object, true));
+    $sub_object = base64_decode($sub_object);
     $con = self::get_conecction();
-    $sub = new Subscription($con, $sub_object['id']);
+    $id = str_replace("S-", "", $sub_object);
+    $sub = new Subscription($con, $id);
     return $sub;
   }
 }

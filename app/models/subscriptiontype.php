@@ -34,9 +34,9 @@ class Subscriptiontype {
           $this->price = $row['price'];
           $this->annual_price = $row['annual_price'] ?? 0.0;
           $this->iva = $row['iva'];
-          $this->see_lockers = $row['see_lockers'];
-          $this->see_services = $row['see_services'];
-          $this->description = $row['description'];
+          $this->see_lockers = $row['see_lockers'] ?? 0;
+          $this->see_services = $row['see_services'] ?? 0;
+          $this->description = $row['description'] ?? '';
           $this->months_duration = $row['months_duration'] ?? 0;
           $this->details = json_decode($row['details'], true) ?? [];
         }

@@ -5,6 +5,7 @@ namespace App\Models;
 require_once __DIR__ . '/subscriptiontype.php';
 
 use App\Models\Subscriptiontype;
+use PDO;
 
 class Subscription {
   private $con;
@@ -42,8 +43,8 @@ class Subscription {
     $this->type_id = $row['type_id'];
     $this->subscribed_in = $row['subscribed_in'];
     $this->paid_by = $row['paid_by'];
-    $this->paid_by_name = $row['paid_by_name'];
-    $this->period = $row['period'];
+    $this->paid_by_name = $row['paid_by_name'] ?? '';
+    $this->period = $row['period'] ?? 0;
     $this->nit = $row['nit'];
     $this->department_id = $row['department_id'];
     $this->expires_in = $row['expires_in'];
@@ -112,7 +113,7 @@ class Subscription {
       $sql = "SELECT TOP 1 * FROM tblUsersSubscribed a INNER JOIN tblSubscriptions b ON a.subscription_id = b.id_subscription WHERE a.user_id = $id_user ORDER BY b.expires_in DESC;";
       $stmt = $con->query($sql);
       $stmt->execute();
-      $row = $stmt->fetch();
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
       if ($row) {
         $subscription->load($row);
       }

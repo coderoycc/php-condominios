@@ -14,7 +14,9 @@ class AuthMiddleware {
     'user/search_with_department',
     'locker/add_content',
     'locker/list_all',
-    'services/add_code'
+    'services/add_code_service',
+    'services/get_my_services',
+    'services/codes_department_app'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {
@@ -22,7 +24,8 @@ class AuthMiddleware {
         $token = $_COOKIE['jwt'];
       else { // headers
         $headers = getallheaders();
-        if (isset($headers['Authorization'])) {
+        $header = $headers['Authorization'] ?? $headers['authorization'];
+        if ($header) {
           $bearer = explode(' ', $headers['Authorization']);
           $token = $bearer[1];
         } else

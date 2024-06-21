@@ -33,15 +33,15 @@ class SubscriptionController {
     }
   }
   public function subscribe($data, $files = null) {
-    if (!Request::required(['type_id', 'user_id', 'pin'], $data))
+    if (!Request::required(['type_id', 'user_id', 'pin', 'annual'], $data))
       Response::error_json(['message' => 'Parametros faltantes']);
 
     $con = Database::getInstanceByPin($data['pin']);
     $type = new Subscriptiontype($con, $data['type_id']);
     $resident = new Resident($con, $data['user_id']);
     if ($type->price > 0) {
-      $periods = $data['periods'] ?? 1;
-      $precio = $periods * $type->price;
+      $precio = $data['annual'] ? $type->annual_price : $type->price;
+      // $precio = $periods * $type->price;
       $payment = new Payment($con, null);
       $payment->amount = $precio;
       $payment->app_user_id = $data['user_id'];

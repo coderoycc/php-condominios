@@ -13,6 +13,7 @@ require_once("../helpers/middlewares/web_auth.php");
   <link href="../css/styles.css" rel="stylesheet" />
   <link rel="stylesheet" href="../assets/jquery/jqueryToast.min.css">
   <link rel="stylesheet" href="../css/custom.css">
+  <link rel="stylesheet" href="../assets/datatables/datatables.bootstrap5.min.css">
   <script src="../assets/fontawesome/fontawesome6.min.js"></script>
   <script src="../assets/jquery/jquery.js"></script>
   <script src="../assets/jquery/jqueryToast.min.js"></script>
@@ -28,9 +29,9 @@ require_once("../helpers/middlewares/web_auth.php");
           <h3 class="mt-4">SERVICIOS</h3>
 
           <div class="row">
-
+            <div class="col-md-5" id="panel_sub"></div>
+            <div class="col-md-7" id="panel_content"></div>
           </div>
-        </div>
       </main>
     </div>
   </div><!-- fin contenedor -->
@@ -39,6 +40,7 @@ require_once("../helpers/middlewares/web_auth.php");
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>
   <script src="../assets/datatables/datatables.bootstrap5.min.js"></script>
+  <script src="./js/app.js"></script>
 </body>
 
 </html>

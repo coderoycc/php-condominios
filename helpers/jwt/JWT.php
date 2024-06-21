@@ -48,7 +48,7 @@ class JWT {
           $error = 'Firma no válida';
         }
       } else {
-        $error = 'Token no válido';
+        $error = 'Token no válido ' . $token;
       }
     } catch (\Throwable $th) {
       $error = 'Error al decodificar el token';

@@ -18,7 +18,6 @@ class AuthController {
     if (!empty($condominioData)) {
       $auth = new AuthProvider(null, $condominioData['dbname']);
       $data_login = $auth->auth($data['user'], $data['password']);
-
       $user = $data_login['user'];
       if ($user->id_user > 0) { // existe el usuario        
         if (!$data_login['expired']) { //suscripcion no vencida
@@ -26,7 +25,7 @@ class AuthController {
           $codicationdb = base64_encode(base64_encode($condominioData['dbname']));
           $codificationPIN = base64_encode(base64_encode($data['pin']));
           $sub = $data_login['subscription'];
-          $sub_data = base64_encode(base64_encode(json_encode(['id' => $sub->id_subscription, 'expires_in' => $sub->expires_in])));
+          $sub_data = base64_encode(base64_encode('S-' . $sub->id_subscription));
           $payload = ['user_id' => $user->id_user, 'user' => $user->username, 'exp' => $validez, 'credential' => $codicationdb, 'pin' => $codificationPIN, 'us_su' => $sub_data];
           $token = JWT::encode($payload);
           $data_login['token'] = $token;

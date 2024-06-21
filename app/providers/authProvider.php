@@ -61,5 +61,6 @@ class AuthProvider {
     } catch (\Throwable $th) {
       Response::error_json(['message' => 'Error Auth Provider names NULL' . $th->getMessage()]);
     }
+    return $data;
   }
 }
