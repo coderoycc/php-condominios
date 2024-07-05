@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use PDO;
+
 require_once(__DIR__ . '/service_detail.php');
 class Services {
   private $con;
@@ -76,13 +78,19 @@ class Services {
       $sql = "SELECT * FROM tblServices WHERE department_id = ?;";
       $stmt = $con->prepare($sql);
       $stmt->execute([$department_id]);
-      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $rows;
     } catch (\Throwable $th) {
       //throw $th;
     }
     return [];
   }
+  /**
+   * Funcion que devuelve todas las suscripciones que estan habilitadas para ver servicios
+   * @param PDO $con Conexion PDO
+   * @param array $filters 
+   * @return mixed
+   */
   public static function subs_all($con, $filters) {
     try {
       $sql = "SELECT a.id_subscription, a.valid, a.expires_in, a.code, b.name, c.dep_number, c.id_department FROM tblSubscriptions a 
@@ -90,30 +98,59 @@ class Services {
         INNER JOIN tblDepartments c ON c.id_department = a.department_id;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $rows;
     } catch (\Throwable $th) {
       //throw $th;
     }
     return [];
   }
-  public static function sum_department($con, $depa_id, $currYear) {
+  /**
+   * metodo que devuelve los montos de servicios de un departamento por mes de un año pasado por parametro
+   * @param PDO $con
+   * @param int $depa_id
+   * @param int $year
+   * @return mixed
+   */
+  public static function sum_department($con, $depa_id, $year) {
     try {
-      $sql = "SELECT MONTH(month) as mes, ROUND(sum(amount), 2) as total FROM tblServiceDetail
-        WHERE service_id IN (
-          SELECT id_service FROM tblServices WHERE department_id = $depa_id
-        )
-        AND YEAR(month) = $currYear
-        GROUP BY MONTH(month)";
+      $sql = "
+      WITH pagos AS (
+        SELECT 
+        a.department_id,
+        a.payment_id,
+        a.status,
+        MONTH(a.target_date) as mes
+        FROM tblPaymentsServices a 
+        WHERE YEAR(target_date) = 2024 
+        AND department_id = $depa_id
+      )
+      SELECT a.*, b.department_id, b.status, b.payment_id FROM (
+        SELECT MONTH(month) as mes, ROUND(sum(amount), 2) as total FROM tblServiceDetail
+          WHERE service_id IN (
+            SELECT id_service FROM tblServices WHERE department_id = $depa_id
+          )
+          AND YEAR(month) = $year
+          GROUP BY MONTH(month)
+      ) as a
+      LEFT JOIN pagos b ON a.mes = b.mes";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $rows;
     } catch (\Throwable $th) {
       var_dump($th);
     }
     return [];
   }
+  /**
+   * Detalle de los sevicios por mes y departamento
+   * @param PDO $con Conexion PDO
+   * @param int $month  
+   * @param int $year
+   * @param int $depa_id
+   * @return mixed
+   */
   public static function detail_for_month($con, $month, $year, $depa_id) {
     try {
       $sql = "SELECT * FROM tblServices a
@@ -121,7 +158,7 @@ class Services {
         WHERE MONTH(b.month) = $month AND YEAR(b.month) = $year;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $rows;
     } catch (\Throwable $th) {
       var_dump($th);

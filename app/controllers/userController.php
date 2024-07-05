@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Config\Accesos;
 use App\Config\Database;
-use App\Models\Department;
 use App\Models\Resident;
 use App\Models\User;
 use App\Providers\DBAppProvider;

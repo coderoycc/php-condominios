@@ -1,14 +1,26 @@
 <div class="card shadow">
   <div class="card-body">
-    <p class="fw-bold fs-4">Agregar pagos departamento <i><?= $department->dep_number ?></i></p>
+    <?php if ($nuevo) : ?>
+      <p class="fw-bold fs-4">Agregar pagos departamento <i><?= $department->dep_number ?></i></p>
+    <?php else : ?>
+      <p class="fw-bold fs-4">Editar pagos departamento <i><?= $department->dep_number ?></i></p>
+    <?php endif; ?>
     <div class="row">
       <div class="col-md-6 mx-auto">
-        <label for="mes">Selecciona un mes:</label>
-        <input type="month" id="mes" name="mes" class="form-control" value="<?= date("Y-m") ?>">
+        <?php if ($nuevo) : ?>
+          <label for="mes">Selecciona un mes:</label>
+          <input type="month" id="mes" name="mes" class="form-control" value="<?= date("Y-m") ?>">
+        <?php else : ?>
+          <label for="mes">Mes:</label>
+          <input type="hidden" id="mes" name="mes" value="<?= $fecha ?>">
+          <?php $fecha = explode('-', $fecha); ?>
+          <input type="month" class="form-control" disabled value="<?= $fecha[0] . '-' . $fecha[1] ?>">
+        <?php endif; ?>
       </div>
     </div>
     <div class="row">
-      <form id="fill_amounts_form">
+      <form id="<?= $nuevo ? 'fill_amounts_form' : 'update_amounts' ?>">
+        <input type="hidden" name="id_department" value="<?= $department->id_department ?>">
         <table class="table table-striped">
           <thead>
             <tr class="text-center">
@@ -18,13 +30,18 @@
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($services as $service) : ?>
+            <?php
+            $total = 0;
+            foreach ($services as $service) :
+              $total += $service['amount'] ?? 0;
+            ?>
               <tr>
                 <td><?= $service['code'] ?></td>
                 <td><?= $service['service_name'] ?></td>
                 <td>
+                  <input type="hidden" name="id_detail[]" value="<?= $service['id_service_detail'] ?? '' ?>" />
                   <input type="hidden" name="ids[]" value="<?= $service['id_service'] ?>">
-                  <input type="number" name="amounts[]" class="form-control service_amount text-end" placeholder="0.0" step="any" value="">
+                  <input type="number" name="amounts[]" class="form-control service_amount text-end" placeholder="0.0" step="any" value="<?= $service['amount'] ?? '' ?>">
                 </td>
               </tr>
             <?php endforeach; ?>
@@ -32,14 +49,21 @@
           <tfoot>
             <tr>
               <td colspan="2" class="text-end fw-bold">Total: </td>
-              <td class="text-end pe-3" id="total_services">0.0</td>
+              <td class="text-end pe-3" id="total_services"><?= number_format($total, 2) ?></td>
             </tr>
           </tfoot>
         </table>
         <div class="row d-flex justify-content-center">
-          <div style="width:140px">
-            <button type="submit" class="btn btn-primary text-white" <?= $services ? '' : 'disabled' ?>><i class="fa fa-solid fa-save"></i> Guardar</button>
-          </div>
+          <?php if ($nuevo) : ?>
+            <div style="width:140px">
+              <button type="submit" class="btn btn-primary text-white" <?= $services ? '' : 'disabled' ?>><i class="fa fa-solid fa-save"></i> Guardar</button>
+            </div>
+          <?php else : ?>
+            <div style="width:100%;display:flex;justify-content:space-between;">
+              <button type="button" class="btn btn-secondary" onclick="delete_panel()">Cancelar</button>
+              <button type="submit" class="btn btn-info text-white"><i class="fa fa-solid fa-save"></i> Actualizar</button>
+            </div>
+          <?php endif; ?>
         </div>
       </form>
     </div>
@@ -54,4 +78,8 @@
     })
     $("#total_services").text(total.toFixed(2));
   })
+
+  function delete_panel() {
+    $("#panel_content ").html("");
+  }
 </script>

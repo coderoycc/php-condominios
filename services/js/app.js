@@ -3,6 +3,7 @@ $(document).ready(() => {
 })
 
 $(document).on('submit', '#fill_amounts_form', send_amounts)
+$(document).on('submit', '#update_amounts', update_amounts)
 $(document).on('change', '#year_codes', load_data_year)
 
 
@@ -52,10 +53,35 @@ async function send_amounts(e) {
   if (res.success) {
     toast('Montos Agregados', '', 'success', 2090);
     $("#panel_content").children().remove();
+  } else {
+    toast('Error al agregar montos', res.message, 'error', 5000);
   }
+}
+async function update_amounts(e) {
+  e.preventDefault();
+  const data = $("#update_amounts").serializeArray();
+  const res = await $.ajax({
+    url: '../app/services/update_amounts',
+    data,
+    type: 'PUT',
+    dataType: 'json'
+  });
+  console.log(res)
 }
 async function load_data_year(e) {
   const year = e.target.value;
   const id = $("#depa_id_codes").val();
   see_codes(id, year);
+}
+
+async function edit_amount(month, depa_id) {
+  const year = $('#year_codes').val();
+  console.log(month, year, depa_id)
+  const res = await $.ajax({
+    url: '../app/services/edit_amounts',
+    data: { month, year, depa_id },
+    type: 'GET',
+    dataType: 'html'
+  });
+  $("#panel_content").html(res);
 }

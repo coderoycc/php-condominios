@@ -3,8 +3,7 @@
 namespace App\Models;
 
 /**
- * Pago de servicios agrupa todos los pagos de un departamento y los suma
- * Une las tablas 
+ * Objeto que se genera a partir de la tabla tblPaymentServices 
  */
 class ServicesPay {
   private $con;

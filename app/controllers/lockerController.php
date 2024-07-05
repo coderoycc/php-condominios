@@ -17,6 +17,21 @@ class LockerController {
     $lockers = Locker::getAll($con, $data);
     Render::view('locker/list', ['lockers' => $lockers]);
   }
+  /**
+   * [PUT] Liberar un casillero mediante su ID
+   * @return void
+   */
+  public function change_available($body) /* protected */ {
+    $con = DBAppProvider::get_conecction();
+    $locker = new Locker($con, $body['locker_id']);
+    if ($locker->id_locker == 0)
+      Response::error_json(['message' => 'Casillero no existente']);
+    $locker->locker_status = 1;
+    if ($locker->save())
+      Response::success_json('Casillero liberado correctamente', []);
+    else
+      Response::error_json(['message' => 'Error al liberar casillero']);
+  }
   public function create($data, $file = null) {
     if (DBWebProvider::session_exists()) {
       $con = DBWebProvider::getSessionDataDB();

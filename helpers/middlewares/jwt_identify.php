@@ -16,7 +16,8 @@ class AuthMiddleware {
     'locker/list_all',
     'services/add_code_service',
     'services/get_my_services',
-    'services/codes_department_app'
+    'services/codes_department_app',
+    'locker/change_available'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {

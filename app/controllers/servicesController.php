@@ -118,14 +118,28 @@ class ServicesController {
     $con = DBWebProvider::getSessionDataDB();
     $department = new Department($con, $query['id']);
     $services = Services::list_by_department($con, $query['id']);
-    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department]);
+    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => true]);
+  }
+  public function edit_amounts($query) /*web*/ {
+    $con = DBWebProvider::getSessionDataDB();
+    $month = $query['month'];
+    $year = $query['year'];
+    $fecha = $year . '-' . ($month > 9 ? $month : '0' . $month) . '-01';
+    $department = new Department($con, $query['depa_id']);
+    $services = ServiceDetail::list_depa_amounts($con, $fecha, $query['depa_id']);
+    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => false, 'fecha' => $fecha]);
   }
   public function add_amounts($body) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
     $ids = $body['ids'];
     $amounts = $body['amounts'];
+    $department_id = $body['id_department'];
     $mes = $body['mes'] . '-01';
     $n = count($ids);
+    $exist = ServiceDetail::verify_exist($con, intval(explode('-', $mes)[1]), intval(explode('-', $mes)[0]), $department_id);
+    if ($exist) {
+      Response::error_json(['message' => 'Los montos para este mes ya fueron registrados'], 200);
+    }
     $response = true;
     for ($i = 0; $i < $n; $i++) {
       $detail = new ServiceDetail($con);
@@ -141,6 +155,19 @@ class ServicesController {
       Response::success_json('Agregado correctamente', ['OK' => 'Servicios agregados']);
     else
       Response::error_json(['message' => 'Error al agregar servicios'], 200);
+  }
+  public function update_amounts($body) /* web */ {
+    $con = DBWebProvider::getSessionDataDB();
+    $detail_ids = $body['id_detail'];
+    $amounts = $body['amounts'];
+    $n = count($detail_ids);
+    $updateds = 0;
+    for ($i = 0; $i < $n; $i++) {
+      $detail = new ServiceDetail($con, $detail_ids[$i]);
+      $detail->amount = $amounts[$i];
+      if ($detail->update() > 0) $updateds++;
+    }
+    Response::success_json('Actualizado correctamente', ['affected' => $updateds, 'total' => $n]);
   }
   public function my_service_balance() {
   }

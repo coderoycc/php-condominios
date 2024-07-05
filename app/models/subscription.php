@@ -198,11 +198,12 @@ class Subscription {
       $start = $filters['start'] ?? date('Y') . "-01-01T00:00:00";
       $end = $filters['end'] ?? date('Y') . "-12-31T00:00:00";
 
-      $sql = "SELECT a.name, a.price, a.see_lockers, a.see_services, b.*, d.amount, d.created_at, d.confirmed
+      $sql = "SELECT a.name, a.price, a.see_lockers, a.see_services, b.*, d.amount, d.created_at, d.confirmed, u.cellphone
       FROM tblSubscriptionType a INNER JOIN 
       tblSubscriptions b ON a.id_subscription_type = b.type_id
       LEFT JOIN tblPaymentSubscriptions c ON c.subscription_id = b.id_subscription
       LEFT JOIN tblPayments d ON c.payment_id = d.idPayment
+			LEFT JOIN tblUsers u ON u.id_user = b.paid_by
       WHERE b.type_id = ? AND b.subscribed_in BETWEEN '$start' AND '$end';";
       $stmt = $con->prepare($sql);
       $stmt->execute([$id]);

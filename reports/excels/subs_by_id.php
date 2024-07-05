@@ -39,16 +39,18 @@ $objPHPExcel->getProperties()->setCreator("STIS - BOLIVIA")
 $hoja = $objPHPExcel->getActiveSheet();
 $hoja->getColumnDimension('A')->setWidth(10);
 $hoja->getColumnDimension('B')->setWidth(35);
-$hoja->getColumnDimension('C')->setWidth(30);
+$hoja->getColumnDimension('C')->setWidth(25);
 $hoja->getColumnDimension('D')->setWidth(20);
 $hoja->getColumnDimension('E')->setWidth(20);
 $hoja->getColumnDimension('F')->setWidth(15);
-$hoja->getColumnDimension('G')->setWidth(10);
+$hoja->getColumnDimension('G')->setWidth(20);
 $hoja->getColumnDimension('H')->setWidth(20);
-$hoja->getColumnDimension('I')->setWidth(20);
+$hoja->getColumnDimension('I')->setWidth(10);
+$hoja->getColumnDimension('J')->setWidth(20);
+$hoja->getColumnDimension('K')->setWidth(20);
 
-$hoja->mergeCells('A1:I1');
-$hoja->mergeCells('A2:I2');
+$hoja->mergeCells('A1:K1');
+$hoja->mergeCells('A2:K2');
 $estiloCombinado = array(
   'font' => array(
     'bold' => true,
@@ -84,9 +86,11 @@ $hoja->setCellValue('C3', 'NIT.');
 $hoja->setCellValue('D3', 'SUSCRITO EN');
 $hoja->setCellValue('E3', 'CÓDIGO');
 $hoja->setCellValue('F3', 'ESTADO');
-$hoja->setCellValue('G3', 'PERIODOS');
-$hoja->setCellValue('H3', 'PRECIO');
-$hoja->setCellValue('I3', 'SUBTOTAL');
+$hoja->setCellValue('G3', 'VENCE');
+$hoja->setCellValue('H3', 'CELULAR');
+$hoja->setCellValue('I3', 'PERIODOS');
+$hoja->setCellValue('J3', 'PRECIO');
+$hoja->setCellValue('K3', 'SUBTOTAL');
 $hoja->getStyle('A3:I3')->applyFromArray($estiloHeader);
 
 $objPHPExcel->getActiveSheet()->getStyle('A1:C1')->getFont()->setBold(true);
@@ -97,18 +101,23 @@ $n = 1;
 $suscripciones = Subscription::get_subscriptions_by_typeId($con, $id, ['start' => $start, 'end' => $end]);
 // var_dump($suscripciones);
 // die();
+$total = 0;
 foreach ($suscripciones as $sub) {
+  $subtotal = floatval($sub['price'] * $sub['period']);
   $hoja->setCellValue('A' . $i, $n);
   $hoja->setCellValue('B' . $i, $sub['paid_by_name'] ?? 'S/N');
   $hoja->setCellValue('C' . $i, $sub['nit'] ?? '000');
   $hoja->setCellValue('D' . $i, date('d/m/Y', strtotime($sub['subscribed_in'])));
   $hoja->setCellValue('E' . $i, $sub['code'] ?? 'XXXXXX');
-  $hoja->setCellValue('F' . $i, HandleDates::expired($sub['expires_in']) ? 'VENCIDO' : 'VIGENTE');
-  $hoja->setCellValue('G' . $i, $sub['period']);
-  $hoja->setCellValue('H' . $i, $sub['price'] == null ? number_format(0, 2) : number_format($sub['price'], 2));
-  $hoja->setCellValue('I' . $i, $sub['price'] == null ? number_format(0, 2) : number_format($sub['price'] * $sub['period'], 2));
+  $hoja->setCellValue('F' . $i, date('d/m/Y', strtotime($sub['expires_in'])));
+  $hoja->setCellValue('G' . $i, HandleDates::expired($sub['expires_in']) ? 'VENCIDO' : 'VIGENTE');
+  $hoja->setCellValue('H' . $i, $sub['cellphone'] ?? 'Sin celular');
+  $hoja->setCellValue('I' . $i, $sub['period']);
+  $hoja->setCellValue('J' . $i, $sub['price'] == null ? number_format(0, 2) : number_format($sub['price'], 2));
+  $hoja->setCellValue('K' . $i, $sub['price'] == null ? number_format(0, 2) : number_format($subtotal, 2));
   $i++;
   $n++;
+  $total += $subtotal;
 }
 // cambiar formato de una columna
 $hoja->getStyle('C3:C' . $i)->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_TEXT);
@@ -119,8 +128,14 @@ $hoja->getStyle('F3:F' . $i)->getAlignment()->setHorizontal(PHPExcel_Style_Align
 // cambiar nombre de hoja
 $objPHPExcel->getActiveSheet()->setTitle('Suscripciones');
 $i = $i - 1;
-$hoja->getStyle('A3:I' . $i)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
-$hoja->getStyle('I3:I' . $i)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+$hoja->getStyle('A3:K' . $i)->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+$hoja->getStyle('I3:K' . $i)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+$hoja->setCellValue('J' . ($i + 1), 'TOTAL: ');
+$hoja->setCellValue('K' . ($i + 1), number_format($total, 2));
+$hoja->getStyle('J' . ($i + 1))->getFont()->setBold(true);
+$hoja->getStyle('K' . ($i + 1))->getFont()->setBold(true);
+$hoja->getStyle('K' . ($i + 1))->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
+$hoja->getStyle('J' . ($i + 1) . ':K' . ($i + 1))->getBorders()->getAllBorders()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment;filename="suscripciones_' . strtolower($typeSub->name) . '.xlsx"');
 header('Cache-Control: max-age=0');
