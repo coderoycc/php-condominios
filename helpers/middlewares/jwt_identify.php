@@ -16,8 +16,11 @@ class AuthMiddleware {
     'locker/list_all',
     'services/add_code_service',
     'services/get_my_services',
+    'services/delete_my_service',
+    'services/update_my_service',
     'services/codes_department_app',
-    'locker/change_available'
+    'services/detail_services_month',
+    'locker/change_available',
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {
@@ -25,7 +28,13 @@ class AuthMiddleware {
         $token = $_COOKIE['jwt'];
       else { // headers
         $headers = getallheaders();
-        $header = $headers['Authorization'] ?? $headers['authorization'];
+
+        $header = null;
+        if (isset($headers['Authorization'])) {
+          $header = $headers['Authorization'];
+        } elseif (isset($headers['authorization'])) {
+          $header = $headers['authorization'];
+        }
         if ($header) {
           $bearer = explode(' ', $headers['Authorization']);
           $token = $bearer[1];
@@ -34,7 +43,7 @@ class AuthMiddleware {
       }
       $response = JWT::decode($token);
       if (isset($response['error'])) {
-        Response::error_json(['message' => $response['error']]);
+        Response::error_json(['message' => $response['error']], 403);
       } else {
         return $response;
       }

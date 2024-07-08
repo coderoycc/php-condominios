@@ -10,7 +10,7 @@ require_once '../helpers/resources/request.php';
 require_once './controllers/registerController.php';
 require_once './controllers/authController.php';
 
-$entidades = ['user', 'department', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay'];
+$entidades = ['user', 'department', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay', 'ads'];
 foreach ($entidades as $entidad) {
   require_once("models/" . $entidad . ".php");
   require_once("controllers/" . $entidad . "Controller.php");

@@ -55,9 +55,9 @@ class Services {
   public function save(): int {
     if ($this->con) {
       if ($this->id_service > 0) {
-        $sql = "UPDATE tblServices SET user_id = ?, service_name = ?, service_name_id = ?, department_id = ?, code = ? WHERE id_service = ?";
+        $sql = "UPDATE tblServices SET department_id = ?, code = ? WHERE id_service = ?";
         $stmt = $this->con->prepare($sql);
-        $res = $stmt->execute([$this->user_id, $this->service_name, $this->service_name_id, $this->department_id, $this->code, $this->id_service]);
+        $res = $stmt->execute([$this->department_id, $this->code, $this->id_service]);
         if ($res) return $this->id_service;
       } else {
         $sql = "INSERT INTO tblServices (user_id, service_name, service_name_id, department_id, code) VALUES (?, ?, ?, ?, ?)";
@@ -71,7 +71,38 @@ class Services {
     }
     return -1;
   }
+  /**
+   * Elimina un servicio
+   * @param int $id_service
+   * @return array ['status' => boolean, 'message' => string]
+   */
   public function delete() {
+    $resp = ['status' => false, 'message' => ''];
+    try {
+      if ($this->con) {
+        $sql_verify = "SELECT * FROM tblServiceDetail WHERE service_id = ?";
+        $stmt_verify = $this->con->prepare($sql_verify);
+        $stmt_verify->execute([$this->id_service]);
+        $row = $stmt_verify->fetchAll(PDO::FETCH_ASSOC);
+        if (count($row) > 0) {
+          $resp['message'] = 'No se puede eliminar el servicio porque tiene detalles asociados';
+          return $resp;
+        }
+        $sql = "DELETE FROM tblServices WHERE id_service = ?";
+        $stmt = $this->con->prepare($sql);
+        if ($stmt->execute([$this->id_service])) {
+          $resp['message'] = 'Servicio eliminado correctamente';
+          $resp['status'] = true;
+        } else {
+          $resp['message'] = 'Error al eliminar el servicio';
+        }
+      } else {
+        $resp['message'] = 'Error DB sin instancia';
+      }
+    } catch (\Throwable $th) {
+      $resp['message'] = $th->getMessage();
+    }
+    return $resp;
   }
   public static function list_by_department($con, $department_id) {
     try {
@@ -106,7 +137,7 @@ class Services {
     return [];
   }
   /**
-   * metodo que devuelve los montos de servicios de un departamento por mes de un año pasado por parametro
+   * metodo que devuelve los montos de servicios de un departamento junto a los pagos (QR) si es que se generaron, usando un año pasado por parametro
    * @param PDO $con
    * @param int $depa_id
    * @param int $year
@@ -122,7 +153,7 @@ class Services {
         a.status,
         MONTH(a.target_date) as mes
         FROM tblPaymentsServices a 
-        WHERE YEAR(target_date) = 2024 
+        WHERE YEAR(target_date) = $year 
         AND department_id = $depa_id
       )
       SELECT a.*, b.department_id, b.status, b.payment_id FROM (
@@ -133,7 +164,8 @@ class Services {
           AND YEAR(month) = $year
           GROUP BY MONTH(month)
       ) as a
-      LEFT JOIN pagos b ON a.mes = b.mes";
+      LEFT JOIN pagos b ON a.mes = b.mes
+      ORDER BY a.mes DESC";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

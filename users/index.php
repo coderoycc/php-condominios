@@ -23,7 +23,7 @@ require_once('../app/config/database.php');
   <script src="../assets/jquery/jqueryToast.min.js"></script>
 </head>
 
-<body>
+<body class="sb-nav-fixed">
   <?php include('./modals.php');
   ?>
   <?php include("../partials/header.php"); ?>

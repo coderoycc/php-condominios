@@ -27,10 +27,23 @@ require_once("../helpers/middlewares/web_auth.php");
         <div class="container-fluid px-4">
           <div class="d-flex justify-content-between my-4 flex-wrap">
             <h3>Publicidad</h3>
-            <button class="btn text-white" style="--bs-btn-bg:var(--bs-blue);--btn-custom-bg-hover:var(--bs-complement);" type="button" data-bs-toggle="modal" data-bs-target="#modal_add_ad"><i class="fa-solid fa-circle-plus"></i> Nueva publicidad</button>
+            <div class="d-flex justify-content-between gap-3">
+              <button class="btn btn-info text-white" type="button" id="btn_new_add"><i class="fa-solid fa-circle-plus"></i> Nueva publicidad</button>
+              <button class="btn btn-success text-white" type="button" data-bs-toggle="modal" data-bs-target="#modal_add_ad"><i class="fa-solid fa-circle-plus"></i> Nueva publicitador</button>
+            </div>
           </div>
 
-          <div class="row" id="ad_content"></div>
+          <div class="row" id="ad_content">
+            <div class="d-flex align-items-start flex-md-row flex-column">
+              <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link ads active" data-type="publicidad" data-bs-toggle="pill" type="button" role="tab" aria-selected="true">Publicidades</button>
+                <button class="nav-link ads" data-type="publicitador" data-bs-toggle="pill" type="button" role="tab" aria-selected="false">Publicitadores</button>
+              </div>
+              <div class="tab-content w-100" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="content_tabs" role="tabpanel" tabindex="0"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -38,22 +51,24 @@ require_once("../helpers/middlewares/web_auth.php");
 
 
   <!-- Modal add name service -->
-  <div class="modal fade" id="modal_add_nameservice" tabindex="-1" aria-hidden="true">
+  <div class="modal fade" id="modal_add_ad" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">Nuevo nombre de servicio</h1>
+          <h1 class="modal-title fs-5">Nuevo publicitador</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="name_service" placeholder="Nombre">
-            <label for="name_service">Nombre servicio</label>
-          </div>
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="acronym_service" placeholder="Acronimo">
-            <label for="acronimo">Acrónimo</label>
-          </div>
+          <form>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="name_service" placeholder="Nombre">
+              <label for="name_service">Nombre servicio</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="acronym_service" placeholder="Acronimo">
+              <label for="acronimo">Acrónimo</label>
+            </div>
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -106,6 +121,7 @@ require_once("../helpers/middlewares/web_auth.php");
       </div>
     </div>
   </div>
+
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>

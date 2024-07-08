@@ -46,15 +46,13 @@ class ServicesController {
     }
   }
   public function update_my_service($body) /*protected*/ {
-    if (!Request::required(['service_name', 'code', 'id_sername', 'id'], $body)) {
-      Response::error_json(['message' => 'Campos requeridos [service_name, code, id_sername, id]']);
+    if (!Request::required(['code', 'id'], $body)) {
+      Response::error_json(['message' => 'Campos requeridos [code, id]']);
     }
     $con = DBAppProvider::get_conecction();
     $service = new Services($con, $body['id']);
     if ($service->id_service > 0) {
-      $service->service_name = $body['service_name'];
       $service->code = $body['code'];
-      $service->service_name_id = $body['id_sername'];
       if ($service->save() > 0)
         Response::success_json('Success Request', ['service' => $service]);
       else
@@ -69,10 +67,11 @@ class ServicesController {
     $con = DBAppProvider::get_conecction();
     $service = new Services($con, $body['id']);
     if ($service->id_service > 0) {
-      if ($service->delete() > 0)
-        Response::success_json('Servicio eliminado', ['service' => $service]);
+      $res = $service->delete();
+      if ($res['status'])
+        Response::success_json($res['message'] ?? 'OK', ['service' => $service]);
       else
-        Response::error_json(['message' => 'Error al eliminar servicio'], 500);
+        Response::error_json(['message' => $res['message']], 200);
     } else {
       Response::error_json(['message' => 'Servicio no encontrado por su ID'], 404);
     }
@@ -99,7 +98,7 @@ class ServicesController {
     if ($subscription->id_subscription > 0) {
       $department = new Department($con, $subscription->department_id);
       $codes_for_month = Services::sum_department($con, $department->id_department, $year);
-      Response::success_json('Success Request', [$codes_for_month]);
+      Response::success_json('Success Request', ["global" => $codes_for_month]);
     } else
       Response::error_json(['message' => 'Error al obtener suscripcion'], 500);
   }
@@ -112,7 +111,7 @@ class ServicesController {
     $subscr = DBAppProvider::get_sub();
 
     $resp = Services::detail_for_month($con, $month, $year, $subscr->department_id);
-    Response::success_json('Success Request', $resp);
+    Response::success_json('Success Request', ["detail" => $resp]);
   }
   public function fill_amounts($query) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
