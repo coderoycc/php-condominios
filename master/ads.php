@@ -29,15 +29,15 @@ require_once("../helpers/middlewares/web_auth.php");
             <h3>Publicidad</h3>
             <div class="d-flex justify-content-between gap-3">
               <button class="btn btn-info text-white" type="button" id="btn_new_add"><i class="fa-solid fa-circle-plus"></i> Nueva publicidad</button>
-              <button class="btn btn-success text-white" type="button" data-bs-toggle="modal" data-bs-target="#modal_add_ad"><i class="fa-solid fa-circle-plus"></i> Nueva publicitador</button>
+              <button class="btn btn-success text-white" type="button" data-bs-toggle="modal" data-bs-target="#modal_add_ad"><i class="fa-solid fa-briefcase"></i> Nuevo anunciante</button>
             </div>
           </div>
 
           <div class="row" id="ad_content">
             <div class="d-flex align-items-start flex-md-row flex-column">
               <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <button class="nav-link ads active" data-type="publicidad" data-bs-toggle="pill" type="button" role="tab" aria-selected="true">Publicidades</button>
-                <button class="nav-link ads" data-type="publicitador" data-bs-toggle="pill" type="button" role="tab" aria-selected="false">Publicitadores</button>
+                <button class="nav-link ads fw-semibold active" data-type="publicidad" data-bs-toggle="pill" type="button" role="tab" aria-selected="true">Publicidades</button>
+                <button class="nav-link ads fw-semibold" data-type="publicitador" data-bs-toggle="pill" type="button" role="tab" aria-selected="false">Publicitadores</button>
               </div>
               <div class="tab-content w-100" id="v-pills-tabContent">
                 <div class="tab-pane fade show active" id="content_tabs" role="tabpanel" tabindex="0"></div>
@@ -55,7 +55,7 @@ require_once("../helpers/middlewares/web_auth.php");
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">Nuevo publicitador</h1>
+          <h1 class="modal-title fs-5"><i class="fa-solid fa-briefcase"></i> Nuevo anunciante</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">

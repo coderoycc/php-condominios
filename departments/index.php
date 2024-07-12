@@ -114,7 +114,21 @@ require_once("../helpers/middlewares/web_auth.php");
     </div>
   </div>
 
-
+  <!-- MODAL SUSCRIPCIONES -->
+  <div class="modal fade" id="subscription_depa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-info">
+          <h1 class="modal-title text-white fs-5">Suscripciones de este departamento</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="subs_depa_content"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>

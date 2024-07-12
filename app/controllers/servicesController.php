@@ -21,16 +21,20 @@ class ServicesController {
     if ($subscription->type->see_services) {
       $con = DBAppProvider::get_conecction();
       $resident = DBAppProvider::get_resident();
+      $code = $body['code'];
+      if (Services::exist_code($con, $code, $subscription->department_id))
+        Response::error_json(['message' => 'El código ya existe'], 400);
+
       $service = new Services($con);
       $service->service_name = $body['service_name'];
-      $service->code = $body['code'];
+      $service->code = $code;
       $service->user_id = $resident->id_user;
       $service->department_id = $subscription->department_id;
       $service->service_name_id = $body['id_sername'];
       if ($service->save() > 0)
         Response::success_json('Success Request', ['service' => $service]);
       else
-        Response::error_json((['message' => 'Error al crear servicio']), 200);
+        Response::error_json(['message' => 'Error al crear servicio'], 200);
     } else {
       Response::error_json((['message' => 'Su suscripción no le permite agregar servicios']), 200);
     }
@@ -51,8 +55,13 @@ class ServicesController {
     }
     $con = DBAppProvider::get_conecction();
     $service = new Services($con, $body['id']);
+    $subscription = DBAppProvider::get_sub();
     if ($service->id_service > 0) {
-      $service->code = $body['code'];
+      $code = $body['code'];
+      if (Services::exist_code($con, $code, $subscription->department_id))
+        Response::error_json(['message' => 'No puede agregar un código existente'], 400);
+
+      $service->code = $code;
       if ($service->save() > 0)
         Response::success_json('Success Request', ['service' => $service]);
       else

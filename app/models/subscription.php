@@ -213,4 +213,18 @@ class Subscription {
     }
     return $data_rows;
   }
+  public static function get_department_subscription($con, $depa_id, $filters = []) {
+    try {
+      $sql = "SELECT a.*, b.name FROM tblSubscriptions a INNER JOIN tblSubscriptionType b 
+          ON a.type_id = b.id_subscription_type
+          WHERE a.department_id = $depa_id ORDER BY a.expires_in DESC;";
+      $stmt = $con->query($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $rows;
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return [];
+  }
 }

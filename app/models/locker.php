@@ -64,7 +64,8 @@ class Locker {
       $sql = "UPDATE tblLockers SET locker_status = ? WHERE id_locker = ?";
       $stmt = $this->con->prepare($sql);
       $res = $stmt->execute([$status, $this->id_locker]);
-      return $res;
+      if ($res)
+        return true;
     }
     return false;
   }

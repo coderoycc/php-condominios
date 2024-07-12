@@ -30,7 +30,7 @@ class DepartmentController {
       Response::error_json(['message' => 'Error al crear el departamento'], 200);
     }
   }
-  public function update($data) {
+  public function update($data) /*web*/ {
     if (!Request::required(['id', 'depa_num'], $data))
       Response::error_json(['message' => 'Id faltante'], 200);
 
@@ -44,7 +44,7 @@ class DepartmentController {
     else
       Response::error_json(['message' => 'Error al actualizar el departamento'], 200);
   }
-  public function delete($data) {
+  public function delete($data) /*web*/ {
     if (!Request::required(['id'], $data))
       Response::error_json(['message' => 'Id faltante'], 200);
 
@@ -70,6 +70,18 @@ class DepartmentController {
     if ($con) {
       $subs = Department::get_with_subs($con, $query);
       Render::view('subscription/with_department', ['subs' => $subs]);
+    } else
+      Render::view('error_html', ['message' => 'Instancia de conexión', 'message_details' => 'Vuelva a iniciar sesion']);
+  }
+  public function depa_subscription($query) /*web*/ {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $department = new Department($con, $query['id']);
+      if ($department->id_department == 0) {
+        Render::view('error_html', ['message' => 'Departamento no encontrado', 'message_details' => 'El departamento no existe']);
+      }
+      $department->get_subscriptions();
+      Render::view('department/content_subs', ['department' => $department]);
     } else
       Render::view('error_html', ['message' => 'Instancia de conexión', 'message_details' => 'Vuelva a iniciar sesion']);
   }

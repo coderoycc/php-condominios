@@ -36,7 +36,7 @@ class AuthMiddleware {
           $header = $headers['authorization'];
         }
         if ($header) {
-          $bearer = explode(' ', $headers['Authorization']);
+          $bearer = explode(' ', $header);
           $token = $bearer[1];
         } else
           $token = null;

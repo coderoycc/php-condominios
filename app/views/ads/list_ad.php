@@ -1,6 +1,6 @@
 <div class="row m-2">
   <div class="d-flex align-items-center justify-content-between flex-wrap">
-    <p class="text-muted fs-3 m-0">Todas las publicidades</p>
+    <p class="text-muted fw-semibold fs-4 m-0"><i class="fa-solid fa-clipboard-list"></i> Todas las publicidades</p>
     <div class="align-items-center">
       <select class="form-select">
         <option>TODOS</option>

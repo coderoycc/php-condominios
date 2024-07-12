@@ -1,4 +1,5 @@
 <div class="row m-2">
+  <p class="text-muted fw-semibold fs-4"><i class="fa-solid fa-handshake"></i> Lista de anunciantes</p>
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>

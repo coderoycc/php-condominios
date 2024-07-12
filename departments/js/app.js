@@ -3,7 +3,7 @@ $(document).ready(() => {
 })
 $(document).on('show.bs.modal', "#depa_edit", open_modal_edit)
 $(document).on('show.bs.modal', '#depa_delete', open_modal_delete)
-
+$(document).on('show.bs.modal', '#subscription_depa', open_modal_subscription)
 async function list_data() {
   const res = await $.ajax({
     url: '../app/department/list_all',
@@ -83,4 +83,14 @@ async function add_depa() {
     }, 2100);
   } else
     toast('Ocurrió un error', res.message, 'error', 3000)
+}
+async function open_modal_subscription(e) {
+  const id = e.relatedTarget.dataset.id
+  const res = await $.ajax({
+    url: `../app/department/depa_subscription`,
+    type: 'GET',
+    data: { id },
+    dataType: 'html',
+  });
+  $("#subs_depa_content").html(res);
 }

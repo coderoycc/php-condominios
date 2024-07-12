@@ -12,7 +12,7 @@ use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
 class LockerController {
-  public function list($data) {
+  public function list($data) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
     $lockers = Locker::getAll($con, $data);
     Render::view('locker/list', ['lockers' => $lockers]);
@@ -26,8 +26,7 @@ class LockerController {
     $locker = new Locker($con, $body['locker_id']);
     if ($locker->id_locker == 0)
       Response::error_json(['message' => 'Casillero no existente']);
-    $locker->locker_status = 1;
-    if ($locker->save())
+    if ($locker->updateStatus(1))
       Response::success_json('Casillero liberado correctamente', []);
     else
       Response::error_json(['message' => 'Error al liberar casillero']);

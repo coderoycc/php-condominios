@@ -197,4 +197,26 @@ class Services {
     }
     return [];
   }
+  /**
+   * Verifica si un codigo ya existe en la base de datos
+   * @param PDO $con
+   * @param string $code
+   * @param int $department_id
+   * @return boolean
+   */
+  static function exist_code($con, $code, $department_id) {
+    try {
+      $sql = "SELECT * FROM tblServices WHERE code = '$code' AND department_id = $department_id;";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      if ($rows) {
+        if (count($rows) > 0)
+          return true;
+      }
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return false;
+  }
 }

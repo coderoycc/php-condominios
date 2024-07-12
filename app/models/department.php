@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use PDO;
+
 class Department {
   private $con;
   public int $id_department;
@@ -76,22 +78,38 @@ class Department {
     return false;
   }
 
+  /**
+   * Agrega un atributo "subs" con todas las suscripciones que tiene el departamento
+   * @return void
+   */
+  public function get_subscriptions() {
+    if ($this->con) {
+      $this->{'subs'} = Subscription::get_department_subscription($this->con, $this->id_department);
+    }
+  }
   public static function search($con, $q) {
     if ($con) {
       $sql = "SELECT * FROM tblDepartments WHERE dep_number LIKE '%$q%' OR description LIKE '%$q%';";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     return [];
   }
+  /**
+   * Devuelve todos los departamentos con su suscripcion, si es que tiene y no ha vencido
+   * @param PDO $con
+   * @param string $query
+   * @return mixed
+   */
   public static function get_all($con, $query = []) {
     if ($con) {
-      $sql = "SELECT * FROM tblDepartments";
+      $sql = "SELECT a.*, b.id_subscription, b.subscribed_in, b.expires_in FROM tblDepartments a 
+        LEFT JOIN tblSubscriptions b ON a.id_department = b.department_id AND b.expires_in > GETDATE();";
 
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     return [];
   }
@@ -108,7 +126,7 @@ class Department {
 
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $rows;
     } catch (\Throwable $th) {
       var_dump($th);

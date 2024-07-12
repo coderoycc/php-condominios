@@ -39,4 +39,21 @@ class Advertiser {
     $this->created_at = $row['created_at'];
     $this->created_by = $row['created_by'];
   }
+  /**
+   * Retorna todos los publicitadores
+   * @param PDO $con
+   * @return mixed
+   */
+  static function all($con) {
+    try {
+      $sql = "SELECT * FROM tblAdvertisers ORDER BY id_advertiser DESC";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $rows;
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return [];
+  }
 }
