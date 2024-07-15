@@ -57,12 +57,19 @@ require_once("../helpers/middlewares/web_auth.php");
             <input type="number" class="form-control" id="nro_locker" placeholder="numero" step="1" min="1">
             <label for="nro_locker">N° Casillero</label>
           </div>
-          <div class="form-floating">
+          <div class="form-floating mb-3">
             <select class="form-select" id="detail_locker" placeholder="Detalle">
               <option value="correspondencia">Solo correspondencia</option>
               <option value="todo">Todo por defecto</option>
             </select>
             <label for="detail_locker">Categoría</label>
+          </div>
+          <div class="form-floating mb-2">
+            <select class="form-select" id="in_out" placeholder="Entrada o salida">
+              <option value="ENTRADA">Entrada</option>
+              <option value="SALIDA">Salida</option>
+            </select>
+            <label for="detail_locker">Tipo de casillero</label>
           </div>
         </div>
         <div class="modal-footer">
@@ -72,6 +79,25 @@ require_once("../helpers/middlewares/web_auth.php");
       </div>
     </div>
   </div>
+
+  <!-- MODAL EDIT LOCKER -->
+  <div class="modal fade" id="modal_edit_locker" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-secondary">
+          <h1 class="modal-title fs-5">Editar casillero</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modal_content_edit"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="updateLocker()">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- MODAL DELETE LOCKER -->
   <div class="modal fade" id="modal_delete_locker" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">

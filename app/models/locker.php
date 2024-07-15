@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use PDO;
+
 require_once(__DIR__ . '/lockerContent.php');
 class Locker {
   private $con;
@@ -9,6 +11,7 @@ class Locker {
   public int $locker_number;
   public int $locker_status;
   public string $type;
+  public string $in_out; // bandeja de ENTARDA | SALIDA
   public function __construct($con = null, $id_locker = null) {
     $this->objectNull();
     if ($con) {
@@ -30,28 +33,30 @@ class Locker {
     $this->locker_number = 0;
     $this->locker_status = 0;
     $this->type = "";
+    $this->in_out = "";
   }
   public function load($row) {
     $this->id_locker = $row['id_locker'];
     $this->locker_number = $row['locker_number'];
     $this->locker_status = $row['locker_status'] ?? 0;
     $this->type = $row['type'];
+    $this->in_out = $row['in_out'] ?? "";
   }
   public function save() {
     if ($this->con) {
       $res = 0;
       if ($this->id_locker == 0) { //insert
-        $sql = "INSERT INTO tblLockers(locker_number, type) VALUES(?,?);";
+        $sql = "INSERT INTO tblLockers(locker_number, type, in_out) VALUES(?,?,?);";
         $stmt = $this->con->prepare($sql);
-        $res = $stmt->execute([$this->locker_number, $this->type]);
+        $res = $stmt->execute([$this->locker_number, $this->type, $this->in_out]);
         if ($res) {
           $this->id_locker = $this->con->lastInsertId();
           $res = $this->id_locker;
         }
       } else { // update
-        $sql = "UPDATE tblLockers SET locker_number = ?, type = ? WHERE id_locker = ?;";
+        $sql = "UPDATE tblLockers SET locker_number = ?, type = ?, in_out = ? WHERE id_locker = ?;";
         $stmt = $this->con->prepare($sql);
-        $res = $stmt->execute([$this->locker_number, $this->type, $this->id_locker]);
+        $res = $stmt->execute([$this->locker_number, $this->type, $this->in_out, $this->id_locker]);
         if ($res)
           $res = $this->id_locker;
       }
@@ -78,12 +83,13 @@ class Locker {
     }
     return false;
   }
-  public function addContent($user_id, $content = "") {
+  public function addContent($user_id, $content = "", $department_id) {
     if ($this->con) {
       $lockerContent = new LockerContent($this->con);
       $lockerContent->locker_id = $this->id_locker;
       $lockerContent->content = $content;
       $lockerContent->user_id_target = $user_id;
+      $lockerContent->department_id = $department_id;
       $res = true;
       if ($lockerContent->save() > 0) {
         if ($this->type == "todo") { // actualizamos el estado a ocupado si es del tipo "todo"
@@ -101,11 +107,12 @@ class Locker {
     try {
       $order_name = $params['order_name'] ?? 'id_locker';
       $order_type = $params['order_type'] ?? 'DESC';
-      $sql = "SELECT * FROM tblLockers ORDER BY $order_name $order_type;";
+      $in_out = $params['in_out'] ?? '';
+      $sql = "SELECT * FROM tblLockers WHERE in_out LIKE '%$in_out%' ORDER BY $order_name $order_type;";
       $stmt = $con->prepare($sql);
       $res = $stmt->execute();
       if ($res) {
-        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if ($rows)
           return $rows;
       }

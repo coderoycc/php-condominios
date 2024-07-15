@@ -19,5 +19,22 @@
         <li><a class="dropdown-item" href="#!" id="idLogout">Cerrar sesión</a></li>
       </ul>
     </li>
+    <li class="nav-item dropdown">
+      <a class="bg-success rounded-pill nav-link dropdown-toggle" id="nav_notify" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-bell fa-fw"></i>
+        <span class="position-absolute start-100 translate-middle badge rounded-pill bg-info">
+          99+
+        </span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav_notify">
+        <li>
+          <a class="dropdown-item text-center" href="#!">SOLICITUDES DE ENVIO <span class="badge text-bg-secondary">4</span></a>
+        </li>
+        <!-- <li>
+          <hr class="dropdown-divider" />
+        </li> -->
+        <li><a class="dropdown-item" href="#!">Something else here <span class="badge text-bg-secondary">4</span></a></li>
+      </ul>
+    </li>
   </ul>
 </nav>

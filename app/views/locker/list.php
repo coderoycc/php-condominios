@@ -5,10 +5,11 @@ if (count($lockers) > 0) :
       <div class="card text-bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header fw-bold text-center fs-5">Casillero Nº <?= $locker['locker_number'] ?></div>
         <div class="card-body">
-          <p class="card-text"><?= strtoupper($locker['type']) ?></p>
+          <p class="card-text"><b>Casillero de:</b> <?= $locker['in_out'] ?></p>
+          <p class="card-text"><b>Tipo de contenido:</b> <?= strtoupper($locker['type']) ?></p>
         </div>
         <div class="card-footer text-center">
-          <button type="button" class="btn btn-sm btn-primary text-white" title="EDITAR" data-id="<?= $locker['id_locker'] ?>"><i class="fa fa-solid fa-pencil"></i></button>
+          <button type="button" class="btn btn-sm btn-primary text-white" data-bs-toggle="modal" data-bs-target="#modal_edit_locker" title="EDITAR" data-id="<?= $locker['id_locker'] ?>"><i class="fa fa-solid fa-pencil"></i></button>
           <button type="button" class="btn btn-sm btn-danger text-white" title="ELIMINAR" data-bs-toggle="modal" data-bs-target="#modal_delete_locker" data-id="<?= $locker['id_locker'] ?>" data-nro="<?= $locker['locker_number'] ?>"><i class="fa fa-solid fa-trash"></i></button>
         </div>
       </div>

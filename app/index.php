@@ -4,14 +4,16 @@ namespace App;
 
 require_once 'vendor/autoload.php';
 include_once 'load_core.php';
+// composer "ramsey/uuid"
+// require_once 'webSocket/server.php';
 
 use Helpers\Middlewares\AuthMiddleware;
 use Helpers\Resources\Response;
 
 $url = isset($_GET['url']) ? $_GET['url'] : '';
-// var_dump($url); # users/getAll
+
 $parts = explode('/', $url);
-// print_r($parts);
+
 $method = $_SERVER['REQUEST_METHOD'];
 $controller = $parts[0] ?? 'x';
 $action = $parts[1] ?? 'y';

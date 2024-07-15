@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Locker;
+use App\Models\LockerContent;
 use App\Models\Notification;
 use App\Models\Resident;
 use App\Providers\DBAppProvider;
@@ -40,6 +41,7 @@ class LockerController {
           $locker->locker_status = $data['status'] ?? 1;
           $locker->locker_number = $data['nro'];
           $locker->type = $data['detail'];
+          $locker->in_out = $data['in_out'];
           if ($locker->save() > 0) {
             Response::success_json('Casillero creado correctamente', ['locker' => $locker]);
           } else {
@@ -65,7 +67,21 @@ class LockerController {
     } else
       Response::error_json(['message' => 'Casillero no existente']);
   }
-
+  public function update($data) {
+  }
+  public function edit_locker($query)/*web*/ {
+    $con = DBWebProvider::getSessionDataDB();
+    if (isset($query['locker_id']) && !empty($query['locker_id'])) {
+      $locker = new Locker($con, $query['locker_id']);
+      if ($locker->id_locker == 0) {
+        Render::view('error_html', ['message' => 'Casillero no existente', 'message_details' => 'Con el ID enviado no se encontró ningun casillero']);
+      } else {
+        Render::view('locker/edit_content', ['locker' => $locker]);
+      }
+    } else {
+      Render::view('error_html', ['message' => 'Parametro faltante', 'message_details' => 'No se envió el ID del casillero']);
+    }
+  }
   public function add_content($data, $files = null) /* protected */ {
     if (!Request::required(['user_id', 'locker_id'], $data))
       Response::error_json(['message' => '¡Error!, parámetros faltantes']);
@@ -75,7 +91,7 @@ class LockerController {
     if ($locker->id_locker != 0) {
       $resident = new Resident($con, $data['user_id']);
       if ($resident->id_user != 0) {
-        $locker->addContent($data['user_id'], $data['content'] ?? '');
+        $locker->addContent($data['user_id'], $data['content'] ?? '', $resident->department_id);
         if ($resident->subscription_valid()) { // enviar notificacion solo si esta suscrito
           $message = $locker->type == "todo" ?
             'Usted acaba de recibir un pedido en el casillero Nro. ' . $locker->locker_number . '. Tiene 30 min. para recogerlo.' :
@@ -96,10 +112,19 @@ class LockerController {
   }
   public function list_all($query) /* protected */ {
     $con = DBAppProvider::get_conecction();
+    $in_out = $query['bandeja'] ?? 'ENTRADA';
     if ($con) {
-      $lockers = Locker::getAll($con, []);
+      $lockers = Locker::getAll($con, ['in_out' => $in_out]);
       Response::success_json('Casilleros', $lockers);
     } else
       Response::error_json(['message' => 'Error en conexión de instancia'], 500);
+  }
+  public function list_content($query)/* protected */ {
+    $con = DBAppProvider::get_conecction();
+    $subscription = DBAppProvider::get_sub();
+    $content_history = LockerContent::get_list_department($con, $subscription->department_id, $query['in_out']);
+    if (count($content_history) > 0) {
+      $last = $content_history[0];
+    }
   }
 }

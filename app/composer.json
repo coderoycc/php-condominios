@@ -1,17 +1,17 @@
 {
-    "name": "stis/condominios",
-    "autoload": {
-        "psr-4": {
-            "Stis\\Condominios\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "coderoycc",
-            "email": "rcchambi4@gmail.com"
-        }
-    ],
-    "require": {
-        "ramsey/uuid": "^4.2"
+  "name": "stis/condominios",
+  "autoload": {
+    "psr-4": {
+      "Stis\\Condominios\\": "src/"
     }
+  },
+  "authors": [
+    {
+      "name": "coderoycc",
+      "email": "rcchambi4@gmail.com"
+    }
+  ],
+  "require": {
+    "ramsey/uuid": "^4.2"
+  }
 }
