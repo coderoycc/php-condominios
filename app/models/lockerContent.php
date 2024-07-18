@@ -12,6 +12,8 @@ class LockerContent {
   public int $user_id_target;
   public int $department_id;
   public string $received_at;
+  public int $received_by;
+  public int $delivered; //0: NO ENTREGADO, 1: ENTREGADO
   public function __construct($con = null, $id_content = null) {
     $this->objectNull();
     if ($con) {
@@ -33,6 +35,8 @@ class LockerContent {
     $this->user_id_target = 0;
     $this->received_at = '';
     $this->department_id = 0;
+    $this->received_by = 0;
+    $this->delivered = 0;
   }
   public function load($row) {
     $this->id_content = $row['id_content'];
@@ -41,15 +45,30 @@ class LockerContent {
     $this->user_id_target = $row['user_id_target'];
     $this->received_at = $row['received_at'];
     $this->department_id = $row['department_id'] ?? 0;
+    $this->received_by = $row['received_by'] ?? 0;
+    $this->delivered = $row['delivered'] ?? 0;
   }
   public function save() {
     if ($this->con) {
-      $sql = "INSERT INTO tblLockerContent (content, locker_id, user_id_target, department_id) VALUES (?, ?, ?, ?)";
+      $sql = "INSERT INTO tblLockerContent (content, locker_id, user_id_target, department_id, received_by) VALUES (?, ?, ?, ?, ?)";
       $stmt = $this->con->prepare($sql);
-      $stmt->execute([$this->content, $this->locker_id, $this->user_id_target, $this->department_id]);
+      $stmt->execute([$this->content, $this->locker_id, $this->user_id_target, $this->department_id, $this->received_by]);
       $this->id_content = $this->con->lastInsertId();
       $this->received_at = date('Y-m-d H:i:s');
       return $this->id_content;
+    }
+    return -1;
+  }
+  public function change_delivered() {
+    try {
+      if ($this->con) {
+        $sql = "UPDATE tblLockerContent SET delivered = ? WHERE id_content = ?";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute([$this->delivered, $this->id_content]);
+        return $this->id_content;
+      }
+    } catch (\Throwable $th) {
+      var_dump($th);
     }
     return -1;
   }
@@ -62,10 +81,10 @@ class LockerContent {
    */
   public static function get_list_department($con, $depa_id, $bandeja) {
     try {
-      $sql = "SELECT a.id_content, a.content, a.received_at, b.locker_number, a.department_id , b.type, b.in_out 
+      $sql = "SELECT TOP 10 a.id_content, a.content, a.received_at, a.received_by, a.delivered, b.locker_number, a.department_id , b.type, b.in_out 
         FROM tblLockerContent a INNER JOIN tblLockers b 
         ON a.locker_id = b.id_locker
-        WHERE a.user_id_target = $depa_id AND b.in_out = '$bandeja'
+        WHERE a.department_id = $depa_id AND b.in_out = '$bandeja'
         ORDER BY a.id_content DESC;";
       $stmt = $con->prepare($sql);
       $stmt->execute();

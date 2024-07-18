@@ -6,6 +6,7 @@ use App\Models\Locker;
 use App\Models\LockerContent;
 use App\Models\Notification;
 use App\Models\Resident;
+use App\Models\User;
 use App\Providers\DBAppProvider;
 use App\Providers\DBWebProvider;
 use Helpers\Resources\Render;
@@ -82,7 +83,13 @@ class LockerController {
       Render::view('error_html', ['message' => 'Parametro faltante', 'message_details' => 'No se envió el ID del casillero']);
     }
   }
-  public function add_content($data, $files = null) /* protected */ {
+  /**
+   * Controlador donde el conserje agrega contenido a un casillero,
+   * @param array $data - datos del contenido a agregar
+   * @param mixed $files
+   * @return void
+   */
+  public function add_content($data, $files = null) /* protected conserje*/ {
     if (!Request::required(['user_id', 'locker_id'], $data))
       Response::error_json(['message' => '¡Error!, parámetros faltantes']);
 
@@ -91,7 +98,8 @@ class LockerController {
     if ($locker->id_locker != 0) {
       $resident = new Resident($con, $data['user_id']);
       if ($resident->id_user != 0) {
-        $locker->addContent($data['user_id'], $data['content'] ?? '', $resident->department_id);
+        $received_by = DBAppProvider::get_payload_value('user_id');
+        $locker->addContent($data['user_id'], $data['content'] ?? '', $resident->department_id, $received_by);
         if ($resident->subscription_valid()) { // enviar notificacion solo si esta suscrito
           $message = $locker->type == "todo" ?
             'Usted acaba de recibir un pedido en el casillero Nro. ' . $locker->locker_number . '. Tiene 30 min. para recogerlo.' :
@@ -112,7 +120,7 @@ class LockerController {
   }
   public function list_all($query) /* protected */ {
     $con = DBAppProvider::get_conecction();
-    $in_out = $query['bandeja'] ?? 'ENTRADA';
+    $in_out = $query['in_out'] ?? 'ENTRADA';
     if ($con) {
       $lockers = Locker::getAll($con, ['in_out' => $in_out]);
       Response::success_json('Casilleros', $lockers);
@@ -122,9 +130,31 @@ class LockerController {
   public function list_content($query)/* protected */ {
     $con = DBAppProvider::get_conecction();
     $subscription = DBAppProvider::get_sub();
-    $content_history = LockerContent::get_list_department($con, $subscription->department_id, $query['in_out']);
+    $bandeja = $query['in_out'] ?? 'ENTRADA';
+    $content_history = LockerContent::get_list_department($con, $subscription->department_id, $bandeja);
+    $conserje = null;
     if (count($content_history) > 0) {
       $last = $content_history[0];
+      $conserje = new User($con, $last['received_by']);
+      unset($conserje->password);
+      unset($conserje->device_id);
+    }
+    Response::success_json("Contenido de casilleros $bandeja", ['conserje' => $conserje, 'content' => $content_history]);
+  }
+  public function change_delivered($body) /*protected*/ {
+    $con = DBAppProvider::get_conecction();
+    if (!Request::required(['content_id'], $body))
+      Response::error_json(['message' => 'Datos incompletos']);
+
+    $content = new LockerContent($con, $body['content_id']);
+    if ($content->id_content == 0) {
+      Response::error_json(['message' => 'Contenido no encontrado']);
+    } else {
+      $content->delivered = 1;
+      if ($content->change_delivered())
+        Response::success_json('Contenido actualizado correctamente', []);
+      else
+        Response::error_json(['message' => 'Error al actualizar contenido'], 200);
     }
   }
 }

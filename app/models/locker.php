@@ -83,13 +83,14 @@ class Locker {
     }
     return false;
   }
-  public function addContent($user_id, $content = "", $department_id) {
+  public function addContent($user_id, $content = "", $department_id, $received_by) {
     if ($this->con) {
       $lockerContent = new LockerContent($this->con);
       $lockerContent->locker_id = $this->id_locker;
       $lockerContent->content = $content;
       $lockerContent->user_id_target = $user_id;
       $lockerContent->department_id = $department_id;
+      $lockerContent->received_by = $received_by;
       $res = true;
       if ($lockerContent->save() > 0) {
         if ($this->type == "todo") { // actualizamos el estado a ocupado si es del tipo "todo"
@@ -99,14 +100,13 @@ class Locker {
         $res = false;
       }
       return $res;
-    } else {
     }
     return false;
   }
   public static function getAll($con, $params) {
     try {
-      $order_name = $params['order_name'] ?? 'id_locker';
-      $order_type = $params['order_type'] ?? 'DESC';
+      $order_name = $params['order_name'] ?? 'locker_number';
+      $order_type = $params['order_type'] ?? 'ASC';
       $in_out = $params['in_out'] ?? '';
       $sql = "SELECT * FROM tblLockers WHERE in_out LIKE '%$in_out%' ORDER BY $order_name $order_type;";
       $stmt = $con->prepare($sql);
