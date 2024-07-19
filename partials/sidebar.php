@@ -45,6 +45,16 @@
           Administración de servicios
         </a>
 
+        <div class="sb-sidenav-menu-heading">Correspondencia Envíos</div>
+        <a class="nav-link" href="../shipping" data-route="shipping/index">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-box"></i></div>
+          Envios
+        </a>
+        <a class="nav-link" href="../shipping/waiting.php" data-route="shipping/waiting.php">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-box"></i></div>
+          En espera
+        </a>
+
         <div class="sb-sidenav-menu-heading">MASTER</div>
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_master" aria-expanded="false" aria-controls="collapse_master" data-route="master">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
@@ -74,7 +84,6 @@
             <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
           </nav>
         </div> -->
-
       </div>
     </div>
     <div class="sb-sidenav-footer" style="color: var(--bs-verde);">

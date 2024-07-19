@@ -6533,7 +6533,8 @@ progress {
 
 .bg-primary {
   --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+  /* background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important; */
+    background-color: var(--bs-verde-2) !important;
 }
 
 .bg-secondary {
@@ -10258,11 +10259,14 @@ body {
 }
 
 .sb-sidenav.bg-primary .sb-sidenav-menu .nav-link.active {
-  background-color: var(--bs-verde-2);
+  background-color: var(--bs-secondary) !important;
+  color: var(--bs-verde) !important;
+  /* font-weight: bolder; */
 }
 
 .sb-sidenav.bg-primary .sb-sidenav-menu .nav-link.active .sb-nav-link-icon {
-  color: var(--bs-white);
+  color: var(--bs-verde);
+  font-weight: bold;
 }
 
 .sb-sidenav.bg-primary .sb-sidenav-footer {

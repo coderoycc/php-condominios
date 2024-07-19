@@ -8165,7 +8165,8 @@ fieldset:disabled .btn {
 }
 
 .bg-primary {
-  background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important
+  /* background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important */
+  background-color: var(--bs-verde-2) !important;
 }
 
 .bg-secondary {
@@ -8174,6 +8175,7 @@ fieldset:disabled .btn {
 
 .bg-success {
   background-color: rgba(var(--bs-success-rgb), var(--bs-bg-opacity)) !important
+  /* background-color: var(--bs-verde-2) !important; */
 }
 
 .bg-info {
