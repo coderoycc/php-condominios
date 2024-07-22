@@ -147,7 +147,7 @@ class UserController {
     if (!Request::required(['q_user'], $query))
       Response::error_json(['message' => 'Parametros faltantes']);
 
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $depa_num = $query['depa_num'] ?? null;
     if ($con) {
       $rows_data = Resident::search_user_depa($con, $query['q_user'], $depa_num);

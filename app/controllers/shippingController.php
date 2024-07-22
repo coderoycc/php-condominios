@@ -4,11 +4,12 @@ namespace App\Controllers;
 
 use App\Models\Shipping;
 use App\Providers\DBAppProvider;
+use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
 class ShippingController {
   public function create($data, $files = null) /* protected */ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $idUser = DBAppProvider::get_payload_value('user_id');
     $subscription = DBAppProvider::get_sub();
     $shipping = new Shipping($con);
@@ -25,7 +26,7 @@ class ShippingController {
   public function get($query) /*protected*/ {
     if (!isset($query['id']))
       Response::error_json(['message' => 'Error, ID faltante']);
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $shipping = new Shipping($con, $query['id']);
     // var_dump($shipping);
     if ($shipping->id != 0)
@@ -34,10 +35,33 @@ class ShippingController {
       Response::error_json(['message' => 'Error, no se encontro el shipping'], 404);
   }
   public function me($query)/* protected */ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
 
     $subscription = DBAppProvider::get_sub();
     $shippings = Shipping::get_all($con, ['department_id' => $subscription->department_id]);
     Response::success_json('OK', ['shippings' => $shippings]);
+  }
+  public function update($data)/* protected */ {
+    if (!Request::required(['id'], $data))
+      Response::error_json(['message' => 'Error, el ID es necesario']);
+
+    $con = DBAppProvider::get_connection();
+    $id = $data['id'];
+    unset($data['id']);
+    $shipping = new Shipping($con, $id);
+    // var_dump($shipping);
+    $initial = clone $shipping;
+    if ($shipping->id > 0) {
+      if ($shipping->status == 'PENDIENTE') {
+        $shipping->set_data($data);
+        if ($shipping->update(null, $initial) > 0) {
+          Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
+        } else {
+          Response::error_json(['message' => 'Error al actualizar el shipping'], 200);
+        }
+      } else
+        Response::error_json(['message' => 'Error, el shipping ya fue procesado, no es posible editar']);
+    } else
+      Response::error_json(['message' => 'Error, no se encontro el shipping'], 404);
   }
 }

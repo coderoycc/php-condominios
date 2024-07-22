@@ -58,11 +58,13 @@ class BaseModel {
       $valores = [];
       $campos = "";
       foreach ($propiedades as $propiedad) {
-        $nombrePropiedad = $propiedad->getName();
-        $valorPropiedad = $this->$nombrePropiedad;
-        if ($valorPropiedad != $original->$nombrePropiedad) {
-          $campos .= "$nombrePropiedad = ?,";
-          $valores[] = $valorPropiedad;
+        if ($propiedad->isPublic()) {
+          $nombrePropiedad = $propiedad->getName();
+          $valorPropiedad = $this->$nombrePropiedad;
+          if ($valorPropiedad != $original->$nombrePropiedad) {
+            $campos .= "$nombrePropiedad = ?,";
+            $valores[] = $valorPropiedad;
+          }
         }
       }
       $campos = rtrim($campos, ',');
@@ -93,14 +95,16 @@ class BaseModel {
       $campos = "";
       $camposValores = '';
       foreach ($propiedades as $propiedad) {
-        $nombrePropiedad = $propiedad->getName();
-        if ($nombrePropiedad == 'con')
-          continue;
-        $valorPropiedad = $this->$nombrePropiedad;
-        if ($valorPropiedad != '' && $valorPropiedad != null) {
-          $campos .= "$nombrePropiedad,";
-          $valores[] = $valorPropiedad;
-          $camposValores .= '?,';
+        if ($propiedad->isPublic()) {
+          $nombrePropiedad = $propiedad->getName();
+          if ($nombrePropiedad == 'con')
+            continue;
+          $valorPropiedad = $this->$nombrePropiedad;
+          if ($valorPropiedad != '' && $valorPropiedad != null) {
+            $campos .= "$nombrePropiedad,";
+            $valores[] = $valorPropiedad;
+            $camposValores .= '?,';
+          }
         }
       }
       $campos = rtrim($campos, ',');
@@ -118,7 +122,7 @@ class BaseModel {
   }
   /**
    * Carga los datos de un array al objeto
-   * @param array $arr_data
+   * @param array $arr_data datos con las mismas keys que en la base de datos
    * @return void
    */
   public function set_data($arr_data = []) {
@@ -128,7 +132,9 @@ class BaseModel {
       foreach ($propiedades as $propiedad) {
         $nombrePropiedad = $propiedad->getName();
         if (isset($arr_data[$nombrePropiedad])) {
-          $this->$nombrePropiedad = $arr_data[$nombrePropiedad];
+          if ($propiedad->isPublic()) { // solo si es publico
+            $this->$nombrePropiedad = $arr_data[$nombrePropiedad];
+          }
         }
       }
     } catch (\Throwable $th) {

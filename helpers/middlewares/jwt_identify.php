@@ -24,7 +24,9 @@ class AuthMiddleware {
     'locker/change_available',
     'shipping/create',
     'shipping/get',
-    'shipping/me'
+    'shipping/me',
+    'shipping/update',
+    'master/get_countries'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {

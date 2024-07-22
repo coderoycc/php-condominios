@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Config\Accesos;
 use App\Config\Database;
 use App\Models\Resident;
 use App\Models\Subscription;
@@ -53,7 +54,7 @@ class DBAppProvider {
    * @return Resident
    */
   public static function get_resident(): Resident {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $id_user = $GLOBALS['payload']['user_id'];
     $resident = new Resident($con, $id_user);
     return $resident;
@@ -62,7 +63,7 @@ class DBAppProvider {
    * Devuelve la conexion a la base de datos usando la instancia (pin) en el token 
    * @return PDO|null
    */
-  public static function get_conecction() {
+  public static function get_connection() {
     if (self::exist()) {
       $con = Database::getInstanceX(self::get_db_name());
       return $con;
@@ -86,7 +87,7 @@ class DBAppProvider {
   public static function get_sub(): Subscription {
     $sub_object = base64_decode($GLOBALS['payload']['us_su']);
     $sub_object = base64_decode($sub_object);
-    $con = self::get_conecction();
+    $con = self::get_connection();
     $id = str_replace("S-", "", $sub_object);
     $sub = new Subscription($con, $id);
     return $sub;
@@ -102,5 +103,15 @@ class DBAppProvider {
       return $payload[$key];
     }
     return null;
+  }
+  /**
+   * Devuelve los datos de la tabla tblCondominioData segun el token campo pin 
+   * @return array
+   */
+  public static function get_enterprise() {
+    $xpin = self::get_payload_value('pin');
+    $pin = base64_decode(base64_decode($xpin));
+    $data = Accesos::getCondominio($pin);
+    return $data;
   }
 }

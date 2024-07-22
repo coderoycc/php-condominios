@@ -19,7 +19,7 @@ class ServicesController {
     $subscription = DBAppProvider::get_sub();
     $subscription->type();
     if ($subscription->type->see_services) {
-      $con = DBAppProvider::get_conecction();
+      $con = DBAppProvider::get_connection();
       $resident = DBAppProvider::get_resident();
       $code = $body['code'];
       if (Services::exist_code($con, $code, $subscription->department_id))
@@ -40,7 +40,7 @@ class ServicesController {
     }
   }
   public function get_my_services($query) /*protected*/ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $resident = DBAppProvider::get_resident();
     if ($resident->department_id > 0) {
       $services = Services::list_by_department($con, $resident->department_id);
@@ -53,7 +53,7 @@ class ServicesController {
     if (!Request::required(['code', 'id'], $body)) {
       Response::error_json(['message' => 'Campos requeridos [code, id]']);
     }
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $service = new Services($con, $body['id']);
     $subscription = DBAppProvider::get_sub();
     if ($service->id_service > 0) {
@@ -73,7 +73,7 @@ class ServicesController {
   public function delete_my_service($body) /*protected*/ {
     if (!Request::required(['id'], $body))
       Response::error_json(['message' => 'Campos faltantes']);
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $service = new Services($con, $body['id']);
     if ($service->id_service > 0) {
       $res = $service->delete();
@@ -100,7 +100,7 @@ class ServicesController {
     Render::view('services/codes_list', ['department' => $department, 'sums' => $sums, 'months' => $months, 'year' => $year]);
   }
   public function codes_department_app($query)/* Protected */ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $subscription = DBAppProvider::get_sub();
     $year = $query['year'] ?? date('Y');
     $year = intval($year);
@@ -114,7 +114,7 @@ class ServicesController {
   public function detail_services_month($query)/*protected */ {
     if (!Request::required(['month', 'year'], $query))
       Response::error_json(['message' => 'Campos faltantes']);
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $month = intval($query['month']);
     $year = intval($query['year']);
     $subscr = DBAppProvider::get_sub();

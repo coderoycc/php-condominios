@@ -24,7 +24,7 @@ class LockerController {
    * @return void
    */
   public function change_available($body) /* protected */ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $locker = new Locker($con, $body['locker_id']);
     if ($locker->id_locker == 0)
       Response::error_json(['message' => 'Casillero no existente']);
@@ -93,7 +93,7 @@ class LockerController {
     if (!Request::required(['user_id', 'locker_id'], $data))
       Response::error_json(['message' => '¡Error!, parámetros faltantes']);
 
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $locker = new Locker($con, $data['locker_id']);
     if ($locker->id_locker != 0) {
       $resident = new Resident($con, $data['user_id']);
@@ -119,7 +119,7 @@ class LockerController {
       Response::error_json(['message' => 'Casillero no encontrado'], 404);
   }
   public function list_all($query) /* protected */ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $in_out = $query['in_out'] ?? 'ENTRADA';
     if ($con) {
       $lockers = Locker::getAll($con, ['in_out' => $in_out]);
@@ -128,7 +128,7 @@ class LockerController {
       Response::error_json(['message' => 'Error en conexión de instancia'], 500);
   }
   public function list_content($query)/* protected */ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     $subscription = DBAppProvider::get_sub();
     $bandeja = $query['in_out'] ?? 'ENTRADA';
     $content_history = LockerContent::get_list_department($con, $subscription->department_id, $bandeja);
@@ -142,7 +142,7 @@ class LockerController {
     Response::success_json("Contenido de casilleros $bandeja", ['conserje' => $conserje, 'content' => $content_history]);
   }
   public function change_delivered($body) /*protected*/ {
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     if (!Request::required(['content_id'], $body))
       Response::error_json(['message' => 'Datos incompletos']);
 

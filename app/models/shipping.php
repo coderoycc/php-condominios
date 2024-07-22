@@ -58,6 +58,21 @@ class Shipping extends BaseModel {
     }
     return $r;
   }
+  /**
+   * Actualiza datos de segun los cambios realizados con el objeto incial (initial)
+   * @param mixed $con
+   * @param Shipping $initial
+   * @param string $table
+   * @param string $id
+   * @return int
+   */
+  public function update($con = null, $initial, $table = 'tblShipping', $id = 'id') {
+    $r = -1;
+    if ($this->con != null) {
+      $r = parent::update($this->con, $initial, $table, $id);
+    }
+    return $r;
+  }
   public static function get_all($con, $filters = []) {
     try {
       $department = isset($filters['department_id']) ? "department_id = " . $filters['department_id'] : '';

@@ -13,7 +13,7 @@ class NotificationController {
     if (!Request::required(['id', 'nro_casillero'], $data))
       Response::error_json(['message' => 'Parámetros faltantes [id, nro_casillero]']);
 
-    $con = DBAppProvider::get_conecction();
+    $con = DBAppProvider::get_connection();
     if ($con) {
       $id = $data['id'];
       $user = new User($con, $id);

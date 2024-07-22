@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Config\Database;
+use PDO;
 
 class Master {
   public static function create_ad() {
@@ -54,5 +55,16 @@ class Master {
     return [];
   }
   public static function get_ads(int $c = 1, string $type = 'image') {
+  }
+  public static function get_countries($filters) {
+    $s = $filters['search'] ?? '';
+    $con = Database::getInstaceCondominiosExterno();
+    if ($con) {
+      $sql = "SELECT name, cca2, cca3, name_official, name_esp FROM tblCountries WHERE name_esp LIKE '%$s%' OR name_official LIKE '%$s%';";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    return [];
   }
 }

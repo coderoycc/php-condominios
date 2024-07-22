@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Master;
+use App\Providers\DBAppProvider;
 use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
@@ -45,5 +46,12 @@ class MasterController {
       Render::view('master/list_nameservices', ['services' => $services]);
     else
       Response::success_json('Nombres de servicios', ['services' => $services], 200);
+  }
+  public function get_countries($query) /* protected */ {
+    $countries = Master::get_countries(['search' => $query['q'] ?? '']);
+    $location = DBAppProvider::get_enterprise();
+    unset($location['pin']);
+    unset($location['dbname']);
+    Response::success_json('Paises', ['countries' => $countries, 'current_location' => $location], 200);
   }
 }
