@@ -46,13 +46,13 @@
         </a>
 
         <div class="sb-sidenav-menu-heading">Correspondencia Envíos</div>
-        <a class="nav-link" href="../shipping" data-route="shipping/index">
-          <div class="sb-nav-link-icon"><i class="fa-solid fa-box"></i></div>
-          Envios
+        <a class="nav-link" href="../shipping" data-route="shipping/index" data-position="down">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-table"></i></div>
+          Listado
         </a>
-        <a class="nav-link" href="../shipping/waiting.php" data-route="shipping/waiting.php">
+        <a class="nav-link" href="../shipping/progress.php" data-route="shipping/progress.php" data-position="down">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-box"></i></div>
-          En espera
+          En proceso
         </a>
 
         <div class="sb-sidenav-menu-heading">MASTER</div>
@@ -63,8 +63,8 @@
         </a>
         <div class="collapse" id="collapse_master" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
           <nav class="sb-sidenav-menu-nested nav">
-            <a class="nav-link" href="../master/nameservices.php" data-route="master/nameservices.php">Nombres de servicios</a>
-            <a class="nav-link" href="../master/ads.php" data-route="master/ads.php">Publicidad</a>
+            <a class="nav-link" href="../master/nameservices.php" data-route="master/nameservices.php" data-position="down">Nombres de servicios</a>
+            <a class="nav-link" href="../master/ads.php" data-route="master/ads.php" data-position="down">Publicidad</a>
           </nav>
         </div>
         <!-- <a class="nav-link" href="../ads" data-route="ads">

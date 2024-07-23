@@ -37,12 +37,13 @@ require_once "../helpers/middlewares/web_auth.php";
           <div class="row" id="cards-usuarios">
             <div class="card mb-4 shadow">
               <div class="card-header">
-                <h4>
-                  <i class="fas fa-table me-1"></i>
-                  Lista de envios
-                </h4>
+                <div class="d-flex gap-3 flex-wrap">
+                  <button type="button" data-status="SIN PAGAR" class="btn-table-shipp btn btn-outline-info active">SIN PAGAR</button>
+                  <button type="button" data-status="PARA ENVIAR" class="btn-table-shipp btn btn-outline-dark">PARA ENVIAR</button>
+                  <button type="button" data-status="ENVIADOS" class="btn-table-shipp btn btn-outline-success">ENVIADOS</button>
+                </div>
               </div>
-              <div class="card-body">
+              <div class="card-body" id="shipp_content">
 
               </div>
             </div>
@@ -55,7 +56,7 @@ require_once "../helpers/middlewares/web_auth.php";
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>
   <script src="../assets/datatables/datatables.bootstrap5.min.js"></script>
-  <!-- <script src="./js/app.js"></script> -->
+  <script src="./js/app.js"></script>
 </body>
 
 </html>

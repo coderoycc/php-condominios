@@ -29,31 +29,28 @@ require_once "../helpers/middlewares/web_auth.php";
       <main>
         <div class="container-fluid px-4">
           <div class="mt-4">
-            <h2>Envios</h2>
+            <h2><i class="text-warning fa-solid fa-bell"></i> Envios en progreso</h2>
           </div>
           <!-- <div class="buttons-head col-md-6 col-sm-12 mb-3">
             <button type="button" class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#modal_usuario_nuevo"><i class="fa fa-user-plus"></i> Crear Nuevo Usuario</button>
           </div> -->
           <div class="row" id="cards-usuarios">
             <div class="card mb-4 shadow">
-              <div class="card-header">
-                <h4>
-                  <i class="fas fa-table me-1"></i>
-                  Lista de usuarios
-                </h4>
-              </div>
-              <div class="card-body"></div>
+
+              <div class="card-body" id="progress_content"></div>
             </div>
           </div>
         </div>
       </main>
     </div>
   </div><!-- fin contenedor -->
+
+  <?php include('./modal_price.php'); ?>
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>
   <script src="../assets/datatables/datatables.bootstrap5.min.js"></script>
-  <!-- <script src="./js/app.js"></script> -->
+  <script src="./js/progress.js"></script>
 </body>
 
 </html>

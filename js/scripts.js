@@ -17,19 +17,30 @@ function activateRoute() {
   if (strLocation.length == 0) return;
   const arrLocation = strLocation.split('/');
   arrLocation.shift(); // eliminamos la ruta inicial (xampp)
-  console.log(arrLocation.join('/'));
-  $(`a[data-route="${arrLocation.join('/')}"]`).addClass('active');
+  const ruta = arrLocation.join('/');
+  $location = $(`a[data-route="${ruta}"]`);
+  $location.addClass('active');
+
+  // scrolleat abajo
+  if ($location.data('position') == 'down')
+    scrollDown()
+
   if (arrLocation.length > 1) {
-    $parent = $(`a[data-route='${arrLocation[0]}']`);
+    const padre = arrLocation[0];
+    $parent = $(`a[data-route='${padre}']`);
     $parent.addClass('active');
     $parent.removeClass('collapsed');
     const idCollapse = $parent.attr('data-bs-target');
     $(idCollapse).addClass('show');
-    if(arrLocation[1] == ''){ // index
-      $(`a[data-route='${arrLocation[0]}/index']`).addClass('active');
+    if (arrLocation[1] == '') { // index
+      $location = $(`a[data-route='${arrLocation[0]}/index']`);
+      $location.addClass('active');
+      if ($location.data('position') == 'down')
+        scrollDown()
     }
   } else {
-    $(`a[data-route='${strLocation}']`).addClass('active');
+    $location = $(`a[data-route='${strLocation}']`);
+    $location.addClass('active');
   }
 }
 
@@ -222,4 +233,10 @@ function toast(title, text, icon = 'success', time = 1500) {
     position: 'top-right',
     hideAfter: time
   })
+}
+function scrollDown() {
+  // contenedor side nav
+  const contSideNav = $("#sidenavAccordion>.sb-sidenav-menu")[0];
+  const h = contSideNav.scrollHeight;
+  contSideNav.scrollTop = h;
 }

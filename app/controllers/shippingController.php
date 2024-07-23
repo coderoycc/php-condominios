@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\Shipping;
 use App\Providers\DBAppProvider;
+use App\Providers\DBWebProvider;
+use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
@@ -49,11 +51,11 @@ class ShippingController {
     $id = $data['id'];
     unset($data['id']);
     $shipping = new Shipping($con, $id);
-    // var_dump($shipping);
     $initial = clone $shipping;
     if ($shipping->id > 0) {
       if ($shipping->status == 'PENDIENTE') {
         $shipping->set_data($data);
+        $shipping->status = 'EN PROCESO';
         if ($shipping->update(null, $initial) > 0) {
           Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
         } else {
@@ -63,5 +65,25 @@ class ShippingController {
         Response::error_json(['message' => 'Error, el shipping ya fue procesado, no es posible editar']);
     } else
       Response::error_json(['message' => 'Error, no se encontro el shipping'], 404);
+  }
+  public function get_all($query)/* web */ {
+    $con = DBWebProvider::getSessionDataDB();
+
+    $status = $query['status'] ?? 'EN PROCESO';
+    $shippings = Shipping::get_all($con, ['status' => $status]);
+    Render::view('shipping/list_all', ['shippings' => $shippings, 'estado' => $status]);
+  }
+  public function add_price($body)/*web*/ {
+    $con = DBWebProvider::getSessionDataDB();
+    if (!Request::required(['id', 'price'], $body))
+      Response::error_json(['message' => 'Error, faltan datos'], 200);
+    $shipping = new Shipping($con, $body['id']);
+    $initial = clone $shipping;
+    $shipping->price = $body['price'];
+    $shipping->status = 'SIN PAGAR';
+    if ($shipping->update(null, $initial) > 0)
+      Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
+    else
+      Response::error_json(['message' => 'Error al actualizar el shipping'], 200);
   }
 }

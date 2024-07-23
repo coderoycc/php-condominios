@@ -31,7 +31,7 @@ class Shipping extends BaseModel {
   public float $price;
   public string $currency; // tipo moneda
   public string $tracking_id;
-  public string $status; // estado del envio PENDIENTE | EN PROCESO | ENVIADO
+  public string $status; // estado del envio PENDIENTE | EN PROCESO | PARA ENVIAR | ENVIADO
   public int $department_id;
   public string $created_at;
   public int $created_by; // id usuario residente
@@ -73,11 +73,17 @@ class Shipping extends BaseModel {
     }
     return $r;
   }
+  /**
+   * Devuelve todos los envios con filtros adicionales ['department_id', 'status']
+   * @param PDO $con
+   * @param array $filters
+   * @return mixed
+   */
   public static function get_all($con, $filters = []) {
     try {
-      $department = isset($filters['department_id']) ? "department_id = " . $filters['department_id'] : '';
-      $status = isset($filters['status']) ? "status = '" . $filters['status'] . "'" : '';
-      $sql = "SELECT * FROM tblShipping";
+      $department = isset($filters['department_id']) ? "a.department_id = " . $filters['department_id'] : '';
+      $status = isset($filters['status']) ? "a.status = '" . $filters['status'] . "'" : '';
+      $sql = "SELECT a.*, d.dep_number FROM tblShipping a INNER JOIN tblDepartments d ON a.department_id = d.id_department";
       if ($department != "" && $status != '') {
         $sql .= " WHERE $department AND $status";
       } else if ($department != '' && $status == "") {
@@ -85,7 +91,7 @@ class Shipping extends BaseModel {
       } else if ($department == '' && $status != '') {
         $sql .= " WHERE $status";
       }
-      $sql .= " ORDER BY id DESC";
+      $sql .= " ORDER BY a.id DESC";
       // var_dump($sql);
       $stmt = $con->prepare($sql);
       $stmt->execute();
