@@ -59,6 +59,38 @@ class Shipping extends BaseModel {
     return $r;
   }
   /**
+   * Carga todos los objetos dependencias como 'department', 'payment'
+   * @return void
+   */
+  public function load_full_data() {
+    if ($this->con != null) {
+      try {
+        $sql = "SELECT d.*, y.* FROM tblShipping a 
+        LEFT JOIN tblDepartments d ON a.department_id = d.id_department 
+        LEFT JOIN tblPaymentShipping p ON p.payment_id = a.id 
+        LEFT JOIN tblPayments y ON y.idPayment = p.payment_id
+        WHERE a.id = ?;";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute([$this->id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+          $department = new Department();
+          $department->load($result);
+          $this->{'department'} = $department;
+          if ($result['idPayment'] != null) {
+            $payment = new Payment();
+            $payment->load($result);
+            $this->{'payment'} = $payment;
+          } else {
+            $this->{'payment'} = null;
+          }
+        }
+      } catch (\Throwable $th) {
+        var_dump($th);
+      }
+    }
+  }
+  /**
    * Actualiza datos de segun los cambios realizados con el objeto incial (initial)
    * @param mixed $con
    * @param Shipping $initial

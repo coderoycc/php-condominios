@@ -52,11 +52,13 @@ require_once "../helpers/middlewares/web_auth.php";
       </main>
     </div>
   </div><!-- fin contenedor -->
+  <?php include "./modal_details.php"; ?>
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>
   <script src="../assets/datatables/datatables.bootstrap5.min.js"></script>
   <script src="./js/app.js"></script>
+  <script src="./js/common_shipp.js"></script>
 </body>
 
 </html>

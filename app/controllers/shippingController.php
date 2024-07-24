@@ -86,4 +86,16 @@ class ShippingController {
     else
       Response::error_json(['message' => 'Error al actualizar el shipping'], 200);
   }
+  public function get_by_id($query)/* web */ {
+    $con = DBWebProvider::getSessionDataDB();
+    if (!Request::required(['id'], $query))
+      Response::error_json(['message' => 'Error, faltan datos'], 200);
+    $shipping = new Shipping($con, $query['id']);
+    if ($shipping->id > 0) {
+      $shipping->load_full_data();
+      Render::view('shipping/detail', ['shipping' => $shipping]);
+    } else {
+      Render::view('error_html', ['message' => 'Error, no se encontro el shipping', 'message_details' => 'el ID enviado no tiene ningun resultado -> ' . $query['id']]);
+    }
+  }
 }

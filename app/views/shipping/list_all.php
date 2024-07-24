@@ -36,7 +36,7 @@
           <td><?= $shipp['h'] . ' x ' . $shipp['l'] . ' x ' . $shipp['w'] ?></td>
           <td class="text-center">
             <div class="d-flex justify-content-between flex-wrap gap-3">
-              <button type="button" class="btn btn-outline-dark" data-id="<?= $shipp['id'] ?>"><i class="fa fa-solid fa-eye"></i></button>
+              <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#modal_show_details" data-id="<?= $shipp['id'] ?>"><i class="fa fa-solid fa-eye"></i></button>
               <?php if ($estado == 'EN PROCESO') : ?>
                 <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_price" data-id="<?= $shipp['id'] ?>">Agregar Precio</button>
               <?php elseif ($estado == 'PARA ENVIAR') : ?>
