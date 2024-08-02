@@ -64,7 +64,7 @@ class ShippingController {
         if ($shipping->update(null, $initial) > 0) {
           Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
         } else {
-          Response::error_json(['message' => 'Error al actualizar el shipping'], 200);
+          Response::error_json(['message' => 'No se encontraron datos para actualizar'], 200);
         }
       } else
         Response::error_json(['message' => 'Error, el shipping ya fue procesado, no es posible editar']);
