@@ -37,6 +37,10 @@ class Shipping extends BaseModel {
   public int $created_by; // id usuario residente
   public int $nat; // 1: nacional, 0: internacional
 
+  public string $phone_origin;
+  public string $phone_destiny;
+  public string $company; // Empresa de envio
+
   public function __construct($con = null, $id = null) {
     $this->objectNull();
     if ($con != null) {

@@ -57,11 +57,13 @@ class BaseModel {
       $cadena = "UPDATE $table SET ";
       $valores = [];
       $campos = "";
+      $propsCambiadas = 'PROPS -- ';
       foreach ($propiedades as $propiedad) {
         if ($propiedad->isPublic()) {
           $nombrePropiedad = $propiedad->getName();
           $valorPropiedad = $this->$nombrePropiedad;
           if ($valorPropiedad != $original->$nombrePropiedad) {
+            $propsCambiadas .= '  x->' . $nombrePropiedad;
             $campos .= "$nombrePropiedad = ?,";
             $valores[] = $valorPropiedad;
           }
@@ -70,9 +72,13 @@ class BaseModel {
       $campos = rtrim($campos, ',');
       $cadena .= $campos . " WHERE id = ?";
       $valores[] = $original->{$id};
-      $stmt = $con->prepare($cadena);
-      $stmt->execute($valores);
-      return $stmt->rowCount();
+      if (count($valores) > 1) {
+        $stmt = $con->prepare($cadena);
+        // $log = $propsCambiadas . '-->' . json_encode($valores) . '--------------' . $campos . '-------------------' . $cadena;
+        // file_put_contents(__DIR__ . '/Log.txt', $log);
+        $stmt->execute($valores);
+        return $stmt->rowCount();
+      }
     } catch (\Throwable $th) {
       var_dump($th);
     }

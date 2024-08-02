@@ -20,6 +20,7 @@ class ShippingController {
     $data['department_id'] = $subscription->department_id;
     $shipping->set_data($data);
     if ($shipping->insert() > 0) {
+      $shipping->created_at = date('Y-m-d H:i:s');
       Response::success_json('Creado con exito', ['shipping' => $shipping], 201);
     } else {
       Response::error_json(['message' => 'Error al crear el shipping']);
@@ -54,8 +55,12 @@ class ShippingController {
     $initial = clone $shipping;
     if ($shipping->id > 0) {
       if ($shipping->status == 'PENDIENTE') {
+        if (isset($data['weight'])) { // caso editar final (cuando pone peso y alto ancho)
+          $shipping->status = 'EN PROCESO';
+          // enviar notificacion
+        }
+        // var_dump($data);
         $shipping->set_data($data);
-        $shipping->status = 'EN PROCESO';
         if ($shipping->update(null, $initial) > 0) {
           Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
         } else {
