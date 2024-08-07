@@ -49,9 +49,9 @@
         </div>
         <small class="fw-semibold">Dimensiones (cm):</small>
         <div class="d-flex justify-content-between">
-          <p class="mb-1"><span class="fw-semibold">Alto: </span><?= $shipping->h ?? '' ?></p>
-          <p class="mb-1"><span class="fw-semibold">Ancho:</span> <?= $shipping->w ?? '' ?></p>
-          <p class="mb-1"><span class="fw-semibold">Largo:</span> <?= $shipping->l ?? '' ?></p>
+          <p class="mb-1"><span class="fw-semibold">Alto: </span><?= $shipping->h ?? '' ?> cm</p>
+          <p class="mb-1"><span class="fw-semibold">Ancho:</span> <?= $shipping->w ?? '' ?> cm</p>
+          <p class="mb-1"><span class="fw-semibold">Largo:</span> <?= $shipping->l ?? '' ?> cm</p>
         </div>
         <p><span class="fw-semibold">Peso: </span><?= $shipping->weight ?> kg.</p>
         <p><span class="fw-semibold">Costo envio: </span><?= number_format($shipping->price ?? 0, 2) ?> </p>

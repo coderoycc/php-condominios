@@ -32,7 +32,7 @@
           <td><?= $shipp['address_destiny'] ?></td>
           <td><?= date('d/m/Y', strtotime($shipp['created_at'])) ?></td>
           <td><?= number_format($shipp['price'] ?? 0, 2) ?></td>
-          <td><?= $shipp['weight'] ?></td>
+          <td><?= number_format($shipp['weight'], 2) ?></td>
           <td><?= $shipp['h'] . ' x ' . $shipp['l'] . ' x ' . $shipp['w'] ?></td>
           <td class="text-center">
             <div class="d-flex justify-content-between flex-wrap gap-3">

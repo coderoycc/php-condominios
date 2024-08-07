@@ -3,8 +3,18 @@
 namespace Helpers\Resources;
 
 class HandleDates {
-  public static function addDate($meses): string { // mejor si es 00:00:00
+  public static function add_date($meses): string { // mejor si es 00:00:00
     $date = date('Y-m-d H:i:s', strtotime("+$meses months"));
+    return $date;
+  }
+  /**
+   * Devuelve un string con una fecha anterior de acuerdo al parametro enviado (Hoy - X meses)
+   * @param mixed $months Cantidad de meses que desea retroceder
+   * @return string
+   */
+  public static function prev_date($months) {
+    $months = intval($months ?? 1);
+    $date = date('Y-m-d', strtotime("-$months months"));
     return $date;
   }
   public static function remaining_days($date): string {

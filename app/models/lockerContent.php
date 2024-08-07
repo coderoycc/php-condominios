@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Helpers\Resources\HandleDates;
 use PDO;
 
 class LockerContent {
@@ -14,6 +15,7 @@ class LockerContent {
   public string $received_at;
   public int $received_by;
   public int $delivered; //0: NO ENTREGADO, 1: ENTREGADO
+  public int $shipping_id; // unicamente para envios de salida.
   public function __construct($con = null, $id_content = null) {
     $this->objectNull();
     if ($con) {
@@ -37,6 +39,7 @@ class LockerContent {
     $this->department_id = 0;
     $this->received_by = 0;
     $this->delivered = 0;
+    $this->shipping_id = 0;
   }
   public function load($row) {
     $this->id_content = $row['id_content'];
@@ -47,6 +50,7 @@ class LockerContent {
     $this->department_id = $row['department_id'] ?? 0;
     $this->received_by = $row['received_by'] ?? 0;
     $this->delivered = $row['delivered'] ?? 0;
+    $this->shipping_id = $row['shipping_id'] ?? 0;
   }
   public function save() {
     if ($this->con) {
@@ -59,6 +63,24 @@ class LockerContent {
     }
     return -1;
   }
+  /**
+   * Actualiza el shipping_id de la tabla tblLockerContent con el ID del envio
+   * @param int $shipping_id
+   * @return bool
+   */
+  public function set_shipping_id($shipping_id) {
+    if ($this->con == null)
+      return false;
+    try {
+      $sql = "UPDATE tblLockerContent SET shipping_id = ? WHERE id_content = ?";
+      $stmt = $this->con->prepare($sql);
+      $stmt->execute([$shipping_id, $this->id_content]);
+      return true;
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return false;
+  }
   public function change_delivered() {
     try {
       if ($this->con) {
@@ -68,6 +90,7 @@ class LockerContent {
         return $this->id_content;
       }
     } catch (\Throwable $th) {
+      // throw new ErrorException();
       var_dump($th);
     }
     return -1;
@@ -89,6 +112,42 @@ class LockerContent {
       $stmt = $con->prepare($sql);
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return [];
+  }
+  public static function get_history_locker($con, $locker_id, $filters = []) {
+    try {
+      $start_date = $filters['start'] ?? HandleDates::prev_date(1);
+      $end_date = $filters['end'] ?? date('Y-m-d');
+      $where = "WHERE a.locker_id = $locker_id AND a.received_at BETWEEN '" . $start_date . "T00:00:00.000' AND '" . $end_date . "T23:59:59.000'";
+      $sql = "SELECT a.*, b.locker_number, b.locker_status FROM tblLockerContent a INNER JOIN tblLockers b 
+      ON a.locker_id = b.id_locker $where ORDER BY a.id_content DESC";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return [];
+  }
+  /**
+   * Devuelve el ultimo registro en el casillero
+   * @param PDO $con
+   * @param int $locker_id
+   * @return array
+   */
+  public static function last($con, $locker_id) {
+    try {
+      $sql = "SELECT TOP 1 a.*, b.locker_number, b.locker_status, c.first_name, c.last_name, c.username, c.role, c.cellphone, c.gender, c.status, d.* FROM tblLockerContent a INNER JOIN tblLockers b 
+      ON a.locker_id = b.id_locker 
+      LEFT JOIN tblUsers c ON c.id_user = a.user_id_target
+      LEFT JOIN tblDepartments d ON d.id_department = a.department_id
+      WHERE a.locker_id = $locker_id ORDER BY a.id_content DESC";
+      $stmt = $con->prepare($sql);
+      $stmt->execute([$locker_id]);
+      return $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (\Throwable $th) {
       var_dump($th);
     }

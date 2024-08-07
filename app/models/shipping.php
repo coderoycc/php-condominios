@@ -28,6 +28,7 @@ class Shipping extends BaseModel {
   public float $h; // altura cm
   public float $l; // largo cm
   public float $w; // ancho cm
+  public float $volume;
   public float $price;
   public string $currency; // tipo moneda
   public string $tracking_id;
@@ -40,6 +41,7 @@ class Shipping extends BaseModel {
   public string $phone_origin;
   public string $phone_destiny;
   public string $company; // Empresa de envio
+  public int $envelope; // 1: es sobre, 0: no es sobre
 
   public function __construct($con = null, $id = null) {
     $this->objectNull();

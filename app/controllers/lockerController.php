@@ -90,29 +90,34 @@ class LockerController {
    * @return void
    */
   public function add_content($data, $files = null) /* protected conserje*/ {
-    if (!Request::required(['user_id', 'locker_id'], $data))
+    if (!Request::required(['user_id', 'locker_id', 'in_out'], $data))
       Response::error_json(['message' => '¡Error!, parámetros faltantes']);
-
+    // in_out ENTRADA SALIDA, shipping_id
     $con = DBAppProvider::get_connection();
     $locker = new Locker($con, $data['locker_id']);
     if ($locker->id_locker != 0) {
       $resident = new Resident($con, $data['user_id']);
       if ($resident->id_user != 0) {
         $received_by = DBAppProvider::get_payload_value('user_id');
-        $locker->addContent($data['user_id'], $data['content'] ?? '', $resident->department_id, $received_by);
-        if ($resident->subscription_valid()) { // enviar notificacion solo si esta suscrito
-          $message = $locker->type == "todo" ?
-            'Usted acaba de recibir un pedido en el casillero Nro. ' . $locker->locker_number . '. Tiene 30 min. para recogerlo.' :
-            'Usted acaba de recibir correspondencia en el casillero Nro. ' . $locker->locker_number;
-          $res_noti = Notification::send_id($resident->device_id, $message, "TeLoPago");
-          if (!isset($res_noti['errors'])) {
-            Response::success_json('Guardado y notificación enviada correctamente', ['notification' => $res_noti], 200);
-          } else {
-            Response::success_json('Guardado, notificación no enviada', [], 200);
+        $content = $locker->addContent($data['user_id'], $data['content'] ?? '', $resident->department_id, $received_by);
+        if ($content->id_content > 0) {
+          if ($data['in_out'] == 'SALIDA') { // Necesario shipping_id
+            if (!Request::required(['shipping_id'], $data))
+              Response::error_json(['message' => '¡Error!, parámetros faltantes SHIPPING ID']);
+            $content->shipping_id = $data['shipping_id'];
+            $content->set_shipping_id($data['shipping_id']);
           }
-        } else {
+        } else
+          Response::error_json(['message' => 'Error al agregar contenido al casillero']);
+        if ($resident->subscription_valid()) { // enviar notificacion solo si esta suscrito
+          $message = $locker->message_notification();
+          $res_noti = Notification::send_id($resident->device_id, $message, "TeLoPago");
+          if (!isset($res_noti['errors']))
+            Response::success_json('Guardado y notificación enviada correctamente', ['notification' => $res_noti], 200);
+          else
+            Response::success_json('Guardado, notificación no enviada', [], 200);
+        } else
           Response::success_json('Guardado, residente no suscrito', [], 200);
-        }
       } else
         Response::error_json(['message' => 'Residente no encontrado'], 404);
     } else
@@ -122,7 +127,7 @@ class LockerController {
     $con = DBAppProvider::get_connection();
     $in_out = $query['in_out'] ?? 'ENTRADA';
     if ($con) {
-      $lockers = Locker::getAll($con, ['in_out' => $in_out]);
+      $lockers = Locker::getAll($con, []);
       Response::success_json('Casilleros', $lockers);
     } else
       Response::error_json(['message' => 'Error en conexión de instancia'], 500);
@@ -156,5 +161,19 @@ class LockerController {
       else
         Response::error_json(['message' => 'Error al actualizar contenido'], 200);
     }
+  }
+  public function history($query)/*protected*/ {
+    if (!isset($query['locker_id']))
+      Response::error_json(['message' => 'Datos incompletos']);
+    $con = DBAppProvider::get_connection();
+    $content_history = LockerContent::get_history_locker($con, $query['locker_id']);
+    Response::success_json('Historial de casillero', $content_history);
+  }
+  public function get_last_content($query)/* protected */ {
+    if (!isset($query['locker_id']))
+      Response::error_json(['message' => 'Datos incompletos LOCKER ID']);
+    $con = DBAppProvider::get_connection();
+    $content = LockerContent::last($con, $query['locker_id']);
+    Response::success_json('Último contenido del casillero', ['content_info' => $content]);
   }
 }

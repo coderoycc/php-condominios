@@ -15,6 +15,8 @@ class AuthMiddleware {
     'locker/add_content',
     'locker/list_all',
     'locker/list_content',
+    'locker/history',
+    'locker/get_last_content',
     'services/add_code_service',
     'services/get_my_services',
     'services/delete_my_service',
@@ -26,7 +28,7 @@ class AuthMiddleware {
     'shipping/get',
     'shipping/me',
     'shipping/update',
-    'master/get_countries'
+    'master/get_countries',
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {

@@ -167,4 +167,14 @@ class UserController {
       Render::view('resident/list', ['residents' => $residents]);
     }
   }
+  public function get_user($query) {
+    if (!Request::required(['pin', 'user_id'], $query))
+      Response::error_json(['message' => 'Parametros faltantes']);
+
+    $condominio = Accesos::getCondominio($query['pin']);
+    $con = Database::getInstanceByPin($query['pin']);
+    $user = new User($con, $query['user_id']);
+    unset($user->password);
+    Response::success_json('Usuario', ['user' => $user, 'condominio' => $condominio]);
+  }
 }

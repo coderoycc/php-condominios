@@ -11,7 +11,7 @@ class Locker {
   public int $locker_number;
   public int $locker_status;
   public string $type;
-  public string $in_out; // bandeja de ENTARDA | SALIDA
+  public string $in_out; // bandeja de ENTRADA | SALIDA
   public function __construct($con = null, $id_locker = null) {
     $this->objectNull();
     if ($con) {
@@ -74,6 +74,17 @@ class Locker {
     }
     return false;
   }
+  public function message_notification() {
+    $message = '';
+    if ($this->in_out == 'ENTRADA') {
+      $message = $this->type == "todo" ?
+        'Usted acaba de recibir un pedido en el casillero Nro. ' . $this->locker_number . '. Tiene 30 min. para recogerlo.' :
+        'Usted acaba de recibir correspondencia en el casillero Nro. ' . $this->locker_number;
+    } else {
+      $message = 'Su envio se encuentra en el casillero Nro. ' . $this->locker_number;
+    }
+    return $message;
+  }
   public function delete() {
     if ($this->con) {
       $sql = "DELETE FROM tblLockers WHERE id_locker = ?;";
@@ -91,17 +102,13 @@ class Locker {
       $lockerContent->user_id_target = $user_id;
       $lockerContent->department_id = $department_id;
       $lockerContent->received_by = $received_by;
-      $res = true;
       if ($lockerContent->save() > 0) {
-        if ($this->type == "todo") { // actualizamos el estado a ocupado si es del tipo "todo"
-          $res = $this->updateStatus(0);
-        }
-      } else {
-        $res = false;
+        if ($this->type == "todo")  // actualizamos el estado a ocupado si es del tipo "todo"
+          $this->updateStatus(0);
       }
-      return $res;
+      return $lockerContent;
     }
-    return false;
+    return new LockerContent();
   }
   public static function getAll($con, $params) {
     try {
