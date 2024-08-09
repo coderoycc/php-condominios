@@ -54,4 +54,8 @@ class MasterController {
     unset($location['dbname']);
     Response::success_json('Paises', ['countries' => $countries, 'current_location' => $location], 200);
   }
+  public function support_phone($query) {
+    $phone = Master::get_support_phone();
+    Response::success_json('Telefono de soporte', ['support_phone' => $phone], 200);
+  }
 }

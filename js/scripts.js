@@ -11,7 +11,7 @@ $(document).ready(() => {
   }
   activateRoute();
 });
-
+$(document).on('change', '#select_condominio', changeSession);
 function activateRoute() {
   const strLocation = location.pathname.substring(1);
   if (strLocation.length == 0) return;
@@ -239,4 +239,24 @@ function scrollDown() {
   const contSideNav = $("#sidenavAccordion>.sb-sidenav-menu")[0];
   const h = contSideNav.scrollHeight;
   contSideNav.scrollTop = h;
+}
+async function changeSession(e) {
+  const pin = e.target.value
+  if (pin == '')
+    return;
+  console.log(pin)
+  const res = await $.ajax({
+    url: '../app/auth/change_credentials',
+    data: { pin },
+    type: "POST",
+    dataType: "JSON",
+  });
+  if (res.success) {
+    toast('Cambio realizado', 'Se ha cambiado la contraseña', 'success', 2000)
+    setTimeout(() => {
+      window.location.href = '../dash';
+    }, 2000);
+  } else {
+    toast('Ocurrió un error', res.message, 'error', 2000)
+  }
 }

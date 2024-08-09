@@ -15,9 +15,10 @@ class DBWebProvider {
     }
     return false;
   }
-  public static function start_session($user, $condominio) {
+  public static function start_session($user, $condominio, $condominios = []) {
     $_SESSION['user'] = json_encode($user);
     $_SESSION['credentials'] = json_encode($condominio);
+    $_SESSION['condominios'] = json_encode($condominios);
     session_write_close();
   }
   public static function session_end() {
@@ -26,6 +27,7 @@ class DBWebProvider {
   }
 
   public static function session_get_user() {
+    return json_decode($_SESSION['user']);
   }
 
   public static function session_get_condominio() {

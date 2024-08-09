@@ -3,9 +3,11 @@
 namespace App\Controllers;
 
 use App\Config\Accesos;
+use App\Models\Master;
 use App\Providers\DBWebProvider;
 use Helpers\Resources\Response;
 use App\Providers\AuthProvider;
+use Exception;
 use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
 
@@ -50,7 +52,8 @@ class AuthController {
       $res_auth = $auth->auth_web($data['user'], $data['password']);
       if ($res_auth['user']) {
         if ($res_auth['admin']) {
-          DBWebProvider::start_session($res_auth['user'], $condominioData);
+          $condominios = Master::get_condominios("WHERE pin != '" . $data['pin'] . "'");
+          DBWebProvider::start_session($res_auth['user'], $condominioData, $condominios);
           Response::success_json('Login Correcto', []);
         } else {
           Response::error_json(['message' => 'Credenciales incorrectas [ADMIN ONLY]'], 401);
@@ -61,6 +64,20 @@ class AuthController {
     } else {
       Response::error_json(['message' => 'Pin incorrecto'], 401);
     }
+  }
+  public function change_credentials($body, $files = null) {
+    try {
+      if (DBWebProvider::session_exists()) {
+        $condominioData = Accesos::getCondominio($body['pin']);
+        $user = DBWebProvider::session_get_user();
+        $condominios = Master::get_condominios("WHERE pin != '" . $body['pin'] . "'");
+        DBWebProvider::start_session($user, $condominioData, $condominios);
+        Response::success_json('Login Correcto', []);
+      }
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    Response::error_json(['message' => 'Error al cambiar de sesion'], 200);
   }
   public function logout() {
     try {

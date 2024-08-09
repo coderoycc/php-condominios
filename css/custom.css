@@ -1,3 +1,17 @@
+.select_cond{
+  background-color: var(--bs-success);
+  border: 0;
+  color: var(--bs-white);
+  padding: 12px;
+  outline: none;
+}
+.select_cond:active{
+  border:0;
+}
+.select_cond:focus-visible{
+  border:0;
+}
+
 .buttons-head {
   width: 100%;
   display: flex;

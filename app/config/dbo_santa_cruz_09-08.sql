@@ -12,7 +12,7 @@
  Target Server Version : 16001000
  File Encoding         : 65001
 
- Date: 05/07/2024 19:07:00
+ Date: 09/08/2024 17:36:59
 */
 
 
@@ -89,11 +89,50 @@ CREATE TABLE [dbo].[tblLockerContent] (
   [locker_id] int  NOT NULL,
   [content] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL,
   [received_at] datetime DEFAULT getdate() NULL,
-  [user_id_target] int  NULL
+  [user_id_target] int  NULL,
+  [department_id] int  NULL,
+  [received_by] int  NULL,
+  [delivered] bit DEFAULT 0 NULL,
+  [shipping_id] int  NULL
 )
 GO
 
 ALTER TABLE [dbo].[tblLockerContent] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Usuario target de origen o destino',
+'SCHEMA', N'dbo',
+'TABLE', N'tblLockerContent',
+'COLUMN', N'user_id_target'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Departamento target (user_id_target)',
+'SCHEMA', N'dbo',
+'TABLE', N'tblLockerContent',
+'COLUMN', N'department_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Usuario (conserje)',
+'SCHEMA', N'dbo',
+'TABLE', N'tblLockerContent',
+'COLUMN', N'received_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'0: NO ENTREGADO 1: ENTREGADO',
+'SCHEMA', N'dbo',
+'TABLE', N'tblLockerContent',
+'COLUMN', N'delivered'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Cuando es un envio ',
+'SCHEMA', N'dbo',
+'TABLE', N'tblLockerContent',
+'COLUMN', N'shipping_id'
 GO
 
 
@@ -103,13 +142,82 @@ GO
 SET IDENTITY_INSERT [dbo].[tblLockerContent] ON
 GO
 
-INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target]) VALUES (N'1', N'4', N'', N'2024-05-11 14:48:37.213', N'3')
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'4', N'5', N'Hamburguesas', N'2024-07-17 11:07:35.823', N'17', N'6', N'31', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target]) VALUES (N'2', N'4', N'', N'2024-05-11 14:51:15.887', N'3')
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'5', N'7', N'', N'2024-07-17 11:49:11.103', N'17', N'6', N'31', N'1', NULL)
 GO
 
-INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target]) VALUES (N'3', N'4', N'Rappi comida', N'2024-05-11 14:52:24.753', N'7')
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'6', N'7', N'', N'2024-07-17 12:14:14.190', N'17', N'6', N'31', N'1', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'7', N'7', N'Correspondiencia', N'2024-07-17 12:14:29.973', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'8', N'7', N'contenido de prueba', N'2024-08-07 12:37:14.510', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'9', N'11', N'Hamburguesas', N'2024-08-07 13:02:46.183', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'10', N'11', N'gkfhtg', N'2024-08-07 13:04:56.933', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'11', N'7', N'jfjffuf', N'2024-08-07 13:09:20.260', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'12', N'11', N'Test de recepción', N'2024-08-07 13:37:47.473', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'13', N'11', N'test 8', N'2024-08-07 13:44:01.453', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'14', N'8', N'test 9', N'2024-08-07 13:44:49.327', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'15', N'8', N'cjfh', N'2024-08-07 14:00:57.700', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'16', N'8', N'gjghvg', N'2024-08-07 15:01:10.000', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'17', N'8', N'iigjjv', N'2024-08-07 15:05:30.770', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'18', N'8', N'jkhju', N'2024-08-07 15:06:41.210', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'19', N'8', N'CV ihrjgr', N'2024-08-07 15:12:07.183', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'20', N'8', N'jkhy', N'2024-08-07 15:14:42.063', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'21', N'6', N'envió de paquetes', N'2024-08-07 16:18:11.377', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'22', N'11', N'Hamburguesas', N'2024-08-07 16:19:22.483', N'17', N'6', N'31', N'0', N'18')
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'23', N'11', N'Hamburguesas', N'2024-08-07 16:22:00.330', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'24', N'6', N'jivukh', N'2024-08-07 16:23:00.837', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'25', N'11', N'Hamburguesas', N'2024-08-07 16:23:22.187', N'17', N'6', N'31', N'0', N'18')
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'26', N'6', N'iuuojh', N'2024-08-07 16:24:18.260', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'27', N'6', N'iuuojh', N'2024-08-07 16:25:04.710', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'28', N'6', N'iuuojh', N'2024-08-07 16:25:46.167', N'17', N'6', N'31', N'0', NULL)
+GO
+
+INSERT INTO [dbo].[tblLockerContent] ([id_content], [locker_id], [content], [received_at], [user_id_target], [department_id], [received_by], [delivered], [shipping_id]) VALUES (N'29', N'6', N'ibko', N'2024-08-07 16:27:19.603', N'17', N'6', N'31', N'0', N'18')
 GO
 
 SET IDENTITY_INSERT [dbo].[tblLockerContent] OFF
@@ -127,7 +235,8 @@ CREATE TABLE [dbo].[tblLockers] (
   [id_locker] int  IDENTITY(1,1) NOT NULL,
   [locker_number] int  NULL,
   [locker_status] bit DEFAULT 1 NULL,
-  [type] varchar(40) COLLATE Modern_Spanish_CI_AS  NULL
+  [type] varchar(40) COLLATE Modern_Spanish_CI_AS  NULL,
+  [in_out] varchar(30) COLLATE Modern_Spanish_CI_AS  NULL
 )
 GO
 
@@ -148,6 +257,13 @@ EXEC sp_addextendedproperty
 'COLUMN', N'type'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'ENTRADA | SALIDA',
+'SCHEMA', N'dbo',
+'TABLE', N'tblLockers',
+'COLUMN', N'in_out'
+GO
+
 
 -- ----------------------------
 -- Records of tblLockers
@@ -155,10 +271,25 @@ GO
 SET IDENTITY_INSERT [dbo].[tblLockers] ON
 GO
 
-INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type]) VALUES (N'3', N'1', N'1', N'correspondencia')
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'5', N'3', N'1', N'todo', N'ENTRADA')
 GO
 
-INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type]) VALUES (N'4', N'2', N'0', N'todo')
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'6', N'4', N'1', N'correspondencia', N'SALIDA')
+GO
+
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'7', N'1', N'1', N'correspondencia', N'ENTRADA')
+GO
+
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'8', N'2', N'1', N'todo', N'ENTRADA')
+GO
+
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'9', N'5', N'0', N'todo', N'ENTRADA')
+GO
+
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'10', N'6', N'1', N'todo', N'ENTRADA')
+GO
+
+INSERT INTO [dbo].[tblLockers] ([id_locker], [locker_number], [locker_status], [type], [in_out]) VALUES (N'11', N'7', N'0', N'todo', N'ENTRADA')
 GO
 
 SET IDENTITY_INSERT [dbo].[tblLockers] OFF
@@ -393,9 +524,72 @@ GO
 INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'43', N'BOB', N'353.55', N'Pago Servicios', N'QR', N'e81c8664-500f-4d18-b6ad-27572189f7fc', N'050', N'18', N'050', NULL, N'0', N'2024-07-05 16:01:53.023', N'1255555', NULL)
 GO
 
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'44', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'2aa3d623-c0a2-4e92-a137-cb8ea63560de', N'050', N'17', N'050', NULL, N'0', N'2024-07-26 13:19:00.960', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'45', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'e7f4916d-a419-4497-9432-9e4803f81c65', N'050', N'17', N'050', NULL, N'0', N'2024-07-26 13:23:09.390', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'46', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'3b662db8-04be-494a-88d9-551c57e53a5d', N'050', N'17', N'050', NULL, N'0', N'2024-07-26 13:28:33.950', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'47', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'99157561-6aae-43af-945b-702042aa5506', N'050', N'17', N'050', NULL, N'0', N'2024-07-26 13:30:34.910', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'48', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'faf074b7-b03f-457c-bbe7-9becc779ac3f', N'050', N'17', N'050', NULL, N'0', N'2024-07-26 13:34:17.773', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'49', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'c6dd26be-d287-45e8-8c18-80b22a5b08d7', N'050', N'17', N'050', NULL, N'0', N'2024-07-26 13:58:39.363', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'50', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'5844e8dc-1b45-4080-acb7-8ef757a7b2a8', N'050', N'17', N'050', NULL, N'0', N'2024-08-02 17:25:26.770', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'51', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'c8de1c09-ed96-4dcf-9bc6-b6d8468a785a', N'050', N'16', N'050', NULL, N'0', N'2024-08-02 17:41:21.383', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'52', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'5dc42160-a987-416e-8251-5e83974ce5f9', N'050', N'16', N'050', NULL, N'0', N'2024-08-02 18:57:17.600', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'53', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'd0bbb9f2-72ff-4fe1-b833-fe5ee76655ce', N'050', N'17', N'050', NULL, N'0', N'2024-08-02 18:57:56.760', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'54', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'6c0b0a32-3b18-4fc5-ac7a-10529459501c', N'050', N'17', N'050', NULL, N'0', N'2024-08-02 19:05:36.153', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'55', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'7df2da0f-ae0f-4b13-9f04-80176a20239a', N'050', N'17', N'050', NULL, N'0', N'2024-08-02 20:03:32.710', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'56', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'c63be3d3-7602-4934-8e7b-917063065c0a', N'050', N'17', N'050', NULL, N'0', N'2024-08-07 16:31:08.980', N'12882760', NULL)
+GO
+
+INSERT INTO [dbo].[tblPayments] ([idPayment], [currency], [amount], [gloss], [type], [correlation_id], [serviceCode], [app_user_id], [bussinessCode], [transaction_response], [confirmed], [created_at], [id_qr], [expiration_qr]) VALUES (N'57', N'BOB', N'500', N'Pago suscripcion Standard', N'QR', N'45a7d4a3-d537-4c63-bbef-6c9b98fe9389', N'050', N'17', N'050', NULL, N'0', N'2024-08-07 17:14:24.290', N'12882760', NULL)
+GO
+
 SET IDENTITY_INSERT [dbo].[tblPayments] OFF
 GO
 
+
+-- ----------------------------
+-- Table structure for tblPaymentShipping
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[tblPaymentShipping]') AND type IN ('U'))
+	DROP TABLE [dbo].[tblPaymentShipping]
+GO
+
+CREATE TABLE [dbo].[tblPaymentShipping] (
+  [payment_id] int  NOT NULL,
+  [shipping_id] int  NOT NULL
+)
+GO
+
+ALTER TABLE [dbo].[tblPaymentShipping] SET (LOCK_ESCALATION = TABLE)
+GO
+
+
+-- ----------------------------
+-- Records of tblPaymentShipping
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for tblPaymentsServices
@@ -732,7 +926,219 @@ GO
 INSERT INTO [dbo].[tblServices] ([id_service], [service_name], [service_name_id], [code], [user_id], [department_id]) VALUES (N'11', N'ELECTROPAZ', N'3', N'ABDCR', N'17', N'6')
 GO
 
+INSERT INTO [dbo].[tblServices] ([id_service], [service_name], [service_name_id], [code], [user_id], [department_id]) VALUES (N'16', N'Nuevatel (Telefonia)', N'5', N'2234', N'17', N'6')
+GO
+
 SET IDENTITY_INSERT [dbo].[tblServices] OFF
+GO
+
+
+-- ----------------------------
+-- Table structure for tblShipping
+-- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[tblShipping]') AND type IN ('U'))
+	DROP TABLE [dbo].[tblShipping]
+GO
+
+CREATE TABLE [dbo].[tblShipping] (
+  [id] int  IDENTITY(1,1) NOT NULL,
+  [name_origin] varchar(200) COLLATE Modern_Spanish_CI_AS  NULL,
+  [country_origin] varchar(120) COLLATE Modern_Spanish_CI_AS  NULL,
+  [address_origin] varchar(250) COLLATE Modern_Spanish_CI_AS  NULL,
+  [postal_code_origin] varchar(100) COLLATE Modern_Spanish_CI_AS  NULL,
+  [city_origin] varchar(100) COLLATE Modern_Spanish_CI_AS  NULL,
+  [nif_origin] varchar(50) COLLATE Modern_Spanish_CI_AS  NULL,
+  [name_destiny] varchar(200) COLLATE Modern_Spanish_CI_AS  NULL,
+  [country_destiny] varchar(120) COLLATE Modern_Spanish_CI_AS  NULL,
+  [address_destiny] varchar(250) COLLATE Modern_Spanish_CI_AS  NULL,
+  [postal_code_destiny] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL,
+  [city_destiny] varchar(100) COLLATE Modern_Spanish_CI_AS  NULL,
+  [nif_destiny] varchar(50) COLLATE Modern_Spanish_CI_AS  NULL,
+  [weight] float(53)  NULL,
+  [h] float(53)  NULL,
+  [l] float(53)  NULL,
+  [w] float(53)  NULL,
+  [price] float(53)  NULL,
+  [currency] varchar(10) COLLATE Modern_Spanish_CI_AS  NULL,
+  [tracking_id] varchar(25) COLLATE Modern_Spanish_CI_AS  NULL,
+  [status] varchar(20) COLLATE Modern_Spanish_CI_AS  NULL,
+  [department_id] int  NULL,
+  [created_by] int  NULL,
+  [created_at] datetime DEFAULT getdate() NULL,
+  [nat] bit DEFAULT 0 NULL,
+  [phone_origin] varchar(20) COLLATE Modern_Spanish_CI_AS  NULL,
+  [phone_destiny] varchar(20) COLLATE Modern_Spanish_CI_AS  NULL,
+  [company] varchar(20) COLLATE Modern_Spanish_CI_AS  NULL,
+  [volume] float(53)  NULL,
+  [envelope] bit  NULL
+)
+GO
+
+ALTER TABLE [dbo].[tblShipping] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Peso KILOS',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'weight'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Altura cm',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'h'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Largo cm',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'l'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Ancho cm',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'w'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Precio de envio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'price'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Moneda',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'currency'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Numero de seguimiento (guia)',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'tracking_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Estado del envio PENDIENTE | EN PROCESO | SIN PAGAR | PARA ENVIAR | ENVIADO',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'status'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Usuario Residente propietario envio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'created_by'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'1: nacional, 0: internacional',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'nat'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Empresa de envio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'company'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Volumen del envio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'volume'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'0: no es sobre, 1: es sobre',
+'SCHEMA', N'dbo',
+'TABLE', N'tblShipping',
+'COLUMN', N'envelope'
+GO
+
+
+-- ----------------------------
+-- Records of tblShipping
+-- ----------------------------
+SET IDENTITY_INSERT [dbo].[tblShipping] ON
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'7', N'Jorge Reinaldo', N'Bolivia', N'Avenida Bolivia El Alto', NULL, N'La Paz', NULL, N'Federico Corleris', N'Estados Unidos', N'Av. Siempre Viva', N'5564723', N'Springfield', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-18 17:17:47.340', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'8', N'Jorge Reinaldo', N'Bolivia', N'Avenida Bolivia El Alto', NULL, N'La Paz', NULL, N'Federico Corleris', N'Estados Unidos', N'Av. Siempre Viva', N'5564723', N'Springfield', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-18 17:32:16.410', N'1', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'9', N'Jorge Reinaldo', N'Bolivia', N'Avenida Bolivia El Alto', NULL, N'La Paz', NULL, N'Federico Corleris', N'Estados Unidos', N'Av. Siempre Viva', N'5564723', N'Springfield', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-18 18:19:32.520', N'1', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'10', N'Lintio Sinleo', N'Peru', N'Avenida Bolivia El Alto', N'787878', N'Cambio de prueba', NULL, N'Celestino Meyers', N'Canada', N'Av. Siempre Viva', N'5564723', N'Springfield', NULL, N'20', N'5', N'55', N'20', N'800', NULL, NULL, N'EN PROCESO', N'6', N'17', N'2024-07-22 17:09:35.593', N'1', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'11', N'Lintio Sinleo', N'Peru', N'Avenida Bolivia El Alto', NULL, N'Nueva York', NULL, N'Celestino Meyers', N'Estados Unidos', N'Av. Siempre Viva', N'5564723', N'Springfield', NULL, NULL, NULL, NULL, NULL, N'8796', NULL, NULL, N'SIN PAGAR', N'6', N'17', N'2024-07-22 17:45:23.160', N'1', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'12', N'Lorenzo Frorentino', N'EEUU', N'Avenida Bolivia El Alto', NULL, N'Nueva York', NULL, N'Celestino Meyers', N'Estados Unidos', N'Av. Siempre Viva', N'5564723', N'Springfield', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-22 17:55:00.623', N'1', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'13', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'María Luisa', N'Estados Unidos', N'Ávila Camacho', N'76543', N'Washigton', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-30 16:40:15.720', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'14', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Tereza Bolívar', N'Venezuela', N'Av Timotes Run', N'56437', N'Caracas', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-30 16:43:54.277', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'15', N'Jorge el Curioso', N'Bolivia', N'Av Mariscal Santa Cruz', NULL, N'La Paz', NULL, N'Andrea Cuaglio', N'Uruguay', N'Av Villazon, calle valverde', N'1235', N'Montevideo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-07-30 16:49:13.750', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'16', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Juan Arthur', N'Ecuador', N'Av Bolívar, calle salguedo', N'585479997', N'Quito', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'EN PROCESO', N'6', N'17', N'2024-07-30 16:52:26.963', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'17', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Pablo Mármol Torres', N'Uruguay', N'Av Circunvalación, calle 43', NULL, N'Montevideo', NULL, N'2.5', N'6', N'5', N'3', N'738.2', NULL, NULL, N'SIN PAGAR', N'6', N'17', N'2024-07-30 18:43:01.260', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'18', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Juan Gutiérrez Pacheco', N'Colombia', N'Av Tránsito, calle Bonifacio Ramírez', NULL, N'Bogotá', NULL, N'0.0555', N'12', N'12', N'21', N'870.8', NULL, NULL, N'SIN PAGAR', N'6', N'17', N'2024-08-02 13:47:14.090', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'19', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Alex Choque López', N'Perú', N'Zona Munaypata, calle Roberto Salas', NULL, N'La Paz', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-02 15:27:18.997', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'20', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Álvaro Quenya Aranda', N'Brasil', N'Zona Giorghinho, calle Joao vinicius', NULL, N'Sao Paulo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-02 15:29:12.167', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'21', N'Jorge el Curioso', N'Bolivia', NULL, NULL, N'La Paz', NULL, N'Andrea Cuaglio', N'Uruguay', N'Av Villazon, calle valverde', N'1235', N'Montevideo', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-02 15:30:33.033', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'22', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Juan González Huallpa', N'Chile', N'Av Juanjo Reynaga, calle cobreloa', NULL, N'Antofagasta', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-02 15:53:44.463', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'23', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Vanessa Hudgens', N'Estados Unidos', N'Av Third Monserrat, street Long Hiung', N'8667494', N'New York', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'EN PROCESO', N'6', N'17', N'2024-08-02 16:42:29.457', N'0', NULL, NULL, NULL, NULL, NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'24', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', N'', N'Santa Cruz', NULL, N'Joaquín Venegaa', N'Estados Unidos', N'Av Filipinos, street Dark Quanthum', N'', N'New York', NULL, N'20', N'5', N'55', N'7', N'150', NULL, NULL, N'EN PROCESO', N'6', N'17', N'2024-08-02 16:52:32.657', N'0', N'222222', N'3333333', N'DHL', N'25', NULL)
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'25', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Guadalupe Chambi', N'Bolivia', N'Av 123', N'12574', N'Santa Cruz', NULL, N'5', N'2', N'1', N'5', N'78585.2', NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-07 16:52:37.947', N'1', N'77441122', N'2257896', N'FEDEX', NULL, N'1')
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'26', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Carlín Chuquimia Soto', N'México', N'Av Circunvalación, calle 21', N'653363', N'Monterrey', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-08 13:22:01.857', N'0', N'77441122', N'5221478965', N'DHL', NULL, N'0')
+GO
+
+INSERT INTO [dbo].[tblShipping] ([id], [name_origin], [country_origin], [address_origin], [postal_code_origin], [city_origin], [nif_origin], [name_destiny], [country_destiny], [address_destiny], [postal_code_destiny], [city_destiny], [nif_destiny], [weight], [h], [l], [w], [price], [currency], [tracking_id], [status], [department_id], [created_by], [created_at], [nat], [phone_origin], [phone_destiny], [company], [volume], [envelope]) VALUES (N'27', N'Jorge El curioso', N'Bolivia', N'Av. Mariscal Santa Cruz', NULL, N'Santa Cruz', NULL, N'Juan Carlos Bodoque', N'Bolivia', N'Av Tres Tristes, Calle 76', NULL, N'Santa Cruz', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, N'PENDIENTE', N'6', N'17', N'2024-08-08 13:27:23.383', N'1', N'77441122', N'225879544', N'FEDEX', NULL, N'1')
+GO
+
+SET IDENTITY_INSERT [dbo].[tblShipping] OFF
 GO
 
 
@@ -837,10 +1243,10 @@ GO
 INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [subscribed_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'11', N'3', N'2024-05-02 18:25:57.000', N'2', N'S/N', N'1', N'000', N'4', N'2024-06-21 18:26:27.000', N'1', N'FFE432', N'3')
 GO
 
-INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [subscribed_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'12', N'8', N'2024-05-07 18:27:41.380', N'26', N'PALERMO', N'2', N'10098892722', N'6', N'2024-07-07 18:27:25.000', N'1', N'FDFD32', N'3')
+INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [subscribed_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'12', N'8', N'2024-05-07 18:27:41.380', N'26', N'PALERMO', N'2', N'10098892722', N'6', N'2024-08-31 18:27:25.000', N'1', N'FDFD32', N'3')
 GO
 
-INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [subscribed_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'13', N'2', N'2024-05-07 18:30:05.220', N'24', N'S/N', N'2', N'100025454854', N'2', N'2024-05-01 18:29:49.000', N'0', N'FDEED4', N'3')
+INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [subscribed_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'13', N'2', N'2024-05-07 18:30:05.220', N'24', N'S/N', N'2', N'100025454854', N'2', N'2024-09-01 18:29:49.000', N'0', N'FDEED4', N'3')
 GO
 
 INSERT INTO [dbo].[tblSubscriptions] ([id_subscription], [type_id], [subscribed_in], [paid_by], [paid_by_name], [period], [nit], [department_id], [expires_in], [valid], [code], [limit]) VALUES (N'14', N'1', N'2024-05-20 17:39:13.477', N'16', N'test 3', N'0', N'000', N'3', N'2024-06-19 23:59:59.000', N'1', N'174948', N'1')
@@ -1043,7 +1449,7 @@ GO
 INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'16', N'test 3', N'', N'77777772', N'resident', N'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', N'00-00-000', N'2024-04-30 12:27:31.740', N'77777772', N'M', N'1')
 GO
 
-INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'17', N'Jorge El curioso', N'', N'77441122', N'resident', N'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', N'00-00-000', N'2024-04-30 12:30:00.237', N'77441122', N'M', N'1')
+INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'17', N'Jorge El curioso', N'', N'77441122', N'resident', N'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', N'4f01456a-87c4-4288-986d-cffe6e1e04b1', N'2024-04-30 12:30:00.237', N'77441122', N'M', N'1')
 GO
 
 INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'18', N'test 5', N'', N'77777773', N'resident', N'0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c', N'71dbb0a1-962b-47b3-a235-e0dec3695925', N'2024-04-30 13:29:09.500', N'77777773', N'F', N'1')
@@ -1080,6 +1486,9 @@ INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], 
 GO
 
 INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'30', N'hgfut', N'', N'77777710', N'resident', N'03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', N'b428c9a2-0eaa-4959-938e-0748b46d894c', N'2024-06-18 10:41:35.053', N'77777710', N'M', N'1')
+GO
+
+INSERT INTO [dbo].[tblUsers] ([id_user], [first_name], [last_name], [username], [role], [password], [device_id], [created_at], [cellphone], [gender], [status]) VALUES (N'31', N'Conserjencio ', N'', N'78945612', N'conserje', N'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', N'', N'2024-07-17 11:02:24.303', N'78945612', N'O', N'1')
 GO
 
 SET IDENTITY_INSERT [dbo].[tblUsers] OFF
@@ -1163,7 +1572,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblLockerContent
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblLockerContent]', RESEED, 3)
+DBCC CHECKIDENT ('[dbo].[tblLockerContent]', RESEED, 29)
 GO
 
 
@@ -1179,7 +1588,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblLockers
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblLockers]', RESEED, 4)
+DBCC CHECKIDENT ('[dbo].[tblLockers]', RESEED, 11)
 GO
 
 
@@ -1195,7 +1604,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblPayments
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblPayments]', RESEED, 43)
+DBCC CHECKIDENT ('[dbo].[tblPayments]', RESEED, 57)
 GO
 
 
@@ -1261,7 +1670,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblServices
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblServices]', RESEED, 11)
+DBCC CHECKIDENT ('[dbo].[tblServices]', RESEED, 26)
 GO
 
 
@@ -1269,6 +1678,22 @@ GO
 -- Primary Key structure for table tblServices
 -- ----------------------------
 ALTER TABLE [dbo].[tblServices] ADD CONSTRAINT [PK_tblServices] PRIMARY KEY CLUSTERED ([id_service])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Auto increment value for tblShipping
+-- ----------------------------
+DBCC CHECKIDENT ('[dbo].[tblShipping]', RESEED, 27)
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table tblShipping
+-- ----------------------------
+ALTER TABLE [dbo].[tblShipping] ADD CONSTRAINT [PK__tblShipp__3213E83F4481393B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -1309,7 +1734,7 @@ GO
 -- ----------------------------
 -- Auto increment value for tblUsers
 -- ----------------------------
-DBCC CHECKIDENT ('[dbo].[tblUsers]', RESEED, 30)
+DBCC CHECKIDENT ('[dbo].[tblUsers]', RESEED, 31)
 GO
 
 
@@ -1325,10 +1750,19 @@ GO
 -- ----------------------------
 -- Foreign Keys structure for table tblLockerContent
 -- ----------------------------
+ALTER TABLE [dbo].[tblLockerContent] ADD CONSTRAINT [fk_department_target] FOREIGN KEY ([department_id]) REFERENCES [dbo].[tblDepartments] ([id_department]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[tblLockerContent] ADD CONSTRAINT [fk_locker_received_by] FOREIGN KEY ([received_by]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
 ALTER TABLE [dbo].[tblLockerContent] ADD CONSTRAINT [fk_locker_content] FOREIGN KEY ([locker_id]) REFERENCES [dbo].[tblLockers] ([id_locker]) ON DELETE CASCADE ON UPDATE NO ACTION
 GO
 
 ALTER TABLE [dbo].[tblLockerContent] ADD CONSTRAINT [fk_user_target_content] FOREIGN KEY ([user_id_target]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE CASCADE ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[tblLockerContent] ADD CONSTRAINT [fk_shipping_content] FOREIGN KEY ([shipping_id]) REFERENCES [dbo].[tblShipping] ([id]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
 
@@ -1336,6 +1770,16 @@ GO
 -- Foreign Keys structure for table tblPayments
 -- ----------------------------
 ALTER TABLE [dbo].[tblPayments] ADD CONSTRAINT [fk_user_payment] FOREIGN KEY ([app_user_id]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE CASCADE ON UPDATE NO ACTION
+GO
+
+
+-- ----------------------------
+-- Foreign Keys structure for table tblPaymentShipping
+-- ----------------------------
+ALTER TABLE [dbo].[tblPaymentShipping] ADD CONSTRAINT [fk_payment_shipping] FOREIGN KEY ([payment_id]) REFERENCES [dbo].[tblPayments] ([idPayment]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[tblPaymentShipping] ADD CONSTRAINT [fk_shipping_shipping] FOREIGN KEY ([shipping_id]) REFERENCES [dbo].[tblShipping] ([id]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
 
@@ -1383,6 +1827,16 @@ ALTER TABLE [dbo].[tblServices] ADD CONSTRAINT [fk_service_department] FOREIGN K
 GO
 
 ALTER TABLE [dbo].[tblServices] ADD CONSTRAINT [fk_service_user] FOREIGN KEY ([user_id]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE NO ACTION ON UPDATE NO ACTION
+GO
+
+
+-- ----------------------------
+-- Foreign Keys structure for table tblShipping
+-- ----------------------------
+ALTER TABLE [dbo].[tblShipping] ADD CONSTRAINT [fk_department_shipping] FOREIGN KEY ([department_id]) REFERENCES [dbo].[tblDepartments] ([id_department]) ON DELETE CASCADE ON UPDATE NO ACTION
+GO
+
+ALTER TABLE [dbo].[tblShipping] ADD CONSTRAINT [fk_resident_shipping] FOREIGN KEY ([created_by]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE CASCADE ON UPDATE NO ACTION
 GO
 
 

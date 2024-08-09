@@ -6,6 +6,12 @@ use App\Config\Database;
 use PDO;
 
 class Master {
+  public static function get_condominios($where = '', $fields = 'name, pin') {
+    $con = Database::getInstaceCondominiosExterno();
+    $stmt = $con->prepare("SELECT $fields FROM tblCondominiosData $where;");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
   public static function create_ad() {
   }
   public static function create_service_name(array $data): bool {
@@ -66,5 +72,20 @@ class Master {
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     return [];
+  }
+  /**
+   * Retorna el numero de celular de soporte
+   * @return string
+   */
+  public static function get_support_phone() {
+    $con = Database::getInstaceCondominiosExterno();
+    if ($con) {
+      $sql = "SELECT TOP 1 support_phone FROM tblConfig;";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $telefono = $stmt->fetch(PDO::FETCH_ASSOC)['support_phone'] ?? '';
+      return $telefono;
+    }
+    return '';
   }
 }
