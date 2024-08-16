@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use PDO;
 
 class Resident extends User {
   private $con;
   public int $department_id;
-  public object $department;
-  public object $subscription;
+  public Department $department;
+  public Subscription $subscription;
   public string $phone;
   public string $details;
   public function __construct($db = null, $id_user = null) {
@@ -68,6 +69,24 @@ class Resident extends User {
       }
     }
   }
+  public function subscription(): Subscription {
+    $this->subscription = new Subscription();
+    if ($this->con) {
+      if ($this->id_user) {
+        $sql = "SELECT b.* FROM tblUsersSubscribed a
+          INNER JOIN tblSubscriptions b
+          ON a.subscription_id = b.id_subscription
+          WHERE a.user_id = ?;";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute([$this->id_user]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row)
+          $this->subscription->load($row);
+      }
+    }
+    return $this->subscription;
+  }
+
   public function subscription_valid(): bool {
     if ($this->con) {
       $sql = "SELECT b.* FROM tblUsersSubscribed a 

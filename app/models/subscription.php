@@ -104,6 +104,19 @@ class Subscription {
   public function genCode() {
     return strtoupper(substr(uniqid(), -6));
   }
+  public static function get_users_connected($con, $sub_id) {
+    try {
+      $sql = "SELECT count(*) as cantidad FROM tblUsersSubscribed a INNER JOIN tblSubscriptions b 
+      ON a.subscription_id = b.id_subscription WHERE b.id_subscription = $sub_id;";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $row['cantidad'];
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return 0;
+  }
   public static function getTypes($pin) {
     return Subscriptiontype::getTypes($pin, null);
   }

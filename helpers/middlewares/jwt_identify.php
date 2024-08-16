@@ -10,6 +10,7 @@ use Helpers\Resources\Response;
 class AuthMiddleware {
   static array $routes = [ // rutas protegidas con JWT
     'user/number',
+    'resident/me',
     'notification/send_by_id',
     'user/search_with_department',
     'locker/add_content',

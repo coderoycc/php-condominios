@@ -13,9 +13,9 @@ class Accesos {
     unset($_COOKIE['dominio']);
     unset($_SESSION['base']);
     unset($_SESSION['permisos']);
-    setcookie('base', null, -1, '/', false);
-    setcookie('permisos', null, -1, '/', false);
-    setcookie('_emp', null, -1, '/', false);
+    setcookie('base', '', -1, '/', false);
+    setcookie('permisos', '', -1, '/', false);
+    setcookie('_emp', '', -1, '/', false);
     session_destroy();
   }
   public static function base() {
