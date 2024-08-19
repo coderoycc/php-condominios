@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Config\Accesos;
 use App\Config\Database;
 
 class Condominius {

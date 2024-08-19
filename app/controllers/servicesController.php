@@ -41,9 +41,9 @@ class ServicesController {
   }
   public function get_my_services($query) /*protected*/ {
     $con = DBAppProvider::get_connection();
-    $resident = DBAppProvider::get_resident();
-    if ($resident->department_id > 0) {
-      $services = Services::list_by_department($con, $resident->department_id);
+    $sub = DBAppProvider::get_sub();
+    if ($sub->id_subscription > 0) {
+      $services = Services::list_by_department($con, $sub->department_id);
       Response::success_json('Success Request', ['services' => $services]);
     } else {
       Response::error_json((['message' => '¡Error! Residente no asociado a un departamento']), 200);

@@ -20,16 +20,13 @@ class SubscriptionController {
     $data = Subscription::getTypes($data['pin']);
     Response::success_json('Tipos de suscripción', $data);
   }
-  public function types_web($data) {
+  public function types_web($data) /*web*/ {
     $condominio = DBWebProvider::session_get_condominio();
     if (isset($condominio->pin)) {
       $data_subs = Subscription::getTypes($condominio->pin);
-      ob_start();
-      include(__DIR__ . '/../views/subscription/type_list.php');
-      $html = ob_get_clean();
-      Response::html($html);
+      Render::view('subscription/type_list', ['data_subs' => $data_subs]);
     } else {
-      Response::html("<h1 class='text-center'>Ocurrió un error en instance conection</h1>");
+      Render::view('error_html', ['message' => 'PIN no encontrado', 'message_detail' => 'Inicie sesión']);
     }
   }
   public function subscribe($data, $files = null) {
@@ -167,5 +164,31 @@ class SubscriptionController {
       }
     } else
       Response::error_json(['message' => 'Error instancia de conexión', 'error' => true], 200);
+  }
+  public function join_with_code($data, $files = null) {
+    if (!Request::required(['pin', 'code', 'user_id'], $data))
+      Response::error_json(['message' => 'Datos faltantes', 'error' => true], 400);
+
+    $con = Database::getInstanceByPin($data['pin']);
+    $resident = new Resident($con, $data['user_id']);
+    if ($resident->id_user > 0) {
+      $depa_id = $resident->department_id;
+      $code = $data['code'];
+      $code_subs = Subscription::getSubscriptionByCode($con, $code, $depa_id);
+      if (!$code_subs['valid']) {
+        Response::error_json(['message' => 'Código de suscripción no válido']);
+      } else if ($code_subs['limit_reached']) {
+        Response::error_json(['message' => 'Limite alcanzado para el código de suscripción']);
+      } else if (!$code_subs['depa_ok']) {
+        Response::error_json(['message' => "Este código $code, no pertenece a su departamento"]);
+      }
+
+      $r = Subscription::addUserSubscription($con, $data['user_id'], $code_subs['subs_id']);
+      if ($r)
+        Response::success_json('Suscripción realizada', []);
+      else
+        Response::error_json(['message' => 'Error al suscribir usuario']);
+    } else
+      Response::error_json(['message' => 'Usuario no encontrado', 'error' => true], 404);
   }
 }

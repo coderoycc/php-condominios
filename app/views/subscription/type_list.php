@@ -19,10 +19,10 @@ if (count($data_subs) > 0) :
             <?php endforeach; ?>
           </ul>
         </div>
-        <div class="card-footer text-center">
-          <button type="button" class="btn btn-sm btn-primary" style="color:var(--bs-verde)" title="EDITAR" data-id="<?= $sub->id_subscription_type ?>"><i class="fa fa-solid fa-pencil"></i> Editar</button>
-          <!-- <button type="button" class="btn btn-sm btn-danger text-white" title="ELIMINAR" data-bs-toggle="modal" data-bs-target="#modal_delete_type" data-id="<?= $sub->id_subscription_type ?>" data-name="<?= $sub->name ?>"><i class="fa fa-solid fa-trash"></i></button> -->
-        </div>
+        <!-- <div class="card-footer text-center">
+          <button type="button" class="btn btn-sm btn-primary" style="color:var(--bs-verde)" title="EDITAR" data-id="<?= $sub->id_subscription_type ?>"><i class="fa fa-solid fa-pencil"></i> Editar</button> -->
+        <!-- <button type="button" class="btn btn-sm btn-danger text-white" title="ELIMINAR" data-bs-toggle="modal" data-bs-target="#modal_delete_type" data-id="<?= $sub->id_subscription_type ?>" data-name="<?= $sub->name ?>"><i class="fa fa-solid fa-trash"></i></button> -->
+        <!-- </div> -->
       </div>
     </div>
   <?php endforeach;

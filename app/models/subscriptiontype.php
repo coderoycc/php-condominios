@@ -86,11 +86,18 @@ class Subscriptiontype {
     return false;
   }
   public static function getTypes($pin = null, $con = null) {
-    if ($pin) $con = Database::getInstanceByPin($pin);
-    $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
-    $stmt->execute();
-    $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
-    return $rows;
+    try {
+      if ($pin) {
+        $con = Database::getInstanceByPin($pin);
+        $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        return $rows;
+      }
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return [];
   }
   public static function dependency_exist($con, $id): bool {
     $sql = "SELECT * FROM tblSubscriptions WHERE type_id = $id";

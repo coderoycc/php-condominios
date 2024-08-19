@@ -55,11 +55,13 @@ class RegisterController {
 
       if ($data['check']) { // existe un codigo, asociar a suscripcion?  
         $code = $data['code'] ?? 'ABCDEF';
-        $code_subs = Subscription::getSubscriptionByCode($con, $code);
+        $code_subs = Subscription::getSubscriptionByCode($con, $code, $data['depa_id']);
         if (!$code_subs['valid']) {
           Response::error_json(['message' => 'Código de suscripción no válido']);
         } else if ($code_subs['limit_reached']) {
           Response::error_json(['message' => 'Limite alcanzado para el código de suscripción']);
+        } else if (!$code_subs['depa_ok']) {
+          Response::error_json(['message' => "Este código $code, no pertenece a su departamento"]);
         }
       }
 

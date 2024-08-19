@@ -133,13 +133,13 @@ class Subscription {
     }
     return $subscription;
   }
-  public static function getSubscriptionByCode($con = null, $code): array {
-    $resp = ['valid' => false, 'limit_reached' => true, 'subs_id' => 0];
+  public static function getSubscriptionByCode($con = null, $code, $depa_id): array {
+    $resp = ['valid' => false, 'limit_reached' => true, 'subs_id' => 0, 'depa_ok' => true];
     if ($con) {
       $sql = "SELECT * FROM tblSubscriptions a INNER JOIN tblUsersSubscribed b ON a.id_subscription = b.subscription_id WHERE a.code = '$code';";
       $stmt = $con->query($sql);
       $stmt->execute();
-      $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
       if ($rows) {
         $row = $rows[0];
         $resp['valid'] = true;
@@ -147,22 +147,35 @@ class Subscription {
         if (count($rows) < $row['limit']) {
           $resp['limit_reached'] = false;
         }
+        if ($row['department_id'] != $depa_id) {
+          $resp['depa_ok'] = false;
+        }
       }
     }
     return $resp;
   }
   public static function addUserSubscription($con = null, $id_user, $id_subscription) {
-    if ($con) {
+    if ($con == null) return false;
+    try {
+      $sql = "SELECT * FROM tblUsersSubscribed WHERE user_id = $id_user AND subscription_id = $id_subscription;";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      if ($row) {
+        return true;
+      }
       $sql = "INSERT INTO tblUsersSubscribed (user_id, subscription_id) VALUES ($id_user, $id_subscription);";
       $stmt = $con->prepare($sql);
       $res = $stmt->execute();
       return $res;
+    } catch (\Throwable $th) {
+      var_dump($th);
     }
     return false;
   }
   public static function verify_subscription_free($con, $type_id, $resident) {
     try {
-      $max = 3;
+      $max = 2;
       if ($resident->id_user) {
         $year = date('Y');
         // Todos las suscripciones de tipo 'gratuito <TYPE_ID>' que sean de este año que esten asociados al departamento del usuario que solicita la suscripcion gratuita, tambien el usuario debe estar activo (1)

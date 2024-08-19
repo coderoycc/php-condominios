@@ -19,6 +19,8 @@ class ResidentController {
       $resident->department();
       $resident->subscription();
       $condominio = DBAppProvider::get_enterprise();
+      unset($condominio['pin']);
+      unset($condominio['dbname']);
       $cantidad = Subscription::get_users_connected($con, $resident->subscription->id_subscription);
       Response::success_json('Resident data', ['resident' => $resident, 'condominio' => $condominio, 'cantidad_sub' => $cantidad]);
     } else
