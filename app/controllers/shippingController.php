@@ -56,7 +56,8 @@ class ShippingController {
     if ($shipping->id > 0) {
       if ($shipping->status == 'PENDIENTE') {
         if (isset($data['weight'])) { // caso editar final (cuando pone peso y alto ancho)
-          $shipping->status = 'EN PROCESO';
+          // $shipping->status = 'EN PROCESO';
+          $shipping->status = 'SIN PAGAR';
           // enviar notificacion
         }
         $shipping->set_data($data);
@@ -82,8 +83,8 @@ class ShippingController {
       Response::error_json(['message' => 'Error, faltan datos'], 200);
     $shipping = new Shipping($con, $body['id']);
     $initial = clone $shipping;
-    $shipping->price = $body['price'];
-    $shipping->status = 'SIN PAGAR';
+    $shipping->price = floatval($body['price']);
+    // $shipping->status = 'SIN PAGAR';
     if ($shipping->update(null, $initial) > 0)
       Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
     else
@@ -100,5 +101,17 @@ class ShippingController {
     } else {
       Render::view('error_html', ['message' => 'Error, no se encontro el shipping', 'message_details' => 'el ID enviado no tiene ningun resultado -> ' . $query['id']]);
     }
+  }
+  public function add_tracking($body)/*web*/ {
+    $con = DBWebProvider::getSessionDataDB();
+    if (!Request::required(['id', 'tracking_id'], $body))
+      Response::error_json(['message' => 'Error, faltan datos'], 200);
+    $shipping = new Shipping($con, $body['id']);
+    $initial = clone $shipping;
+    $shipping->tracking_id = $body['tracking_id'];
+    if ($shipping->update(null, $initial) > 0)
+      Response::success_json('Actualizado con exito', ['shipping' => $shipping]);
+    else
+      Response::error_json(['message' => 'Error al actualizar el shipping'], 200);
   }
 }

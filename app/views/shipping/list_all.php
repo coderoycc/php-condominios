@@ -40,9 +40,9 @@
               <?php if ($estado == 'EN PROCESO') : ?>
                 <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_price" data-id="<?= $shipp['id'] ?>">Agregar Precio</button>
               <?php elseif ($estado == 'PARA ENVIAR') : ?>
-                <button type="button" class="btn btn-info">Detalles</button>
+                <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_price" data-id="<?= $shipp['id'] ?>" data-price="<?= $shipp['price'] ?? '' ?>">Modificar Precio</button>
               <?php elseif ($estado == 'ENVIADO') : ?>
-                <button type="button" class="btn btn-info">Agregar Codigo seguimiento</button>
+                <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_tracking" data-id="<?= $shipp['id'] ?>" data-tracking="<?= $shipp['tracking_id'] ?? '' ?>">Agregar código</button>
               <?php endif; ?>
             </div>
           </td>

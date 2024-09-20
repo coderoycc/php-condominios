@@ -5,20 +5,24 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Nombre</th>
-          <th>Registrado en</th>
-          <th>Publicidades</th>
+          <th>Nombre compania</th>
+          <th>Creado en</th>
+          <th>Contacto</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Nombre</td>
-          <td>Fecha</td>
-          <td>Publicidades</td>
-          <td>Acciones</td>
-        </tr>
+        <?php foreach ($companies as $com): ?>
+          <tr>
+            <td><?= $com['id_company'] ?></td>
+            <td><?= $com['company'] ?></td>
+            <td><?= date('d/m/Y', strtotime($com['created_at'])) ?></td>
+            <td><?= $com['phone'] ?></td>
+            <td class="d-flex justify-content-between">
+              <button class="btn btn-sm btn-outline-danger" type="button"><i class="fa fa-fw fa-trash"></i></button>
+            </td>
+          </tr>
+        <?php endforeach; ?>
       </tbody>
     </table>
   </div>

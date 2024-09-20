@@ -40,12 +40,10 @@ require_once "../helpers/middlewares/web_auth.php";
                 <div class="d-flex gap-3 flex-wrap">
                   <button type="button" data-status="SIN PAGAR" class="btn-table-shipp btn btn-outline-info active">SIN PAGAR</button>
                   <button type="button" data-status="PARA ENVIAR" class="btn-table-shipp btn btn-outline-dark">PARA ENVIAR</button>
-                  <button type="button" data-status="ENVIADOS" class="btn-table-shipp btn btn-outline-success">ENVIADOS</button>
+                  <button type="button" data-status="ENVIADO" class="btn-table-shipp btn btn-outline-success">ENVIADOS</button>
                 </div>
               </div>
-              <div class="card-body" id="shipp_content">
-
-              </div>
+              <div class="card-body" id="shipp_content"></div>
             </div>
           </div>
         </div>
@@ -53,6 +51,8 @@ require_once "../helpers/middlewares/web_auth.php";
     </div>
   </div><!-- fin contenedor -->
   <?php include "./modal_details.php"; ?>
+  <?php include "./modal_price.php"; ?>
+  <?php include "./modal_add_code.php"; ?>
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>

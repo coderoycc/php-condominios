@@ -4,6 +4,7 @@ namespace App\Config;
 
 use App\Config\Accesos;
 use Helpers\Resources\Response;
+use Throwable;
 
 class Database {
   private static $serverName = "localhost";
@@ -36,6 +37,16 @@ class Database {
     } catch (\PDOException $e) {
       self::$con = null;
       Response::error_json(['message' => '¡Error DB! Instance master', 'data' => $e], 500);
+    }
+    return self::$con;
+  }
+  public static function master_instance() {
+    try {
+      // Removemos el parámetro Database de la cadena de conexión
+      self::$con = new \PDO("sqlsrv:Server=" . self::$serverName . ";Encrypt=0;TrustServerCertificate=1", self::$username, self::$password);
+      self::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    } catch (\PDOException $e) {
+      self::$con = null;
     }
     return self::$con;
   }
@@ -80,7 +91,7 @@ class Database {
       } else {
         return null;
       }
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
       return null;
     }
   }

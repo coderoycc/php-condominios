@@ -9,8 +9,9 @@ require_once '../helpers/resources/response.php';
 require_once '../helpers/resources/request.php';
 require_once './controllers/registerController.php';
 require_once './controllers/authController.php';
+require_once './utils/queries/QueryBuilder.php';
 
-$entidades = ['user', 'resident', 'department', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay', 'ads', 'shipping'];
+$entidades = ['user', 'resident', 'department', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay', 'ads', 'shipping', 'company'];
 foreach ($entidades as $entidad) {
   require_once("models/" . $entidad . ".php");
   require_once("controllers/" . $entidad . "Controller.php");

@@ -33,6 +33,10 @@ class DBWebProvider {
   public static function session_get_condominio() {
     return json_decode($_SESSION['credentials']);
   }
+  /**
+   * Get connection for request from WEB
+   * @return PDO|null
+   */
   public static function getSessionDataDB() {
     if (isset($_SESSION['credentials'])) {
       $condominio = json_decode($_SESSION['credentials']);

@@ -9,7 +9,7 @@ require_once("../app/models/subscriptiontype.php");
 
 $con = Database::getInstanceByPinExterno($condominio->pin);
 $types = Subscriptiontype::getTypes(null, $con);
-// var_dump($types);
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -64,9 +64,7 @@ $types = Subscriptiontype::getTypes(null, $con);
               <?php endforeach; ?>
             </ul>
             <div class="tab-content" id="myTabContent">
-              <div class="tab-pane fade show active" id="tab_name" role="tabpanel" tabindex="0">
-
-              </div>
+              <div class="tab-pane fade show active" id="tab_name" role="tabpanel" tabindex="0"></div>
             </div>
           </div>
         </div>

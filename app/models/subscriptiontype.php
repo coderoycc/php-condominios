@@ -93,6 +93,11 @@ class Subscriptiontype {
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
         return $rows;
+      } else if ($con) {
+        $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        return $rows;
       }
     } catch (\Throwable $th) {
       var_dump($th);

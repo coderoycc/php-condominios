@@ -54,26 +54,31 @@ require_once("../helpers/middlewares/web_auth.php");
   <div class="modal fade" id="modal_add_ad" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5"><i class="fa-solid fa-briefcase"></i> Nuevo anunciante</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form>
+        <form id="form_company">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5"><i class="fa-solid fa-briefcase"></i> Nuevo anunciante</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="name_service" placeholder="Nombre">
-              <label for="name_service">Nombre servicio</label>
+              <input type="text" class="form-control" name="name" placeholder="Nombre" required>
+              <label for="name">Anunciante (nombre empresa)</label>
             </div>
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="acronym_service" placeholder="Acronimo">
-              <label for="acronimo">Acrónimo</label>
+              <input type="text" class="form-control" name="phone" placeholder="Celular" required>
+              <label for="phone">Celular </label>
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="add_service_name()">Guardar</button>
-        </div>
+            <!-- <div class="form-floating mb-3">
+              <input type="text" class="form-control" name="phone" placeholder="Celular">
+              <label for="phone"></label>
+            </div> -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -65,7 +65,7 @@ class DepartmentController {
     $department = new Department($con, $query['id']);
     Render::view('department/edit_content', ['department' => $department]);
   }
-  public function subscribed($query) {
+  public function subscribed($query)/*web */ {
     $con = DBWebProvider::getSessionDataDB();
     if ($con) {
       $subs = Department::get_with_subs($con, $query);

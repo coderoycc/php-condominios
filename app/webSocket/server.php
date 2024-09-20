@@ -1,5 +1,5 @@
 <?php
-// composer require cboden/ratchet
+
 namespace App\WebSocket;
 
 use Ratchet\Server\IoServer;
@@ -13,6 +13,6 @@ $server = IoServer::factory(
       new HandleSocket()
     )
   ),
-  8080
+  88
 );
 $server->run();

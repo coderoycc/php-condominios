@@ -2,15 +2,16 @@
 // EndPoint para manejar la base master de condominios.
 namespace App\Controllers;
 
+use App\Config\Database;
+use App\Models\LockerContent;
 use App\Models\Master;
 use App\Providers\DBAppProvider;
+use App\Utils\Queries\QueryBuilder;
 use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
 class MasterController {
-  public function add_ad() {
-  }
   public function add_service_name($body, $files = null) {
     if (!Request::required(['name', 'acronym'], $body))
       Response::error_json(['message' => 'Parámetros faltantes'], 200);
@@ -57,5 +58,73 @@ class MasterController {
   public function support_phone($query) {
     $phone = Master::get_support_phone();
     Response::success_json('Telefono de soporte', ['support_phone' => $phone], 200);
+  }
+  /**
+   * Search residents in all databases
+   * @param array $query Params query
+   * @return void Response [never] Using class Render
+   */
+  public function residents($query) {
+    $search = $query['q'] ?? '';
+    $option = $query['option'] ?? '';
+
+    $sql = new QueryBuilder();
+    if ($search == '') {
+      $residents = $sql->select('tblUsers', 'a')
+        ->leftJoin('tblResidents', 'b', "a.id_user = b.user_id")
+        ->leftJoin('tblDepartments', 'c', 'c.id_department = b.department_id')
+        ->leftJoin('tblUsersSubscribed', 'd', 'd.user_id = a.id_user')
+        ->leftJoin('tblSubscriptions', 'e', 'e.id_subscription = d.subscription_id')
+        ->where("a.role = 'resident'")
+        ->orderBy('a.created_at DESC')
+        ->get('TOP 20 a.*, b.*, c.*, e.* ');
+    } else { //filtros
+      $condition = self::get_where_filter($option, $search);
+      $residents = $sql->select('tblUsers', 'a')
+        ->leftJoin('tblResidents', 'b', "a.id_user = b.user_id")
+        ->leftJoin('tblDepartments', 'c', 'c.id_department = b.department_id')
+        ->leftJoin('tblUsersSubscribed', 'd', 'd.user_id = a.id_user')
+        ->leftJoin('tblSubscriptions', 'e', 'e.id_subscription = d.subscription_id')
+        ->where("a.role = 'resident' AND (" . $condition . ")")
+        ->get('a.*, b.*, c.*, e.*');
+    }
+    Render::view('resident/master_list', ['residents' => $residents, 'search' => $search, 'option' => $option]);
+  }
+  public function subscription($query) {
+
+    $sql = new QueryBuilder();
+  }
+  public function locker_content($query) {
+    if (!Request::required(['id', 'depa_id', 'key'], $query))
+      Render::view('error_html', ['message' => 'Parámetros faltantes', 'message_detail' => 'Faltan parametros']);
+
+    $con = Database::getInstanceByPin($query['key']);
+    $depa = $query['depa_id'] == '' ? 0 : intval($query['depa_id']);
+    $entrada = LockerContent::get_list_department($con, $depa, 'ENTRADA');
+    $salida = LockerContent::get_list_department($con, $depa, 'SALIDA');
+    Render::view('locker/content_modal', ['entrada' => $entrada, 'salida' => $salida]);
+  }
+
+  public static function get_where_filter($option, $value) {
+    $cad = "";
+    $value = trim($value);
+    switch ($option) {
+      case 'nombres':
+        $cad = "a.first_name LIKE '%$value%' OR a.last_name LIKE '%$value%'";
+        break;
+      case 'celular':
+        $cad = "a.cellphone LIKE '%$value%'";
+        break;
+      case 'email':
+        $cad = "a.email LIKE '%$value%'";
+        break;
+      case 'dpto':
+        $cad = "c.dep_number LIKE '%$value%'";
+        break;
+      default:
+        $cad = "a.first_name LIKE '%$value%' OR a.last_name LIKE '%$value%' OR a.cellphone LIKE '%$value%' OR c.dep_number LIKE '%$value%'";
+        break;
+    }
+    return $cad;
   }
 }

@@ -191,4 +191,17 @@ class SubscriptionController {
     } else
       Response::error_json(['message' => 'Usuario no encontrado', 'error' => true], 404);
   }
+  public function get($query)/*web*/ {
+    $con = DBWebProvider::getSessionDataDB();
+    if ($con) {
+      $subscription = new Subscription($con, $query['id']);
+      if ($subscription->id_subscription > 0) {
+        $subscription->type();
+        Render::view('subscription/details', ['subscription' => $subscription]);
+      } else {
+        Render::view('error_html', ['message' => 'No existe la suscripción']);
+      }
+    } else
+      Render::view('error_html', ['message' => 'Error instancia de conexión', 'message_details' => 'Comunique al administrador e inténtelo más tarde']);
+  }
 }

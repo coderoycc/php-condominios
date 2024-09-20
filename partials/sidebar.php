@@ -7,6 +7,14 @@
           <div class="sb-nav-link-icon"><i class="fa-solid fa-user-shield"></i></div>
           Usuarios del Sistema
         </a>
+        <a class="nav-link" href="../global/residents.php" data-route="global/residents.php">
+          <div class="sb-nav-link-icon"><i class="fa-lg fa-solid fa-users"></i></div>
+          Residentes
+        </a>
+        <a class="nav-link" href="../global/subscriptions.php" data-route="global/subscriptions.php">
+          <div class="sb-nav-link-icon"><i class="fa-lg fa-solid fa-wallet"></i></div>
+          Suscripciones
+        </a>
         <div class="sb-sidenav-menu-heading">RESIDENTES</div>
         <a class="nav-link" href="../residents" data-route="residents">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-people-group"></i></div>
@@ -48,12 +56,12 @@
         <div class="sb-sidenav-menu-heading">Correspondencia Envíos</div>
         <a class="nav-link" href="../shipping" data-route="shipping/index" data-position="down">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-table"></i></div>
-          Listado
+          Listado envios
         </a>
-        <a class="nav-link" href="../shipping/progress.php" data-route="shipping/progress.php" data-position="down">
+        <!-- <a class="nav-link" href="../shipping/progress.php" data-route="shipping/progress.php" data-position="down">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-box"></i></div>
           En proceso
-        </a>
+        </a> -->
 
         <div class="sb-sidenav-menu-heading">MASTER</div>
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_master" aria-expanded="false" aria-controls="collapse_master" data-route="master">

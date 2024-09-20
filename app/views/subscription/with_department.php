@@ -7,6 +7,7 @@
       <th>Suscrito en</th>
       <th>Vence en</th>
       <th>Usado por #</th>
+      <th>Acciones</th>
     </tr>
   </thead>
   <tbody>
@@ -21,9 +22,13 @@
         <td class="text-end"><?= $i ?></td>
         <td class="text-center"><?= $sub['dep_number'] ?></td>
         <td><?= $sub['name'] ?? 'Sin Suscripción' ?></td>
+        <!-- <td><?= $sub['d'] ?></td> -->
         <td class="text-center"><?= $sus_en ?></td>
         <td class="text-center"><?= $valido ?></td>
         <td class="text-center"><?= $sub['cant'] ?? 0 ?></td>
+        <td class="text-center">
+          <button class="btn btn-outline-info" title="Historial subs" data-bs-toggle="modal" data-bs-target="#"><i class="fa-fw fa-solid fa-clock-rotate-left"></i></button>
+        </td>
       </tr>
     <?php
       $i++;

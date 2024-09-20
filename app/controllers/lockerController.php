@@ -26,6 +26,9 @@ class LockerController {
   public function change_available($body) /* protected */ {
     $con = DBAppProvider::get_connection();
     $locker = new Locker($con, $body['locker_id']);
+    $lockerContent = new LockerContent($con, $body['content_id']);
+    $lockerContent->delivered = 1;
+    $lockerContent->change_delivered();
     if ($locker->id_locker == 0)
       Response::error_json(['message' => 'Casillero no existente']);
     if ($locker->updateStatus(1))
@@ -175,5 +178,12 @@ class LockerController {
     $con = DBAppProvider::get_connection();
     $content = LockerContent::last($con, $query['locker_id']);
     Response::success_json('Último contenido del casillero', ['content_info' => $content]);
+  }
+  public function history_last($query)/*protected*/ {
+    $con = DBAppProvider::get_connection();
+    $where = "WHERE a.delivered != 1";
+    $order = "ORDER BY a.received_at DESC";
+    $content_history = LockerContent::content_with_content($con, $where, $order);
+    Response::success_json('Historial de contenido', $content_history);
   }
 }

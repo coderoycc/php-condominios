@@ -5,6 +5,7 @@ namespace App;
 require_once 'vendor/autoload.php';
 include_once 'load_core.php';
 // composer "ramsey/uuid"
+// require_once 'webSocket/handleSocket.php';
 // require_once 'webSocket/server.php';
 
 use Helpers\Middlewares\AuthMiddleware;
