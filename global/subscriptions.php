@@ -33,17 +33,64 @@ require_once("../helpers/middlewares/web_auth.php");
     </div>
   </div>
 
-  <div class="modal fade" id="modal_content_lockers" tabindex="-1" aria-hidden="true">
+  <!-- Modal change subscription -->
+  <div class="modal fade" id="modal_change_subscription" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="form_change_subscription">
+          <input type="hidden" name="idsub" id="id_sub_current" />
+          <input type="hidden" name="key" id="key_sub_data" />
+          <div class="modal-header">
+            <h1 class="modal-title fs-5">Cambiar suscripción</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-12 mb-2">
+                <div class="form-floating">
+                  <select class="form-select" name="type" id="option_type_sub"></select>
+                  <label for="option">Tipo de suscripción</label>
+                </div>
+              </div>
+              <div class="text-muted fw-semibold">Precios</div>
+              <div class="col-md-4 mb-2">
+                <div class="form-floating">
+                  <input class="form-control" placeholder="Precio" type="number" id="current_price" disabled />
+                  <label for="current_price">Actual</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-2">
+                <div class="form-floating">
+                  <input class="form-control" placeholder="Precio" type="number" id="current_price_new" disabled />
+                  <label for="current_price">Nuevo</label>
+                </div>
+              </div>
+              <div class="col-md-4 mb-2">
+                <div class="form-floating">
+                  <input class="form-control" placeholder="Precio" type="number" id="price_to_add" disabled />
+                  <label for="price_to_add">Diferencia</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal add subscription -->
+  <div class="modal fade" id="modal_add_subscription" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">Contenido en casilleros</h1>
+          <h1 class="modal-title fs-5">Agregar una suscripción</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" id="content_lockers"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
+        <div class="modal-body" id="content_add_sub"></div>
       </div>
     </div>
   </div>

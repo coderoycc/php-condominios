@@ -70,7 +70,7 @@ class Resident extends User {
     }
   }
   public function subscription(): Subscription {
-    $this->subscription = new Subscription();
+    $this->subscription = new Subscription($this->con);
     if ($this->con) {
       if ($this->id_user) {
         $sql = "SELECT b.* FROM tblUsersSubscribed a
@@ -80,8 +80,10 @@ class Resident extends User {
         $stmt = $this->con->prepare($sql);
         $stmt->execute([$this->id_user]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row)
+        if ($row) {
           $this->subscription->load($row);
+          $this->subscription->type();
+        }
       }
     }
     return $this->subscription;

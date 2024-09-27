@@ -5,6 +5,7 @@ namespace App\Models;
 require_once __DIR__ . '/subscriptiontype.php';
 
 use App\Models\Subscriptiontype;
+use Exception;
 use PDO;
 
 class Subscription {
@@ -80,6 +81,22 @@ class Subscription {
       var_dump($th);
     }
     return -1;
+  }
+
+  public function change_plan() {
+    try {
+      $sql = "UPDATE tblSubscriptions SET type_id = ?, subscribed_in = ?, expires_in = ? WHERE id_subscription = ?;";
+      $stmt = $this->con->prepare($sql);
+      $res = $stmt->execute([$this->type_id, $this->subscribed_in, $this->expires_in, $this->id_subscription]);
+      if ($res) {
+        return $this->id_subscription;
+      } else {
+        return -1;
+      }
+    } catch (\Throwable $th) {
+      var_dump($th);
+      throw new Exception("Error Processing Request", 1);
+    }
   }
 
   public function objectNull() {
@@ -252,5 +269,18 @@ class Subscription {
       var_dump($th);
     }
     return [];
+  }
+  public static function get_subscriptions_by_department($con, $depa_id) {
+    try {
+      $sql = "SELECT a.*, b.name as type FROM tblSubscriptions a INNER JOIN tblSubscriptionType b
+          ON a.type_id = b.id_subscription_type
+          WHERE a.department_id = $depa_id ORDER BY a.expires_in DESC;";
+      $stmt = $con->query($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $rows;
+    } catch (\Throwable $th) {
+      throw new Exception("Error suscrpitions department", 500);
+    }
   }
 }

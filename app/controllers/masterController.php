@@ -90,9 +90,30 @@ class MasterController {
     }
     Render::view('resident/master_list', ['residents' => $residents, 'search' => $search, 'option' => $option]);
   }
-  public function subscription($query) {
+  public function residents_sub($query) {
+    $search = $query['q'] ?? '';
+    $type = $query['type'] ?? '';
+    $option = '';
+    if ($type == 'Sin Suscripción') {
+      $option = "AND e.id_subscription IS NULL AND c.id_department IS NOT NULL";
+    } else if ($type != '') {
+      $option = "AND f.name LIKE '" . $type . "'";
+    }
+    $types = ['Sin Suscripción', 'Gratuito', 'Standard', 'Premium', 'Premium VIP'];
 
     $sql = new QueryBuilder();
+    $residents = [];
+    $residents = $sql->select('tblUsers', 'a')
+      ->leftJoin('tblResidents', 'b', "a.id_user = b.user_id")
+      ->leftJoin('tblDepartments', 'c', 'c.id_department = b.department_id')
+      ->leftJoin('tblUsersSubscribed', 'd', 'd.user_id = a.id_user')
+      ->leftJoin('tblSubscriptions', 'e', 'e.id_subscription = d.subscription_id')
+      ->leftJoin('tblSubscriptionType', 'f', 'e.type_id = f.id_subscription_type')
+      ->where("a.role = 'resident' $option AND (a.first_name LIKE '%$search%' OR a.last_name LIKE '%$search%')")
+      ->orderBy('a.created_at DESC')
+      ->get('TOP 80 a.*, b.*, c.*, e.*, f.name as type_sub');
+
+    Render::view('subscription/list_global', ['search' => $search, 'types_sub' => $types, 'type_selected' => $type, 'residents' => $residents]);
   }
   public function locker_content($query) {
     if (!Request::required(['id', 'depa_id', 'key'], $query))

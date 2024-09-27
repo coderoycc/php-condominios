@@ -161,7 +161,7 @@ class LockerContent {
    */
   public static function content_with_content($con, $where = "", $order = "") {
     try {
-      $sql = "SELECT a.*, b.locker_number, b.type FROM tblLockerContent a INNER JOIN tblLocker b ON a.locker_id = b.id_locker $where $order";
+      $sql = "SELECT a.*, b.locker_number, b.type FROM tblLockerContent a INNER JOIN tblLockers b ON a.locker_id = b.id_locker $where $order";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);

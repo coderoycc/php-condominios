@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Config\Database;
+use PDO;
 
 class Subscriptiontype {
   private $con;
@@ -91,12 +92,12 @@ class Subscriptiontype {
         $con = Database::getInstanceByPin($pin);
         $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
         $stmt->execute();
-        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
       } else if ($con) {
         $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
         $stmt->execute();
-        $rows = $stmt->fetchAll(\PDO::FETCH_OBJ);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
       }
     } catch (\Throwable $th) {

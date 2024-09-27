@@ -7,11 +7,11 @@
 
 
     <div class="form-floating">
-      <select class="form-select" name="option">
-        <option value="">TODAS</option>
-        <option <?= $option == "nombres" ? 'selected' : '' ?> value="nombres"></option>
-        <option <?= $option == "celular" ? 'selected' : '' ?> value="celular"></option>
-        <option <?= $option == "dpto" ? 'selected' : '' ?> value="dpto"></option>
+      <select class="form-select" name="type">
+        <option value="">TODOS</option>
+        <?php foreach ($types_sub as $type): ?>
+          <option value="<?= $type ?>" <?= $type_selected == $type ? 'selected' : '' ?>><?= strtoupper($type) ?></option>
+        <?php endforeach; ?>
       </select>
       <label for="option">Tipo de suscripción</label>
     </div>
@@ -28,6 +28,7 @@
           <th scope="col">Nombre Completo</th>
           <th scope="col">Departamento</th>
           <th scope="col">Suscrito</th>
+          <th scope="col">Tipo</th>
           <th scope="col">Fecha suscripción</th>
           <th scope="col">Fecha vencimiento</th>
           <th scope="col">Celular</th>
@@ -45,18 +46,24 @@
             <td><?= $resident['dep_number'] ?></td>
             <?php if ($resident['id_subscription']): ?>
               <td class="text-center"><span class="badge text-bg-success">SI</span></td>
+              <td class="text-center"><?= strtoupper($resident['type_sub']) ?></td>
               <td class="text-center"><?= date('d/m/Y', strtotime($resident['subscribed_in'])) ?></td>
               <td class="text-center"><?= date('d/m/Y', strtotime($resident['expires_in'])) ?></td>
               </td>
             <?php else: ?>
               <td class="text-center"><span class="badge text-bg-warning">NO</span></td>
+              <td class="text-center"></td>
               <td class="text-center">Sin suscripción</td>
               <td class="text-center">Sin suscripción</td>
             <?php endif; ?>
             <td><?= $resident['cellphone'] ?></td>
-            <td class="d-flex gap-2">
-              <button type="button" data-bs-toggle="modal" data-bs-target="#modal_content_lockers" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Pedidos y envios"><i class="fa fa-fw fa-door-closed"></i></button>
-              <!-- <button type="button" class="btn btn-sm btn-outline-primary"><i class="fa fa-fw fa-"></i></button> -->
+            <td class="text-center">
+              <?php if ($resident['id_subscription']): ?>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_change_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-typeid="<?= $resident['type_id'] ?>" class="btn btn-sm btn-outline-info" title="Cambiar suscripción"><i class="fa-lg fa-solid fa-arrow-down-up-across-line"></i> Cambiar</button>
+              <?php else: ?>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_add_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Agregar una suscripción"><i class="fa-lg fa-solid fa-square-caret-up"></i> Nuevo</button>
+              <?php endif; ?>
+
             </td>
           </tr>
         <?php

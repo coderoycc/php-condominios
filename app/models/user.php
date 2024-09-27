@@ -171,7 +171,7 @@ class User {
         } else {
           $user->load($row);
         }
-        $user->con = null;
+        // unset($user->con);
         return $user;
       } else {
         return $user;

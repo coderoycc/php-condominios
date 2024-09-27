@@ -204,4 +204,81 @@ class SubscriptionController {
     } else
       Render::view('error_html', ['message' => 'Error instancia de conexión', 'message_details' => 'Comunique al administrador e inténtelo más tarde']);
   }
+  public function change_plan($body) {
+    if (!Request::required(['idsub', 'key'], $body))
+      Response::error_json(['message' => 'Datos faltantes'], 400);
+
+    $con = Database::getInstanceByPin($body['key']);
+    $subscription = new Subscription($con, $body['idsub']);
+    if ($subscription->id_subscription) {
+      $subscription->type_id = $body['type'];
+      $subscription->subscribed_in = HandleDates::date_format_db(date('Y-m-d H:i:s'));
+      $subscription->expires_in = HandleDates::date_expire_month(3);
+      if ($subscription->change_plan() > 0) {
+        Response::success_json('Cambio de plan realizado', ['subscription' => $subscription]);
+      } else
+        Response::error_json(['message' => 'Error al cambiar plan']);
+    } else
+      Response::error_json(['message' => 'No existe la suscripción']);
+  }
+  public function get_new_subscription($query)/*web*/ {
+    $con = Database::getInstanceByPin($query['pin']);
+    $resident = new Resident($con, $query['user_id']);
+    if ($resident->department_id > 0) {
+      $resident->department();
+      $types = Subscriptiontype::getTypes(null, $con);
+      Render::view('subscription/edit_content', ['types' => $types, 'resident' => $resident, 'pin' => $query['pin']]);
+    } else {
+      Render::view('error_html', ['message' => 'Proceso cancelado', 'message_details' => 'El usuario no tiene un departamento asociado']);
+    }
+  }
+  public function add_subscription($body, $files = null)/*web*/ {
+    $pin = $body['key'] ?? null;
+    if ($pin)  //desde global
+      $con = Database::getInstanceByPin($pin);
+    else { // en web desde Seccion WEB 
+      $con = DBWebProvider::getSessionDataDB();
+      if (!$con)
+        Response::error_json(['message' => 'Error instancia de conexión', 'message_details' => 'Comunique al administrador e inténtelo más tarde']);
+    }
+    $type = new Subscriptiontype($con, $body['type']);
+
+    // $precio = $body['btnradio'] == 12 ? $type->annual_price : $type->price;
+    $precio = $body['price'];
+
+    $payment = new Payment($con, null);
+    $payment->amount = $precio;
+    $payment->app_user_id = $body['paid_by'];
+    $payment->gloss = 'Pago suscripcion ' . $type->name;
+    $payment->pay_with_qr();
+    if ($payment->id_qr > 0) {
+      $subscription = new Subscription($con, null);
+      $subscription->type_id = $type->id;
+      $subscription->paid_by = $body['paid_by'];
+      $subscription->paid_by_name = $body['razon_social'];
+      $subscription->period = 0;
+      $subscription->nit = $body['nit'] !== '' ? $body['nit'] : '000';
+      $subscription->department_id = $body['depa_id'];
+      $subscription->expires_in = HandleDates::date_expire_month($body['btnradio']);
+      $subscription->valid = 1;
+      $subscription->code = $subscription->genCode();
+      $subscription->limit = 3;
+      if ($subscription->insert() > 0) {
+        Payment::relation_payment_subscription($con, $payment->idPayment, $subscription->id_subscription);
+        Response::success_json('Suscripción realizada', ['subscription' => $subscription]);
+      } else {
+        Response::error_json(['message' => 'Error al suscribirse', 'error' => true], 200);
+      }
+    } else {
+      Response::error_json(['message' => 'No se pudo crear la suscripcion', 'error' => true]);
+    }
+  }
+  public function history_sub_department($query)/*web*/ {
+    if ($query['department_id']) {
+      $con = DBWebProvider::getSessionDataDB();
+      $subscriptions = Subscription::get_subscriptions_by_department($con, $query['department_id']);
+      Render::view('subscription/history_sub_department', ['subscriptions' => $subscriptions, 'department_id' => $query['department_id']]);
+    } else
+      Render::view('error_html', ['message' => 'No existe el departamento', 'message_details' => 'Parametros faltantes']);
+  }
 }

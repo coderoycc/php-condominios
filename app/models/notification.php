@@ -6,7 +6,7 @@ class Notification {
   private static $url = 'https://onesignal.com/api/v1/notifications';
   private static $token = "ZDhmOGEwZjAtYzgwNy00MDkyLWJlYmQtYWJlNTViMDEzZGZl";
   private static $app_id = "6efa7be7-4b09-4b58-a9b6-ff656938238d";
-  public static function send_id($uuid, $message, $header, $data_call = []) {
+  public static function send_id($uuid, $message, $header, $data_call = [], $buttons = []) {
     $headers = array(
       'Authorization: Basic ' . self::$token,
       'Content-Type: application/json; charset=utf-8'
@@ -26,7 +26,8 @@ class Notification {
     );
     if (!empty($data_call))
       $data['data'] =  $data_call;
-
+    if (!empty($buttons))
+      $data['buttons'] = $buttons;
     $response = null;
     $jsson_data = json_encode($data);
     try {

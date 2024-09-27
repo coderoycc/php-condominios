@@ -97,6 +97,9 @@ class LockerController {
       Response::error_json(['message' => '¡Error!, parámetros faltantes']);
     // in_out ENTRADA SALIDA, shipping_id
     $con = DBAppProvider::get_connection();
+    $conserje_id = DBAppProvider::get_payload_value('user_id');
+    $user_conserje = new User($con, $conserje_id);
+    unset($user_conserje->password);
     $locker = new Locker($con, $data['locker_id']);
     if ($locker->id_locker != 0) {
       $resident = new Resident($con, $data['user_id']);
@@ -114,11 +117,18 @@ class LockerController {
           Response::error_json(['message' => 'Error al agregar contenido al casillero']);
         if ($resident->subscription_valid()) { // enviar notificacion solo si esta suscrito
           $message = $locker->message_notification();
-          $res_noti = Notification::send_id($resident->device_id, $message, "TeLoPago");
+          $buttons = [
+            ['id' => 'call-janitor', 'text' => 'Enviar Mensaje'],
+          ];
+          $resident->department();
+          $user_conserje->{'locker_number'} = $locker->locker_number;
+          $user_conserje->{'dep_number'} = $resident->department->dep_number;
+          $user_conserje->{'content'} = $data['content'];
+          $res_noti = Notification::send_id($resident->device_id, $message, "TeLoPago", $user_conserje, $buttons);
           if (!isset($res_noti['errors']))
             Response::success_json('Guardado y notificación enviada correctamente', ['notification' => $res_noti], 200);
           else
-            Response::success_json('Guardado, notificación no enviada', [], 200);
+            Response::success_json('Guardado, notificación no enviada ' . json_encode($res_noti['errors']), [], 200);
         } else
           Response::success_json('Guardado, residente no suscrito', [], 200);
       } else

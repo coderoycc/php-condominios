@@ -23,7 +23,15 @@ function deleteActiveBtns() {
 async function subHistory(e) {
   deleteActiveBtns();
   const btn = e.currentTarget;
-  $(btn).addClass('active');
+
+
+  const res = await $.ajax({
+    url: '../app/subscription/history_sub_department',
+    type: 'get',
+    data: { department_id: btn.dataset.depa },
+    dataType: 'html'
+  });
+  $("#content_depa_sub").html(res);
 }
 async function subCurrentDetail(e) {
   deleteActiveBtns();

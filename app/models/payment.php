@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Ramsey\Uuid\Uuid;
 
 require_once(__DIR__ . '/QR.php');
@@ -114,5 +115,18 @@ class Payment {
       }
       return false;
     }
+  }
+  public static function relation_payment_subscription($con, $id_payment, $id_subscription) {
+    if ($con) {
+      try {
+        $sql = "INSERT INTO tblPaymentSubscriptions (payment_id, subscription_id) VALUES (?, ?);";
+        $stmt = $con->prepare($sql);
+        $stmt->execute([$id_payment, $id_subscription]);
+        return true;
+      } catch (\Throwable $th) {
+        throw new Exception($th->getMessage());
+      }
+    }
+    return false;
   }
 }
