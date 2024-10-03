@@ -94,6 +94,29 @@ require_once("../helpers/middlewares/web_auth.php");
       </div>
     </div>
   </div>
+  <!-- Modal suspend subscription -->
+  <div class="modal fade" id="modal_suspend" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Suspender suscripción</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" value="" id="subscription_id_suspend" />
+          <input type="hidden" value="" id="data_key_subscription" />
+          <div class="alert alert-warning" role="alert">
+            ¿Esta seguro de suspender está suscripción?
+            <br>
+            Suscripción del departamento <span class="pl-1 fw-semibold" id="dep_sub_suspend"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="supendSub()" class="btn btn-primary text-white" data-bs-dismiss="modal"><i class="fa-lg fa-solid fa-floppy-disk"></i> Sí, suspender</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../js/scripts.js"></script>

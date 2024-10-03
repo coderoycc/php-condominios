@@ -26,12 +26,12 @@
           <th scope="col">#</th>
           <th scope="col">Condominio</th>
           <th scope="col">Nombre Completo</th>
+          <th scope="col">Celular</th>
           <th scope="col">Departamento</th>
           <th scope="col">Creado en</th>
           <th scope="col">Suscrito</th>
           <th scope="col">Fecha suscripción</th>
           <th scope="col">Fecha vencimiento</th>
-          <th scope="col">Celular</th>
           <th scope="col">Acciones</th>
         </tr>
       </thead>
@@ -43,6 +43,7 @@
             <td><?= $i ?></td>
             <td><?= $resident['Condominio'] ?></td>
             <td><?= $resident['first_name'] . ' ' . $resident['last_name'] ?></td>
+            <td><?= $resident['cellphone'] ?></td>
             <td><?= $resident['dep_number'] ?></td>
             <td><?= date('d/m/Y', strtotime($resident['created_at'])) ?></td>
             <?php if ($resident['id_subscription']): ?>
@@ -55,7 +56,6 @@
               <td class="text-center">Sin suscripción</td>
               <td class="text-center">Sin suscripción</td>
             <?php endif; ?>
-            <td><?= $resident['cellphone'] ?></td>
             <td class="d-flex gap-2">
               <button type="button" data-bs-toggle="modal" data-bs-target="#modal_content_lockers" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Pedidos y envios"><i class="fa fa-fw fa-door-closed"></i></button>
               <!-- <button type="button" class="btn btn-sm btn-outline-primary"><i class="fa fa-fw fa-"></i></button> -->

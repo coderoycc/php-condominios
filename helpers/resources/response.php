@@ -4,7 +4,7 @@ namespace Helpers\Resources;
 
 class Response {
 
-  public static function success_json(string $message, array $data, $statusCode = 200) {
+  public static function success_json(string $message, $data, $statusCode = 200) {
     header('Content-Type: application/json');
     http_response_code($statusCode);
     $arr = ['success' => true, 'data' => $data, 'message' => $message];

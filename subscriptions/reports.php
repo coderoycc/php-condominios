@@ -59,7 +59,7 @@ $types = Subscriptiontype::getTypes(null, $con);
               </li>
               <?php foreach ($types as $type) : ?>
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link tabs_reports" id="tab-<?= $type->id_subscription_type ?>" data-bs-toggle="tab" data-bs-target="#tab_<?= strtolower($type->name) ?>" type="button" role="tab" aria-controls="tab_" aria-selected="false" data-id="<?= $type->id_subscription_type ?>"><?= $type->name ?></button>
+                  <button class="nav-link tabs_reports" id="tab-<?= $type['id_subscription_type'] ?>" data-bs-toggle="tab" data-bs-target="#tab_<?= strtolower($type['name']) ?>" type="button" role="tab" aria-controls="tab_" aria-selected="false" data-id="<?= $type['id_subscription_type'] ?>"><?= $type['name'] ?></button>
                 </li>
               <?php endforeach; ?>
             </ul>

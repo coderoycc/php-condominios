@@ -77,7 +77,7 @@ class MasterController {
         ->leftJoin('tblSubscriptions', 'e', 'e.id_subscription = d.subscription_id')
         ->where("a.role = 'resident'")
         ->orderBy('a.created_at DESC')
-        ->get('TOP 20 a.*, b.*, c.*, e.* ');
+        ->get('TOP 20 a.id_user, a.first_name, a.last_name, a.username, a.role, a.created_at, a.cellphone, a.gender, a.status as user_state, b.*, c.*, e.* ');
     } else { //filtros
       $condition = self::get_where_filter($option, $search);
       $residents = $sql->select('tblUsers', 'a')
@@ -86,7 +86,7 @@ class MasterController {
         ->leftJoin('tblUsersSubscribed', 'd', 'd.user_id = a.id_user')
         ->leftJoin('tblSubscriptions', 'e', 'e.id_subscription = d.subscription_id')
         ->where("a.role = 'resident' AND (" . $condition . ")")
-        ->get('a.*, b.*, c.*, e.*');
+        ->get('a.id_user, a.first_name, a.last_name, a.username, a.role, a.created_at, a.cellphone, a.gender, a.status as user_state, b.*, c.*, e.*');
     }
     Render::view('resident/master_list', ['residents' => $residents, 'search' => $search, 'option' => $option]);
   }
@@ -111,7 +111,7 @@ class MasterController {
       ->leftJoin('tblSubscriptionType', 'f', 'e.type_id = f.id_subscription_type')
       ->where("a.role = 'resident' $option AND (a.first_name LIKE '%$search%' OR a.last_name LIKE '%$search%')")
       ->orderBy('a.created_at DESC')
-      ->get('TOP 80 a.*, b.*, c.*, e.*, f.name as type_sub');
+      ->get('TOP 80 a.id_user, a.first_name, a.last_name, a.username, a.role, a.created_at, a.cellphone, a.gender, a.status as user_state, b.*, c.*, e.*, f.name as type_sub');
 
     Render::view('subscription/list_global', ['search' => $search, 'types_sub' => $types, 'type_selected' => $type, 'residents' => $residents]);
   }

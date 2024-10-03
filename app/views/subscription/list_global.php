@@ -26,12 +26,12 @@
           <th scope="col">#</th>
           <th scope="col">Condominio</th>
           <th scope="col">Nombre Completo</th>
+          <th scope="col">Celular</th>
           <th scope="col">Departamento</th>
           <th scope="col">Suscrito</th>
           <th scope="col">Tipo</th>
           <th scope="col">Fecha suscripción</th>
           <th scope="col">Fecha vencimiento</th>
-          <th scope="col">Celular</th>
           <th scope="col">Acciones</th>
         </tr>
       </thead>
@@ -43,6 +43,7 @@
             <td><?= $i ?></td>
             <td><?= $resident['Condominio'] ?></td>
             <td><?= $resident['first_name'] . ' ' . $resident['last_name'] ?></td>
+            <td><?= $resident['cellphone'] ?></td>
             <td><?= $resident['dep_number'] ?></td>
             <?php if ($resident['id_subscription']): ?>
               <td class="text-center"><span class="badge text-bg-success">SI</span></td>
@@ -56,10 +57,10 @@
               <td class="text-center">Sin suscripción</td>
               <td class="text-center">Sin suscripción</td>
             <?php endif; ?>
-            <td><?= $resident['cellphone'] ?></td>
             <td class="text-center">
               <?php if ($resident['id_subscription']): ?>
                 <button type="button" data-bs-toggle="modal" data-bs-target="#modal_change_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-typeid="<?= $resident['type_id'] ?>" class="btn btn-sm btn-outline-info" title="Cambiar suscripción"><i class="fa-lg fa-solid fa-arrow-down-up-across-line"></i> Cambiar</button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_suspend" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-depnumber="<?= $resident['dep_number'] ?>" class="btn btn-sm btn-outline-danger mt-2" title="Supender suscripción"><i class="fa-lg fa-solid fa-circle-arrow-down"></i> Suspender</button>
               <?php else: ?>
                 <button type="button" data-bs-toggle="modal" data-bs-target="#modal_add_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Agregar una suscripción"><i class="fa-lg fa-solid fa-square-caret-up"></i> Nuevo</button>
               <?php endif; ?>

@@ -6,6 +6,7 @@ $(document).on('show.bs.modal', '#modal_change_subscription', loadModalData)
 $(document).on('change', '#option_type_sub', changePriceToAdd)
 $(document).on('submit', '#add_form_new', sendForm)
 $(document).on('submit', '#form_change_subscription', sendChangePlan)
+$(document).on('show.bs.modal', '#modal_suspend', showModalSuspend)
 $(document).on('hide.bs.modal', '#modal_change_subscription', () => {
   $("#form_change_subscription")[0].reset()
 })
@@ -26,7 +27,7 @@ async function get_residents(data = {}) {
     info: false,
     scrollX: true,
     columnDefs: [
-      { orderable: false, targets: [4, 6, 7, 8, 9] }
+      { orderable: false, targets: [5, 7, 8, 9] }
     ],
     searching: false,
   });
@@ -115,5 +116,29 @@ async function sendForm(e) {
     get_residents(formFilter);
   } else {
     toast('Ocurrio un error', 'No se pudo agregar la suscripción', 'danger', 2300)
+  }
+}
+function showModalSuspend(e) {
+  const btn = e.relatedTarget;
+  $("#dep_sub_suspend").html(btn.dataset.depnumber);
+  $("#subscription_id_suspend").val(btn.dataset.idsub);
+  $("#data_key_subscription").val(btn.dataset.key);
+}
+async function supendSub() {
+  const res = await $.ajax({
+    url: '../app/subscription/suspend',
+    data: {
+      key: $("#data_key_subscription").val(),
+      sub_id: $("#subscription_id_suspend").val()
+    },
+    type: "PUT",
+    dataType: "JSON"
+  });
+  if (res.success) {
+    toast('Proceso exitoso', 'Suscripción suspendida', 'info', 2400);
+    const formFilter = $("#formSubs").serializeArray();
+    get_residents(formFilter);
+  } else {
+    toast('Ocurrio un error', res.message, 'error', 2500)
   }
 }

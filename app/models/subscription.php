@@ -19,9 +19,9 @@ class Subscription {
   public string $nit;
   public int $department_id;
   public string $expires_in;
-  public int $valid;
   public int $limit;
   public string $code;
+  public string $status;
   public Subscriptiontype $type;
   public Department $department;
 
@@ -49,17 +49,17 @@ class Subscription {
     $this->nit = $row['nit'];
     $this->department_id = $row['department_id'];
     $this->expires_in = $row['expires_in'];
-    $this->valid = $row['valid'];
     $this->code = $row['code'];
     $this->limit = $row['limit'];
+    $this->status = $row['status'] ?? '';
   }
 
   public function insert() {
     try {
       $this->con->beginTransaction();
-      $sql = "INSERT INTO tblSubscriptions (type_id, paid_by, paid_by_name, period, nit, department_id, expires_in, valid, code, limit) VALUES (?,?,?,?,?,?,?,?,?,?)";
+      $sql = "INSERT INTO tblSubscriptions (type_id, paid_by, paid_by_name, period, nit, department_id, expires_in, code, limit, status) VALUES (?,?,?,?,?,?,?,?,?,?)";
       $stmt = $this->con->prepare($sql);
-      $res = $stmt->execute([$this->type_id, $this->paid_by, $this->paid_by_name, $this->period, $this->nit, $this->department_id, $this->expires_in, $this->valid, $this->code, $this->limit]);
+      $res = $stmt->execute([$this->type_id, $this->paid_by, $this->paid_by_name, $this->period, $this->nit, $this->department_id, $this->expires_in, $this->code, $this->limit, $this->status]);
       if ($res) {
         $this->id_subscription = $this->con->lastInsertId();
         $sqlSubsUser = "INSERT INTO tblUsersSubscribed (user_id, subscription_id) VALUES (?, ?)";
@@ -98,6 +98,20 @@ class Subscription {
       throw new Exception("Error Processing Request", 1);
     }
   }
+  /**
+   * Funcion que unicamente cambia el estado
+   */
+  public function change_status() {
+    try {
+      if ($this->con) {
+        $sql = "UPDATE tblSubscriptions SET status = ? WHERE id_subscription = ?";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute([$this->status, $this->id_subscription]);
+      }
+    } catch (\Throwable $th) {
+      throw new Exception($th->getMessage(), 1);
+    }
+  }
 
   public function objectNull() {
     $this->id_subscription = 0;
@@ -109,9 +123,9 @@ class Subscription {
     $this->nit = "";
     $this->department_id = 0;
     $this->expires_in = "1970-01-01 00:00:00";
-    $this->valid = 0;
     $this->code = "";
     $this->limit = 0;
+    $this->status = "";
   }
   public function type() {
     if ($this->con) {

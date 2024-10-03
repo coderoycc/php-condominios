@@ -18,7 +18,13 @@ class SubscriptionController {
     if (!Request::required(['pin'], $data))
       Response::error_json(['message' => 'Datos faltantes: [pin] requerido']);
     $data = Subscription::getTypes($data['pin']);
-    Response::success_json('Tipos de suscripción', $data);
+    $response = [];
+    foreach ($data as $type) {
+      $subType = new Subscriptiontype();
+      $subType->load($type);
+      $response[] = $subType;
+    }
+    Response::success_json('Tipos de suscripción', $response);
   }
   public function types_web($data) /*web*/ {
     $condominio = DBWebProvider::session_get_condominio();
@@ -59,7 +65,7 @@ class SubscriptionController {
         $subscription->nit = '000';
         $subscription->department_id = $resident->department_id;
         $subscription->expires_in = HandleDates::date_expire_month(1);
-        $subscription->valid = 1;
+        $subscription->status = 'VALIDO';
         $subscription->code = $subscription->genCode();
         $subscription->limit = 1;
         if ($subscription->insert() > 0) {
@@ -260,7 +266,7 @@ class SubscriptionController {
       $subscription->nit = $body['nit'] !== '' ? $body['nit'] : '000';
       $subscription->department_id = $body['depa_id'];
       $subscription->expires_in = HandleDates::date_expire_month($body['btnradio']);
-      $subscription->valid = 1;
+      $subscription->status = 'VALIDO';
       $subscription->code = $subscription->genCode();
       $subscription->limit = 3;
       if ($subscription->insert() > 0) {
@@ -280,5 +286,19 @@ class SubscriptionController {
       Render::view('subscription/history_sub_department', ['subscriptions' => $subscriptions, 'department_id' => $query['department_id']]);
     } else
       Render::view('error_html', ['message' => 'No existe el departamento', 'message_details' => 'Parametros faltantes']);
+  }
+  public function suspend($body)/*web*/ {
+    if (!Request::required(['key', 'sub_id'], $body))
+      Response::error_json(['message' => 'Parametros necesarios no enviados', 'data' => []], 200);
+
+    $con = Database::getInstanceByPin($body['key']);
+    $subscription = new Subscription($con, $body['sub_id']);
+
+    if ($subscription->id_subscription) {
+      $subscription->status = "SUSPENDIDO";
+      $subscription->change_status();
+      Response::success_json('Se ha suspendido la suscripción', $subscription, 200);
+    } else
+      Response::error_json(['message' => 'No existe la suscripción'], 200);
   }
 }

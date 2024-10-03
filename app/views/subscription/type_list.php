@@ -3,17 +3,17 @@ if (count($data_subs) > 0) :
   foreach ($data_subs as $sub) : ?>
     <div class="col-md-4 col-sm-6">
       <div class="card text-bg-secondary mb-3">
-        <div class="card-header fw-bold text-center fs-5" style="color:var(--bs-verde)"><?= strtoupper($sub->name) ?></div>
+        <div class="card-header fw-bold text-center fs-5" style="color:var(--bs-verde)"><?= strtoupper($sub['name']) ?></div>
         <div class="card-body">
           <div class="d-flex justify-content-center w-100">
             <div style="width:80%;color:var(--bs-verde)">
-              <p class="m-0"><?= $sub->tag ?></p>
-              <p class="m-0 d-flex justify-content-between"><b>Precio <?= $sub->months_duration ?> meses</b> <span><?= $sub->price == 0 ? 'Gratis' : $sub->price ?></span></p>
-              <p class="m-0 d-flex justify-content-between"><b>Precio 1 año</b> <span><?= $sub->annual_price == 0 ? 'No válido' : $sub->annual_price ?></span></p>
+              <p class="m-0"><?= $sub['tag'] ?></p>
+              <p class="m-0 d-flex justify-content-between"><b>Precio <?= $sub['months_duration'] ?> meses</b> <span><?= $sub['price'] == 0 ? 'Gratis' : $sub['price'] ?></span></p>
+              <p class="m-0 d-flex justify-content-between"><b>Precio 1 año</b> <span><?= $sub['annual_price'] == 0 ? 'No válido' : $sub['annual_price'] ?></span></p>
             </div>
           </div>
           <ul>
-            <?php $details = json_decode($sub->details);
+            <?php $details = json_decode($sub['details']);
             foreach ($details as $detail) : ?>
               <li><?= $detail ?></li>
             <?php endforeach; ?>

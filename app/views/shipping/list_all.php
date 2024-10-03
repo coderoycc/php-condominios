@@ -4,7 +4,7 @@
       <tr class="text-center">
         <th>ID</th>
         <?php if ($estado == 'ENVIADO') : ?>
-          <th>Código</th>
+          <th>Número guía</th>
         <?php endif; ?>
         <th>Nro. Departamento</th>
         <th>Nombre Origen</th>
@@ -42,7 +42,7 @@
               <?php elseif ($estado == 'PARA ENVIAR') : ?>
                 <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_price" data-id="<?= $shipp['id'] ?>" data-price="<?= $shipp['price'] ?? '' ?>">Modificar Precio</button>
               <?php elseif ($estado == 'ENVIADO') : ?>
-                <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_tracking" data-id="<?= $shipp['id'] ?>" data-tracking="<?= $shipp['tracking_id'] ?? '' ?>">Agregar código</button>
+                <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_add_tracking" data-id="<?= $shipp['id'] ?>" data-tracking="<?= $shipp['tracking_id'] ?? '' ?>">Número de guía</button>
               <?php endif; ?>
             </div>
           </td>
