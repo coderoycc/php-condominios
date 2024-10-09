@@ -49,7 +49,7 @@ if ($body['ResponseCode'] == '000' && $body['state']) {
       $subscription->nit = '000';
       $subscription->department_id = $depa_id;
       $subscription->expires_in = HandleDates::date_expire_month($period * $type->months_duration);
-      $subscription->valid = 1;
+      $subscription->status = 1;
       $subscription->code = $subscription->genCode();
       $subscription->limit = 1;
       if ($subscription->insert() > 0) {

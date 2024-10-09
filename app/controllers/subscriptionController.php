@@ -42,6 +42,11 @@ class SubscriptionController {
     $con = Database::getInstanceByPin($data['pin']);
     $type = new Subscriptiontype($con, $data['type_id']);
     $resident = new Resident($con, $data['user_id']);
+    // existe departamento con suscripcion
+    $subsDepa = Subscription::get_department_subscription($con, $resident->department_id, ['status' => 'VALIDO', 'no_expired' => true]);
+    if (count($subsDepa)) {
+      Response::error_json(['success' => false, 'message' => 'El departamento ya tiene una suscripción', 'error' => true], 200);
+    }
     if ($type->price > 0) {
       $precio = $data['annual'] ? $type->annual_price : $type->price;
       // $precio = $periods * $type->price;

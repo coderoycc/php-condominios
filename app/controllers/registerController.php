@@ -9,10 +9,8 @@ use App\Models\Department;
 use App\Models\Resident;
 use App\Models\Subscription;
 use App\Models\User;
-use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
-use App\Providers\AuthProvider;
 
 class RegisterController {
   public function searchCondominiums($query) {

@@ -21,7 +21,7 @@ class Subscription {
   public string $expires_in;
   public int $limit;
   public string $code;
-  public string $status;
+  public string $status; // 
   public Subscriptiontype $type;
   public Department $department;
 
@@ -264,7 +264,7 @@ class Subscription {
       WHERE b.type_id = ? AND b.subscribed_in BETWEEN '$start' AND '$end';";
       $stmt = $con->prepare($sql);
       $stmt->execute([$id]);
-      $data_rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $data_rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (\Throwable $th) {
       var_dump($th);
     }
@@ -272,9 +272,13 @@ class Subscription {
   }
   public static function get_department_subscription($con, $depa_id, $filters = []) {
     try {
+      $status = isset($filters['status']) ? "a.status = '" . $filters['status'] . "'" : '';
+      $no_expired = isset($filters['no_expired']) ? "a.expires_in > GETDATE()" : '';
+      $where = $status != '' ? "AND $status" : '';
+      $where .= $no_expired != '' ? "AND $no_expired" : '';
       $sql = "SELECT a.*, b.name FROM tblSubscriptions a INNER JOIN tblSubscriptionType b 
           ON a.type_id = b.id_subscription_type
-          WHERE a.department_id = $depa_id ORDER BY a.expires_in DESC;";
+          WHERE a.department_id = $depa_id $where ORDER BY a.expires_in DESC;";
       $stmt = $con->query($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

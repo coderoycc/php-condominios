@@ -29,7 +29,7 @@ class ServicesController {
       $service->service_name = $body['service_name'];
       $service->code = $code;
       $service->user_id = $resident->id_user;
-      $service->department_id = $subscription->department_id;
+      $service->subscription_id = $subscription->id_subscription;
       $service->service_name_id = $body['id_sername'];
       if ($service->save() > 0)
         Response::success_json('Success Request', ['service' => $service]);
@@ -43,7 +43,7 @@ class ServicesController {
     $con = DBAppProvider::get_connection();
     $sub = DBAppProvider::get_sub();
     if ($sub->id_subscription > 0) {
-      $services = Services::list_by_department($con, $sub->department_id);
+      $services = Services::list_by_subscription($con, $sub->id_subscription);
       Response::success_json('Success Request', ['services' => $services]);
     } else {
       Response::error_json((['message' => '¡Error! Residente no asociado a un departamento']), 200);
@@ -125,7 +125,7 @@ class ServicesController {
   public function fill_amounts($query) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
     $department = new Department($con, $query['id']);
-    $services = Services::list_by_department($con, $query['id']);
+    $services = Services::list_by_subscription($con, $query['id']);
     Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => true]);
   }
   public function edit_amounts($query) /*web*/ {
