@@ -101,7 +101,7 @@ class Payment {
       return -1;
     }
   }
-  public function update_by_callback() {
+  public function payment_confirm() {
     if ($this->con) {
       try {
         $sql = "UPDATE tblPayments SET transaction_response = ?, confirmed = ? WHERE idPayment = ?;";

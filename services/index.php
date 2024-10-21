@@ -26,12 +26,21 @@ require_once("../helpers/middlewares/web_auth.php");
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4">
-          <h3 class="mt-4">SERVICIOS</h3>
-
-          <div class="row">
-            <div class="col-md-5" id="panel_sub"></div>
-            <div class="col-md-7" id="panel_content"></div>
+          <div class="row mt-2">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="text-muted text-uppercase" style="font-size:22px;">Lista de servicios <b id="type_list"> para pagar</b></div>
+                  <div class="gap-3">
+                    <button type="button" class="btn btn-success text-white" onclick="list_service_btn('history')">Historial</button>
+                    <button type="button" class="btn btn-info text-white" onclick="list_service_btn('pagar')">Para pagar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+          <div class="row" id="table_services"></div>
+        </div>
       </main>
     </div>
   </div><!-- fin contenedor -->

@@ -37,7 +37,7 @@ class SubscriptionController {
   }
   public function subscribe($data, $files = null) {
     if (!Request::required(['type_id', 'user_id', 'pin', 'annual'], $data))
-      Response::error_json(['message' => 'Parametros faltantes']);
+      Response::error_json(['message' => 'Parametros faltantes dd']);
 
     $con = Database::getInstanceByPin($data['pin']);
     $type = new Subscriptiontype($con, $data['type_id']);
@@ -45,7 +45,7 @@ class SubscriptionController {
     // existe departamento con suscripcion
     $subsDepa = Subscription::get_department_subscription($con, $resident->department_id, ['status' => 'VALIDO', 'no_expired' => true]);
     if (count($subsDepa)) {
-      Response::error_json(['success' => false, 'message' => 'El departamento ya tiene una suscripción', 'error' => true], 200);
+      Response::error_json(['success' => false, 'message' => 'El departamento ya tiene una suscripción valida', 'error' => true], 200);
     }
     if ($type->price > 0) {
       $precio = $data['annual'] ? $type->annual_price : $type->price;
@@ -305,5 +305,19 @@ class SubscriptionController {
       Response::success_json('Se ha suspendido la suscripción', $subscription, 200);
     } else
       Response::error_json(['message' => 'No existe la suscripción'], 200);
+  }
+  public function test_new_sub() {
+    $payment->transaction_response = $data;
+    $subscription = new Subscription($con, null);
+    $subscription->type_id = $type_id;
+    $subscription->paid_by = $user->id_user;
+    $subscription->paid_by_name = $user->first_name;
+    $subscription->period = 0;
+    $subscription->nit = '000';
+    $subscription->department_id = $depa_id;
+    $subscription->expires_in = HandleDates::date_expire_month($period * $type->months_duration);
+    $subscription->status = 'VALIDO';
+    $subscription->code = $subscription->genCode();
+    $subscription->limit = 1;
   }
 }

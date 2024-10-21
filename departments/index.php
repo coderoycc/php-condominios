@@ -43,14 +43,14 @@ require_once("../helpers/middlewares/web_auth.php");
   <div class="modal fade" id="depa_delete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header bg-danger">
-          <h1 class="modal-title text-white fs-5">¿ELIMINAR DEPARTAMENTO?</h1>
+        <div class="modal-header bg-info">
+          <h1 class="modal-title text-white fs-5">¿DAR DE <b id="message_title"></b> AL DEPARTAMENTO?</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <input type="hidden" id="id_depa_delete">
         <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_department()">Eliminar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCELAR</button>
+          <button type="button" class="btn btn-info text-white" data-bs-dismiss="modal" onclick="delete_department()">SI</button>
         </div>
       </div>
     </div>

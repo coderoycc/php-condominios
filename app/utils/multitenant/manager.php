@@ -6,6 +6,9 @@ use App\Config\Database;
 use PDO;
 use Throwable;
 
+/**
+ * Ayuda a crear nuevo condominio y manejar eventos
+ */
 class Manager {
   /**
    * @param mixed $name Nombre del condominio

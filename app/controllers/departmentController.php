@@ -53,7 +53,7 @@ class DepartmentController {
     if ($department->id_department == 0)
       Response::error_json(['message' => 'El departamento no existe'], 200);
 
-    if ($department->delete())
+    if ($department->change_status())
       Response::success_json('Departamento eliminado', ['department' => $department], 200);
     else
       Response::error_json(['message' => 'Error al eliminar el departamento'], 200);

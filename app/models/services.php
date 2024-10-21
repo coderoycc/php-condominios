@@ -94,7 +94,7 @@ class Services extends BaseModel {
    * @param int $year
    * @return mixed
    */
-  public static function sum_department($con, $depa_id, $year) {
+  public static function sum_department($con, $sub_id, $year) {
     try {
       $sql = "
       WITH pagos AS (
@@ -105,12 +105,12 @@ class Services extends BaseModel {
         MONTH(a.target_date) as mes
         FROM tblPaymentsServices a 
         WHERE YEAR(target_date) = $year 
-        AND department_id = $depa_id
+        AND department_id = $sub_id
       )
       SELECT a.*, b.department_id, b.status, b.payment_id FROM (
         SELECT MONTH(month) as mes, ROUND(sum(amount), 2) as total FROM tblServiceDetail
           WHERE service_id IN (
-            SELECT id_service FROM tblServices WHERE department_id = $depa_id
+            SELECT id_service FROM tblServices WHERE department_id = $sub_id
           )
           AND YEAR(month) = $year
           GROUP BY MONTH(month)

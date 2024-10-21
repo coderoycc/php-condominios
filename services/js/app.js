@@ -1,5 +1,5 @@
 $(document).ready(() => {
-  list_subs();
+  getAllServicesToPay();
 })
 
 $(document).on('submit', '#fill_amounts_form', send_amounts)
@@ -7,15 +7,45 @@ $(document).on('submit', '#update_amounts', update_amounts)
 $(document).on('change', '#year_codes', load_data_year)
 
 
-async function list_subs() {
-  const table = await $.ajax({
-    url: '../app/services/list_subs',
-    data: {},
-    type: 'GET',
-    dataType: 'html'
-  })
-  $("#panel_sub").html(table);
+// async function list_subs() {
+//   const table = await $.ajax({
+//     url: '../app/services/list_subs',
+//     data: {},
+//     type: 'GET',
+//     dataType: 'html'
+//   })
+//   $("#panel_sub").html(table);
+// }
+function list_service_btn(type) {
+  type = type == 'history' ? 'historial' : 'para pagar'
+  $("#type_list").html(type)
+  if (type == 'historial') {
+    getAllServicesHistory()
+  } else {
+    getAllServicesToPay()
+  }
 }
+
+async function getAllServicesToPay() {
+  const res = await $.ajax({
+    url: '../app/services/services_to_pay',
+    data: {},
+    type: "GET",
+    dataType: 'html'
+  });
+  $("#table_services").html(res);
+}
+async function getAllServicesHistory() {
+  const res = await $.ajax({
+    url: '../app/services/',
+    data: {},
+    type: "GET",
+    dataType: 'html'
+  });
+  $("#table_services").html(res);
+}
+
+
 async function see_codes(id, year = null) {
   year = year || new Date().getFullYear();
   const res = await $.ajax({

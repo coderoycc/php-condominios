@@ -10,6 +10,7 @@ class Department {
   public string $dep_number;
   public int $bedrooms;
   public string $description;
+  public int $status; // 0 inactivo, 1 activo
   public function __construct($con = null, $id_department = null) {
     $this->objectNull();
     if ($con) {
@@ -28,12 +29,14 @@ class Department {
     $this->dep_number = '0';
     $this->bedrooms = 0;
     $this->description = '';
+    $this->status = 0;
   }
   public function load($row) {
     $this->id_department = $row['id_department'];
     $this->dep_number = $row['dep_number'];
     $this->bedrooms = $row['bedrooms'];
     $this->description = $row['description'];
+    $this->status = $row['status'] ?? 1;
   }
   public function save(): int {
     if ($this->con) {
@@ -61,12 +64,13 @@ class Department {
     }
     return 0;
   }
-  public function delete() {
+  public function change_status() {
     if ($this->con) {
       try {
-        $sql = "DELETE FROM tblDepartments WHERE id_department = :id_department";
+        $this->status = $this->status == 1 ? 0 : 1;
+        $sql = "UPDATE tblDepartments SET status = :status WHERE id_department = :id_department";
         $stmt = $this->con->prepare($sql);
-        $res = $stmt->execute(['id_department' => $this->id_department]);
+        $res = $stmt->execute(['status' => $this->status, 'id_department' => $this->id_department]);
         if ($res) {
           return true;
         }
@@ -105,7 +109,7 @@ class Department {
   public static function get_all($con, $query = []) {
     if ($con) {
       $sql = "SELECT a.*, b.id_subscription, b.subscribed_in, b.expires_in FROM tblDepartments a 
-        LEFT JOIN tblSubscriptions b ON a.id_department = b.department_id AND b.expires_in > GETDATE();";
+        LEFT JOIN tblSubscriptions b ON a.id_department = b.department_id AND b.expires_in > GETDATE() AND b.status = 'VALIDO';";
 
       $stmt = $con->prepare($sql);
       $stmt->execute();
@@ -116,7 +120,7 @@ class Department {
   public static function get_with_subs($con, $filters) {
     try {
       $sql = "SELECT a.*, b.*, c.name, tmp.cant FROM tblDepartments a 
-        LEFT JOIN tblSubscriptions b ON a.id_department = b.department_id AND b.valid = 1 AND b.expires_in > getdate()
+        LEFT JOIN tblSubscriptions b ON a.id_department = b.department_id AND b.status = 'VALIDO' AND b.expires_in > getdate()
         LEFT JOIN tblSubscriptionType c ON c.id_subscription_type = b.type_id 
         LEFT JOIN (
           SELECT subscription_id, count(*) as cant FROM tblUsersSubscribed

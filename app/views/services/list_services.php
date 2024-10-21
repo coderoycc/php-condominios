@@ -14,7 +14,7 @@
         <td><?= $service['dep_number'] ?></td>
         <td><?= date('d/m/Y H:i', strtotime($service['expires_in'])) ?></td>
         <td class="text-center">
-          <button type="button" title="VER DETALLES" class="btn btn-info text-white" onclick="see_codes(<?= $service['id_department'] ?>)"><i class="fa-solid fa-eye"></i></button>
+          <button type="button" title="VER DETALLES" class="btn btn-info text-white" onclick="see_codes(<?= $service['id_subscription'] ?>)"><i class="fa-solid fa-eye"></i></button>
           <button type="button" title="LLENAR MONTOS" class="btn btn-primary text-white" onclick="fill_amounts(<?= $service['id_department'] ?>)"><i class="fa-solid fa-money-bill"></i></button>
         </td>
       </tr>

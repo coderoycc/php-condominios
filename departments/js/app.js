@@ -22,6 +22,8 @@ async function list_data() {
 }
 function open_modal_delete(e) {
   const id = e.relatedTarget.dataset.id
+  const tipo = e.relatedTarget.dataset.message;
+  $("#message_title").html(tipo)
   $("#id_depa_delete").val(id)
 }
 async function delete_department() {
@@ -33,7 +35,7 @@ async function delete_department() {
     dataType: 'json',
   });
   if (res.success) {
-    toast('Operación exitosa', 'Departamento eliminado', 'success', 2000)
+    toast('Operación exitosa', 'Departamento dado de baja', 'success', 2000)
     setTimeout(() => {
       location.reload()
     }, 2100);

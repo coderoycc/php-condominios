@@ -126,6 +126,16 @@ class MasterController {
     Render::view('locker/content_modal', ['entrada' => $entrada, 'salida' => $salida]);
   }
 
+  public function departments_with_sub($query) {
+    $query = new QueryBuilder();
+    $data = $query->select('tblDepartments', 'a')
+      ->leftJoin('tblSubscriptions', 'c', 'c.department_id = a.id_department')
+      ->where("c.status = 'VALIDO' AND c.expires_in > GETDATE()")
+      ->orderBy('a.dep_number DESC')
+      ->get();
+    Response::success_json('Departamentos', ['departments' => $data], 200);
+  }
+
   public static function get_where_filter($option, $value) {
     $cad = "";
     $value = trim($value);

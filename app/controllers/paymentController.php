@@ -17,12 +17,10 @@ class PaymentController {
     if ($payment->idPayment > 0) {
       if ($payment->confirmed == 1) {
         Response::success_json('El pago ya fue confirmado', [], 200);
-      } else {
+      } else
         Response::error_json(['message' => 'El pago no fue confirmado'], 200);
-      }
-    } else {
+    } else
       Response::error_json(['message' => 'El pago no existe'], 200);
-    }
   }
   public function pay_with_card() {
   }

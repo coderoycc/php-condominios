@@ -15,11 +15,15 @@
           <div class="sb-nav-link-icon"><i class="fa-lg fa-solid fa-wallet"></i></div>
           Suscripciones
         </a>
-        <div class="sb-sidenav-menu-heading">RESIDENTES</div>
+        <a class="nav-link" href="../services/" data-route="services">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-cash-register"></i></div>
+          Administración de servicios
+        </a>
+        <!-- <div class="sb-sidenav-menu-heading">RESIDENTES</div>
         <a class="nav-link" href="../residents" data-route="residents">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-people-group"></i></div>
           Residentes
-        </a>
+        </a> -->
 
         <div class="sb-sidenav-menu-heading">SUSCRIPCIONES</div>
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_subscriptions" aria-expanded="false" aria-controls="collapse_subscriptions" data-route="subscriptions">
@@ -47,10 +51,6 @@
         <a class="nav-link" href="../lockers" data-route="lockers">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-door-closed"></i></div>
           Casilleros
-        </a>
-        <a class="nav-link" href="../services/" data-route="services">
-          <div class="sb-nav-link-icon"><i class="fa-solid fa-cash-register"></i></div>
-          Administración de servicios
         </a>
 
         <div class="sb-sidenav-menu-heading">Correspondencia Envíos</div>

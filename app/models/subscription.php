@@ -21,7 +21,8 @@ class Subscription {
   public string $expires_in;
   public int $limit;
   public string $code;
-  public string $status; // 
+  public string $status; // VALIDO | SUSPENDIDO | ELIMINADO
+  public string $suspended_in; // fecha que se suspendio NULL por defecto
   public Subscriptiontype $type;
   public Department $department;
 
@@ -52,8 +53,13 @@ class Subscription {
     $this->code = $row['code'];
     $this->limit = $row['limit'];
     $this->status = $row['status'] ?? '';
+    $this->suspended_in = $row['suspended_id'] ?? '';
   }
 
+  /**
+   * Crea una nueva suscripcion
+   * @return int
+   */
   public function insert() {
     try {
       $this->con->beginTransaction();
@@ -104,7 +110,8 @@ class Subscription {
   public function change_status() {
     try {
       if ($this->con) {
-        $sql = "UPDATE tblSubscriptions SET status = ? WHERE id_subscription = ?";
+        $date = $this->status == "SUSPENDIDO" ? ", suspended_in = '" . date('Y-m-d') . "'" : "";
+        $sql = "UPDATE tblSubscriptions SET status = ? $date WHERE id_subscription = ?";
         $stmt = $this->con->prepare($sql);
         $stmt->execute([$this->status, $this->id_subscription]);
       }
@@ -214,7 +221,7 @@ class Subscription {
           ON a.user_id = b.id_user
           WHERE a.subscription_id IN (
             SELECT id_subscription FROM tblSubscriptions WHERE type_id = $type_id AND YEAR(expires_in) >= $year AND department_id = $resident->department_id
-          ) AND b.status = 1";
+          ) AND b.status = 'VALIDO'";
         $stmt = $con->prepare($sql);
         $stmt->execute();
         $cantidad = $stmt->fetch()['cantidad'];
@@ -282,7 +289,7 @@ class Subscription {
       $stmt = $con->query($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      return $rows;
+      return $rows ?? [];
     } catch (\Throwable $th) {
       var_dump($th);
     }

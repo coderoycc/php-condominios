@@ -7,7 +7,7 @@ use Exception;
 use PDO;
 
 /**
- * Class QueryBuilder hace consultas a las bases de datos usando todas las bases de datos
+ * Class QueryBuilder hace consultas a las bases de datos usando todas las bases de datos registradas en la base de datos master
  * @package App\Utils\Queries
  */
 class QueryBuilder {

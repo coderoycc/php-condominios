@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Department;
 use App\Models\ServiceDetail;
 use App\Models\Services;
+use App\Models\Subscription;
 use App\Providers\DBAppProvider;
 use App\Providers\DBWebProvider;
 use Helpers\Resources\Render;
@@ -95,8 +96,9 @@ class ServicesController {
     $year = $query['year'] ?? date('Y');
     $year = intval($year);
     $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-    $department = new Department($con, $query['id']);
-    $sums = Services::sum_department($con, $department->id_department, $year);
+    $subscription = new Subscription($con, $query['id']);
+    $department = new Department($con, $subscription->department_id);
+    $sums = Services::sum_department($con, $subscription->id_subscription, $year);
     Render::view('services/codes_list', ['department' => $department, 'sums' => $sums, 'months' => $months, 'year' => $year]);
   }
   public function codes_department_app($query)/* Protected */ {
@@ -178,5 +180,12 @@ class ServicesController {
     Response::success_json('Actualizado correctamente', ['affected' => $updateds, 'total' => $n]);
   }
   public function my_service_balance() {
+  }
+
+  public function history_services($query) {
+  }
+  public function services_to_pay($query) {
+
+    Render::view('services/list_global_servicios', []);
   }
 }
