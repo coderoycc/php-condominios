@@ -35,6 +35,7 @@ class AuthProvider {
         $data['subscription'] = $subscription;
         if ($user->role == 'resident') {
           $data['expired'] = HandleDates::expired($subscription->expires_in);
+          $data['status'] = $subscription->status;
           $data['message_subscription'] = HandleDates::remaining_days($subscription->expires_in);
         } else {
           $data['expired'] = false;

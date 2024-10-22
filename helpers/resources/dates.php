@@ -2,6 +2,8 @@
 
 namespace Helpers\Resources;
 
+use DateTime;
+
 class HandleDates {
   public static function add_date($meses): string { // mejor si es 00:00:00
     $date = date('Y-m-d H:i:s', strtotime("+$meses months"));
@@ -19,8 +21,8 @@ class HandleDates {
   }
   public static function remaining_days($date): string {
     $message = '';
-    $today = new \DateTime();
-    $expire = new \DateTime($date);
+    $today = new DateTime();
+    $expire = new DateTime($date);
     $interval = $expire->diff($today);
     $days = $interval->days;
     if ($days < 0) {
@@ -34,8 +36,8 @@ class HandleDates {
     return $message;
   }
   public static function expired($date): bool {
-    $today = new \DateTime();
-    $expire = new \DateTime($date);
+    $today = new DateTime();
+    $expire = new DateTime($date);
     return $today->getTimestamp() > $expire->getTimestamp();
   }
   public static function date_expire_month($months): string {

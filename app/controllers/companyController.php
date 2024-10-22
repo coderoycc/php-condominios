@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Config\Database;
 use App\Models\Company;
-use App\Providers\DBWebProvider;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
@@ -22,5 +21,9 @@ class CompanyController {
       Response::success_json('Empresa agregada', ['company' => $company], 200);
     } else
       Response::error_json(['success' => false, 'message' => 'Error al crear la empresa'], 200);
+  }
+  public function all($query)/*web*/ {
+    $companies = Company::get_companies($query);
+    Response::success_json('Empresas', $companies, 200);
   }
 }

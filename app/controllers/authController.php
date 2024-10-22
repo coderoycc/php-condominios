@@ -12,7 +12,7 @@ use Helpers\JWT\JWT;
 use Helpers\Resources\Request;
 
 class AuthController {
-  public function login_app($data, $files = null) {
+  public function login_app($data, $files = null) /*app*/ {
     if (!Request::required(['user', 'password', 'pin'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
@@ -22,7 +22,7 @@ class AuthController {
       $data_login = $auth->auth($data['user'], $data['password']);
       $user = $data_login['user'];
       if ($user->id_user > 0) { // existe el usuario        
-        if (!$data_login['expired']) { //suscripcion no vencida
+        if (!$data_login['expired'] && $data_login['status'] == 'VALIDO') { //suscripcion no vencida
           $validez = time() + 3600 * 24;
           $codicationdb = base64_encode(base64_encode($condominioData['dbname']));
           $codificationPIN = base64_encode(base64_encode($data['pin']));
