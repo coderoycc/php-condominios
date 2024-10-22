@@ -21,7 +21,7 @@ class Subscription {
   public string $expires_in;
   public int $limit;
   public string $code;
-  public string $status; // VALIDO | SUSPENDIDO | ELIMINADO
+  public string $status; // POR PAGAR | VALIDO | SUSPENDIDO | ELIMINADO
   public string $suspended_in; // fecha que se suspendio NULL por defecto
   public Subscriptiontype $type;
   public Department $department;

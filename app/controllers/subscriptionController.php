@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-
 use App\Config\Database;
 use App\Models\Payment;
 use App\Models\Resident;
@@ -13,6 +12,8 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Services\subscription;
+use function App\Services\pay;
 class SubscriptionController {
   public function types($data) {
     if (!Request::required(['pin'], $data))
@@ -47,37 +48,25 @@ class SubscriptionController {
     if (count($subsDepa)) {
       Response::error_json(['success' => false, 'message' => 'El departamento ya tiene una suscripción valida', 'error' => true], 200);
     }
+    $data_pay = ['resident' => $resident, 'type' => $type, 'nit' => $data['nit'] ?? '000'];
+
     if ($type->price > 0) {
-      $precio = $data['annual'] ? $type->annual_price : $type->price;
-      // $precio = $periods * $type->price;
-      $payment = new Payment($con, null);
-      $payment->amount = $precio;
-      $payment->app_user_id = $data['user_id'];
-      $payment->gloss = 'Pago suscripcion ' . $type->name;
+      $annual = $data['annual'] && $data['annual'] == '1' ? false : true;
+      $payment = pay()->subscription($con, $data_pay, $annual);
       $qrImage = $payment->pay_with_qr();
-      if ($payment->id_qr > 0) {
-        Response::success_json('QR Generado', ['payment' => $payment, 'qr' => $qrImage]);
-      } else {
+      $res_sub = subscription()->subscribe($con, $data_pay, $annual);
+      if ($payment->idPayment > 0 && $res_sub->id_subscription > 0) {
+        pay()->add_sub($con, $res_sub->id_subscription, $payment->idPayment);
+        Response::success_json('QR Generado', ['payment' => $payment, 'subscription' => $res_sub, 'qr' => $qrImage]);
+      } else 
         Response::error_json(['message' => 'Error al generar QR', 'error' => true]);
-      }
     } else { // gratuito
       if (Subscription::verify_subscription_free($con, $type->id, $resident)) {
-        $subscription = new Subscription($con, null);
-        $subscription->type_id = $type->id;
-        $subscription->paid_by = $data['user_id'];
-        $subscription->paid_by_name = $resident->first_name;
-        $subscription->period = 0;
-        $subscription->nit = '000';
-        $subscription->department_id = $resident->department_id;
-        $subscription->expires_in = HandleDates::date_expire_month(1);
-        $subscription->status = 'VALIDO';
-        $subscription->code = $subscription->genCode();
-        $subscription->limit = 1;
-        if ($subscription->insert() > 0) {
-          Response::success_json('Suscripción realizada', ['subscription' => $subscription]);
-        } else {
+        $res_sub = subscription()->subscribe_free($con, $data_pay);
+        if ($res_sub->id_subscription > 0)
+          Response::success_json('Suscripción realizada', ['subscription' => $res_sub]);
+        else 
           Response::error_json(['message' => 'Error al suscribirse', 'error' => true], 200);
-        }
       } else {
         Response::error_json(['message' => 'Limite máximo de suscripciones gratuitas para el departamento', 'error' => true], 200);
       }
@@ -243,47 +232,6 @@ class SubscriptionController {
       Render::view('error_html', ['message' => 'Proceso cancelado', 'message_details' => 'El usuario no tiene un departamento asociado']);
     }
   }
-  public function add_subscription($body, $files = null)/*web*/ {
-    $pin = $body['key'] ?? null;
-    if ($pin)  //desde global
-      $con = Database::getInstanceByPin($pin);
-    else { // en web desde Seccion WEB 
-      $con = DBWebProvider::getSessionDataDB();
-      if (!$con)
-        Response::error_json(['message' => 'Error instancia de conexión', 'message_details' => 'Comunique al administrador e inténtelo más tarde']);
-    }
-    $type = new Subscriptiontype($con, $body['type']);
-
-    // $precio = $body['btnradio'] == 12 ? $type->annual_price : $type->price;
-    $precio = $body['price'];
-
-    $payment = new Payment($con, null);
-    $payment->amount = $precio;
-    $payment->app_user_id = $body['paid_by'];
-    $payment->gloss = 'Pago suscripcion ' . $type->name;
-    $payment->pay_with_qr();
-    if ($payment->id_qr > 0) {
-      $subscription = new Subscription($con, null);
-      $subscription->type_id = $type->id;
-      $subscription->paid_by = $body['paid_by'];
-      $subscription->paid_by_name = $body['razon_social'];
-      $subscription->period = 0;
-      $subscription->nit = $body['nit'] !== '' ? $body['nit'] : '000';
-      $subscription->department_id = $body['depa_id'];
-      $subscription->expires_in = HandleDates::date_expire_month($body['btnradio']);
-      $subscription->status = 'VALIDO';
-      $subscription->code = $subscription->genCode();
-      $subscription->limit = 3;
-      if ($subscription->insert() > 0) {
-        Payment::relation_payment_subscription($con, $payment->idPayment, $subscription->id_subscription);
-        Response::success_json('Suscripción realizada', ['subscription' => $subscription]);
-      } else {
-        Response::error_json(['message' => 'Error al suscribirse', 'error' => true], 200);
-      }
-    } else {
-      Response::error_json(['message' => 'No se pudo crear la suscripcion', 'error' => true]);
-    }
-  }
   public function history_sub_department($query)/*web*/ {
     if ($query['department_id']) {
       $con = DBWebProvider::getSessionDataDB();
@@ -305,19 +253,5 @@ class SubscriptionController {
       Response::success_json('Se ha suspendido la suscripción', $subscription, 200);
     } else
       Response::error_json(['message' => 'No existe la suscripción'], 200);
-  }
-  public function test_new_sub() {
-    $payment->transaction_response = $data;
-    $subscription = new Subscription($con, null);
-    $subscription->type_id = $type_id;
-    $subscription->paid_by = $user->id_user;
-    $subscription->paid_by_name = $user->first_name;
-    $subscription->period = 0;
-    $subscription->nit = '000';
-    $subscription->department_id = $depa_id;
-    $subscription->expires_in = HandleDates::date_expire_month($period * $type->months_duration);
-    $subscription->status = 'VALIDO';
-    $subscription->code = $subscription->genCode();
-    $subscription->limit = 1;
   }
 }

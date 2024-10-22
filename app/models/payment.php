@@ -127,6 +127,5 @@ class Payment {
         throw new Exception($th->getMessage());
       }
     }
-    return false;
   }
 }

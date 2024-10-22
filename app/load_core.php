@@ -21,3 +21,7 @@ $providers = ['auth', 'db_'];
 foreach ($providers as $provider) {
   require_once("providers/" . $provider . "Provider.php");
 }
+$services = ['pay', 'subscription'];
+foreach($services as $service){
+  require("services/".$service."Service.php");
+}
