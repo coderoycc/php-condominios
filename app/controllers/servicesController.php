@@ -23,7 +23,7 @@ class ServicesController {
       $con = DBAppProvider::get_connection();
       $resident = DBAppProvider::get_resident();
       $code = $body['code'];
-      if (Services::exist_code($con, $code, $subscription->department_id))
+      if (Services::exist_code($con, $code, $subscription->id_subscription))
         Response::error_json(['message' => 'El código ya existe'], 400);
 
       $service = new Services($con);
@@ -56,15 +56,16 @@ class ServicesController {
     }
     $con = DBAppProvider::get_connection();
     $service = new Services($con, $body['id']);
+    $newService = clone $service;
     $subscription = DBAppProvider::get_sub();
     if ($service->id_service > 0) {
       $code = $body['code'];
       if (Services::exist_code($con, $code, $subscription->department_id))
         Response::error_json(['message' => 'No puede agregar un código existente'], 400);
 
-      $service->code = $code;
-      if ($service->save() > 0)
-        Response::success_json('Success Request', ['service' => $service]);
+      $newService->code = $code;
+      if ($newService->update(null, $service) > 0)
+        Response::success_json('Success Request', ['service' => $newService]);
       else
         Response::error_json(['message' => 'Error al actualizar servicio'], 500);
     } else {
@@ -101,6 +102,11 @@ class ServicesController {
     $sums = Services::sum_department($con, $subscription->id_subscription, $year);
     Render::view('services/codes_list', ['department' => $department, 'sums' => $sums, 'months' => $months, 'year' => $year]);
   }
+  /**
+   * Suma general de todos los servicios de una suscripcion de un año
+   * @param array $query
+   * @return void
+   */
   public function codes_department_app($query)/* Protected */ {
     $con = DBAppProvider::get_connection();
     $subscription = DBAppProvider::get_sub();

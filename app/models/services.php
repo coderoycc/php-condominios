@@ -31,8 +31,15 @@ class Services extends BaseModel {
       }
     }
   }
-  public function save(): int {
-    return parent::insert($this->con, 'tblServices', 'id_service');
+  /**
+   * Guarda un servicio
+   * @return int
+   */
+  public function save() {
+    return $this->insert($this->con, 'tblServices', 'id_service');
+  }
+  public function update($con = null, $ant, $table = 'tblServices', $id = 'id_service') {
+    return parent::update($this->con, $ant, $table, 'id_service');
   }
   /**
    * Elimina un servicio
@@ -43,7 +50,7 @@ class Services extends BaseModel {
     $resp = ['status' => false, 'message' => ''];
     try {
       if ($this->con) {
-        $sql_verify = "SELECT * FROM tblServiceDetail WHERE service_id = ?";
+        $sql_verify = "SELECT * FROM tblServiceDetailPerMonth WHERE service_id = ?";
         $stmt_verify = $this->con->prepare($sql_verify);
         $stmt_verify->execute([$this->id_service]);
         $row = $stmt_verify->fetchAll(PDO::FETCH_ASSOC);
@@ -155,9 +162,9 @@ class Services extends BaseModel {
    * @param int $department_id
    * @return boolean
    */
-  static function exist_code($con, $code, $department_id) {
+  static function exist_code($con, $code, $subscription_id) {
     try {
-      $sql = "SELECT * FROM tblServices WHERE code = '$code' AND department_id = $department_id;";
+      $sql = "SELECT * FROM tblServices WHERE code = '$code' AND subscription_id = $subscription_id;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

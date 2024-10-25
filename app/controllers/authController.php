@@ -35,12 +35,10 @@ class AuthController {
         } else {
           Response::error_json(['message' => 'Su suscripción ha expirado', 'data' => $data_login], 401);
         }
-      } else { // no existe el usuario
+      } else  // no existe el usuario
         Response::error_json(['message' => 'Credenciales incorrectas'], 401);
-      }
-    } else {
+    } else
       Response::error_json(['message' => 'Pin incorrecto'], 401);
-    }
   }
   public function login_web($data, $files = null) {
     if (!Request::required(['user', 'password', 'pin'], $data))

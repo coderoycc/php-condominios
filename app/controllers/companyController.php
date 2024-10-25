@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Config\Database;
 use App\Models\Company;
+use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
@@ -25,5 +26,9 @@ class CompanyController {
   public function all($query)/*web*/ {
     $companies = Company::get_companies($query);
     Response::success_json('Empresas', $companies, 200);
+  }
+  public function all_view($query) {
+    $companies = Company::get_companies($query);
+    Render::view('company/list_companies', ['companies' => $companies]);
   }
 }

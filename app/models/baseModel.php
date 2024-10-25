@@ -20,6 +20,9 @@ class BaseModel {
         case 'string':
           $propiedad->setValue($this, '');
           break;
+        case 'array':
+          $propiedad->setValue($this, []);
+          break;
         case 'object':
           $propiedad->setValue($this, null);
           break;
@@ -70,7 +73,7 @@ class BaseModel {
         }
       }
       $campos = rtrim($campos, ',');
-      $cadena .= $campos . " WHERE id = ?";
+      $cadena .= $campos . " WHERE $id = ?";
       $valores[] = $original->{$id};
       if (count($valores) > 1) {
         $stmt = $con->prepare($cadena);

@@ -39,6 +39,7 @@ class AuthProvider {
           $data['message_subscription'] = HandleDates::remaining_days($subscription->expires_in);
         } else {
           $data['expired'] = false;
+          $data['status'] = 'VALIDO';
           $data['message_subscription'] = '';
         }
       }
