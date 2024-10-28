@@ -104,26 +104,17 @@ class Services extends BaseModel {
   public static function sum_department($con, $sub_id, $year) {
     try {
       $sql = "
-      WITH pagos AS (
-        SELECT 
-        a.department_id,
-        a.payment_id,
-        a.status,
-        MONTH(a.target_date) as mes
-        FROM tblPaymentsServices a 
-        WHERE YEAR(target_date) = $year 
-        AND department_id = $sub_id
+      WITH payments AS (
+        SELECT * FROM tblPaymentsServices WHERE [year] = $year AND subscription_id = $sub_id
       )
-      SELECT a.*, b.department_id, b.status, b.payment_id FROM (
-        SELECT MONTH(month) as mes, ROUND(sum(amount), 2) as total FROM tblServiceDetail
-          WHERE service_id IN (
-            SELECT id_service FROM tblServices WHERE department_id = $sub_id
-          )
-          AND YEAR(month) = $year
-          GROUP BY MONTH(month)
-      ) as a
-      LEFT JOIN pagos b ON a.mes = b.mes
-      ORDER BY a.mes DESC";
+      SELECT * FROM (
+        SELECT [month], sum(amount) as totalmes FROM tblServiceDetailPerMonth WHERE [year] = $year AND service_id IN (
+          SELECT id_service FROM tblServices WHERE subscription_id = $sub_id
+        ) GROUP BY [month]
+      ) a
+      LEFT JOIN payments b
+      ON a.[month] = b.[month]
+      ORDER BY a.[month] DESC;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
