@@ -99,7 +99,7 @@ class ServicesController {
     $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
     $subscription = new Subscription($con, $query['id']);
     $department = new Department($con, $subscription->department_id);
-    $sums = Services::sum_department($con, $subscription->id_subscription, $year);
+    $sums = Services::sum_by_subscription($con, $subscription->id_subscription, $year);
     Render::view('services/codes_list', ['department' => $department, 'sums' => $sums, 'months' => $months, 'year' => $year]);
   }
   /**
@@ -113,21 +113,20 @@ class ServicesController {
     $year = $query['year'] ?? date('Y');
     $year = intval($year);
     if ($subscription->id_subscription > 0) {
-      $department = new Department($con, $subscription->department_id);
-      $codes_for_month = Services::sum_department($con, $department->id_department, $year);
+      $codes_for_month = Services::sum_by_subscription($con, $subscription->id_subscription, $year);
       Response::success_json('Success Request', ["global" => $codes_for_month]);
     } else
       Response::error_json(['message' => 'Error al obtener suscripcion'], 500);
   }
   public function detail_services_month($query)/*protected */ {
     if (!Request::required(['month', 'year'], $query))
-      Response::error_json(['message' => 'Campos faltantes']);
+      Response::error_json(['message' => 'Campos faltantes MES y AÑO']);
     $con = DBAppProvider::get_connection();
     $month = intval($query['month']);
     $year = intval($query['year']);
     $subscr = DBAppProvider::get_sub();
 
-    $resp = Services::detail_for_month($con, $month, $year, $subscr->department_id);
+    $resp = Services::detail_for_month($con, $month, $year, $subscr->id_subscription);
     Response::success_json('Success Request', ["detail" => $resp]);
   }
   public function fill_amounts($query) /*web*/ {

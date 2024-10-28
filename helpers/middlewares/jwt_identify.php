@@ -30,7 +30,10 @@ class AuthMiddleware {
     'shipping/me',
     'shipping/update',
     'master/get_countries',
-    'locker/history_last'
+    'locker/history_last',
+    'subscriptioncompany/subscribe',
+    'subscriptioncompany/me',
+    'subscriptioncompany/delete'
   ];
   public static function check_jwt($route) {
     if (in_array($route, self::$routes)) {

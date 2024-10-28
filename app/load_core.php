@@ -11,7 +11,7 @@ require_once './controllers/registerController.php';
 require_once './controllers/authController.php';
 require_once './utils/queries/QueryBuilder.php';
 
-$entidades = ['user', 'resident', 'department', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay', 'ads', 'shipping', 'company'];
+$entidades = ['user', 'resident', 'department', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay', 'ads', 'shipping', 'company', 'subscriptionCompany'];
 foreach ($entidades as $entidad) {
   require_once("models/" . $entidad . ".php");
   require_once("controllers/" . $entidad . "Controller.php");
@@ -22,6 +22,6 @@ foreach ($providers as $provider) {
   require_once("providers/" . $provider . "Provider.php");
 }
 $services = ['pay', 'subscription'];
-foreach($services as $service){
-  require("services/".$service."Service.php");
+foreach ($services as $service) {
+  require("services/" . $service . "Service.php");
 }

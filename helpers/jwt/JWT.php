@@ -15,8 +15,10 @@ class JWT {
       ];
       $base64UrlHeader = base64_encode(json_encode($header));
       $base64UrlPayload = base64_encode(json_encode($payload));
+      $base64UrlPayload = rtrim($base64UrlPayload, '=');
       $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, KEY::$private_key, true);
       $base64UrlSignature = base64_encode($signature);
+      $base64UrlSignature = rtrim($base64UrlSignature, '=');
       $token = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
       return $token;
     } catch (\Throwable $th) {
@@ -38,6 +40,7 @@ class JWT {
         // Verificar la firma
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, KEY::$private_key, true);
         $base64UrlSignature = base64_encode($signature);
+        $base64UrlSignature = rtrim($base64UrlSignature, '=');
         if ($base64UrlSignature === $signatureProvided) {
           if ($payload['exp'] >= time()) { // Verificar la expiración del token
             return $payload; // Token válido

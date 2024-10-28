@@ -101,13 +101,13 @@ class Services extends BaseModel {
    * @param int $year
    * @return mixed
    */
-  public static function sum_department($con, $sub_id, $year) {
+  public static function sum_by_subscription($con, $sub_id, $year) {
     try {
       $sql = "
       WITH payments AS (
         SELECT * FROM tblPaymentsServices WHERE [year] = $year AND subscription_id = $sub_id
       )
-      SELECT * FROM (
+      SELECT a.*, b.id_payment_service, b.payment_id, b.subscription_id, b.status FROM (
         SELECT [month], sum(amount) as totalmes FROM tblServiceDetailPerMonth WHERE [year] = $year AND service_id IN (
           SELECT id_service FROM tblServices WHERE subscription_id = $sub_id
         ) GROUP BY [month]
@@ -115,6 +115,7 @@ class Services extends BaseModel {
       LEFT JOIN payments b
       ON a.[month] = b.[month]
       ORDER BY a.[month] DESC;";
+      // var_dump($sql);
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -129,14 +130,15 @@ class Services extends BaseModel {
    * @param PDO $con Conexion PDO
    * @param int $month  
    * @param int $year
-   * @param int $depa_id
+   * @param int $sub_id
    * @return mixed
    */
-  public static function detail_for_month($con, $month, $year, $depa_id) {
+  public static function detail_for_month($con, $month, $year, $sub_id) {
     try {
-      $sql = "SELECT * FROM tblServices a
-        INNER JOIN tblServiceDetail b ON a.id_service = b.service_id AND a.department_id = $depa_id
-        WHERE MONTH(b.month) = $month AND YEAR(b.month) = $year;";
+      $sql = "SELECT * FROM tblServices a INNER JOIN tblServiceDetailPerMonth b 
+            ON a.id_service = b.service_id
+            WHERE b.month = $month AND b.year = $year AND a.subscription_id = $sub_id;";
+      // var_dump($sql);
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
