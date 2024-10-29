@@ -13,6 +13,7 @@ class Company {
   public string $created_at;
   public string $line;
   public string $phone;
+  public string $description;
   public function __construct($con = null, $id = null) {
     $this->objectNull();
     if ($con) {
@@ -32,6 +33,7 @@ class Company {
     $this->created_at = "";
     $this->line = "";
     $this->phone = "";
+    $this->description = "";
   }
   public function load($row) {
     $this->id_company = $row['id_company'];
@@ -39,12 +41,13 @@ class Company {
     $this->created_at = $row['created_at'];
     $this->line = $row['line'] ?? '';
     $this->phone = $row['phone'] ?? '';
+    $this->description = $row['description'] ?? '';
   }
   public function insert() {
     try {
-      $sql = "INSERT INTO tblCompanies (company, line, phone) VALUES (:company, :line, :phone)";
+      $sql = "INSERT INTO tblCompanies (company, line, phone, description) VALUES (:company, :line, :phone, :description)";
       $stmt = $this->con->prepare($sql);
-      $stmt->execute(['company' => $this->company, 'line' => $this->line, 'phone' => $this->phone]);
+      $stmt->execute(['company' => $this->company, 'description' => $this->description, 'line' => $this->line, 'phone' => $this->phone]);
       $this->id_company = $this->con->lastInsertId();
       return $this->id_company;
     } catch (PDOException $e) {

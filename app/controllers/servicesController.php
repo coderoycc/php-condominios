@@ -88,9 +88,13 @@ class ServicesController {
     }
   }
   public function list_subs($query)/* web */ {
-    $con = DBWebProvider::getSessionDataDB();
-    $services = Services::subs_all($con, $query);
-    Render::view('services/list_services', ['services' => $services]);
+    $subscriptions = Services::subscriptions_enable_to_services();
+    Render::view('services/subs_enable', ['subscriptions' => $subscriptions]);
+  }
+  public function history_all($query)/*web*/ {
+    $services = Services::list_filters_all('PAGADO'); // todos los pagados
+    $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+    Render::view('services/list_global_services', ['services' => $services, 'months' => $months]);
   }
   public function codes_department($query) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
@@ -186,11 +190,14 @@ class ServicesController {
   }
   public function my_service_balance() {
   }
-
-  public function history_services($query) {
+  public function services_in_process($query) {
+    $services = Services::list_filters_all(); // vacio SIN PAGO
+    $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+    Render::view('services/list_global_services', ['services' => $services, 'months' => $months]);
   }
   public function services_to_pay($query) {
+    $services = Services::list_filters_all('QR PAGADO'); // pagados por el residente
 
-    Render::view('services/list_global_servicios', []);
+    Render::view('services/list_global_services', ['services' => $services]);
   }
 }

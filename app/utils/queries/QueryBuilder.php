@@ -108,6 +108,30 @@ class QueryBuilder {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
+
+  /**
+   * Genera las consulta master (todas las bases de datos) a partir de una consulta, reemplaza "[]" con las base de datos, y reemplaza "[*]" como la seleccion master para poner el  nombre de condominio y el pin
+   * Devuelve la ejecuccion de la consulta generada
+   * @param string $sql consulta custom sql con los caracteres mencionados ([],[*])
+   */
+  public function get_custom($sql) {
+    $matchNameDb = '[]';
+    $matchSelectHeader = '[*]';
+    $sqls = [];
+    foreach ($this->db_names as $datadb) {
+      $dbname = $datadb['dbname'];
+      $name = $datadb['name'];
+      $pin = $datadb['pin'];
+      $sqlCustom = str_replace($matchNameDb, "[{$dbname}].[dbo].", $sql);
+      $sqlCustom = str_replace($matchSelectHeader, "'{$name}' AS 'Condominio', '{$pin}' AS 'key', ", $sqlCustom);
+      $sqls[] = $sqlCustom;
+    }
+    $sqlunion = join(" UNION ", $sqls);
+    $stmt = $this->con->prepare($sqlunion);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
+
   /**
    * @param string $select
    * @return string[]

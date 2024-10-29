@@ -30,10 +30,12 @@ require_once("../helpers/middlewares/web_auth.php");
             <div class="card">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
-                  <div class="text-muted text-uppercase" style="font-size:22px;">Lista de servicios <b id="type_list"> para pagar</b></div>
+                  <div class="text-muted text-uppercase" style="font-size:22px;" id="type_list">Suscripciones habilitadas para servicios</div>
                   <div class="gap-3">
+                    <button type="button" class="btn btn-dark" onclick="list_subscriptions_enable()">Registrar pagos</button>
+                    <button type="button" class="btn btn-info text-white" onclick="list_service_btn('process')">Pagos Registrados</button>
                     <button type="button" class="btn btn-success text-white" onclick="list_service_btn('history')">Historial</button>
-                    <button type="button" class="btn btn-info text-white" onclick="list_service_btn('pagar')">Para pagar</button>
+                    <button type="button" class="btn btn-danger text-white" onclick="list_service_btn('pagar')">Para pagar</button>
                   </div>
                 </div>
               </div>

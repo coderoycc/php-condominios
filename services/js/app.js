@@ -1,32 +1,59 @@
 $(document).ready(() => {
-  getAllServicesToPay();
+  list_subscriptions_enable();
 })
 
 $(document).on('submit', '#fill_amounts_form', send_amounts)
 $(document).on('submit', '#update_amounts', update_amounts)
 $(document).on('change', '#year_codes', load_data_year)
 
-
-// async function list_subs() {
-//   const table = await $.ajax({
-//     url: '../app/services/list_subs',
-//     data: {},
-//     type: 'GET',
-//     dataType: 'html'
-//   })
-//   $("#panel_sub").html(table);
-// }
 function list_service_btn(type) {
-  type = type == 'history' ? 'historial' : 'para pagar'
-  $("#type_list").html(type)
-  if (type == 'historial') {
+  if (type == 'history') {
     getAllServicesHistory()
+  } else if (type == 'process') {
+    getAllServicesInProcess()
   } else {
     getAllServicesToPay()
   }
 }
+async function getAllServicesInProcess() {
+  $("#type_list").html('Montos registrados')
+  const res = await $.ajax({
+    url: '../app/services/services_in_process',
+    data: {},
+    type: 'GET',
+    dataType: 'html'
+  });
+  $("#table_services").html(res);
+  $("#table_services_content").DataTable({
+    language: lenguaje,
+    info: false,
+    scrollX: true,
+    columnDefs: [
+      { orderable: false, targets: [5] }
+    ],
+  })
+}
+async function list_subscriptions_enable() {
+  $("#type_list").html('Suscripciones habilitadas para servicios')
+  const res = await $.ajax({
+    url: '../app/services/list_subs',
+    data: {},
+    type: 'GET',
+    dataType: 'html'
+  })
+  $("#table_services").html(res);
+  $("#table_subscription").DataTable({
+    language: lenguaje,
+    info: false,
+    scrollX: true,
+    columnDefs: [
+      { orderable: false, targets: [2, 5] }
+    ],
+  })
 
+}
 async function getAllServicesToPay() {
+  $("#type_list").html('Lista de servicios para pagar')
   const res = await $.ajax({
     url: '../app/services/services_to_pay',
     data: {},
@@ -36,13 +63,22 @@ async function getAllServicesToPay() {
   $("#table_services").html(res);
 }
 async function getAllServicesHistory() {
+  $("#type_list").html('Historial del pago de servicios')
   const res = await $.ajax({
-    url: '../app/services/',
+    url: '../app/services/history_all',
     data: {},
     type: "GET",
     dataType: 'html'
   });
   $("#table_services").html(res);
+  $("#table_services_content").DataTable({
+    language: lenguaje,
+    info: false,
+    scrollX: true,
+    columnDefs: [
+      { orderable: false, targets: [5] }
+    ],
+  })
 }
 
 

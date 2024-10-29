@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utils\Queries\QueryBuilder;
 use PDO;
 
 require_once(__DIR__ . '/service_detail.php');
@@ -73,6 +74,22 @@ class Services extends BaseModel {
       $resp['message'] = $th->getMessage();
     }
     return $resp;
+  }
+
+  public static function subscriptions_enable_to_services() {
+    try {
+      $query = new QueryBuilder();
+      $res = $query->select('tblSubscriptions', 'a')
+        ->innerJoin('tblSubscriptionType', 'b', 'a.type_id = b.id_subscription_type AND b.see_services = 1')
+        ->innerJoin('tblDepartments', 'c', 'c.id_department = a.department_id')
+        ->where("a.expires_in > getdate() AND a.status = 'VALIDO'")
+        ->orderBy('a.expires_in DESC')
+        ->get('a.*, b.name as tipo_sub, c.*');
+
+      return $res;
+    } catch (\Throwable $th) {
+      throw $th;
+    }
   }
   /**
    * Funcion que devuelve todas las suscripciones que estan habilitadas para ver servicios
@@ -180,5 +197,54 @@ class Services extends BaseModel {
       var_dump($th);
     }
     return [];
+  }
+  /**
+   * Listado de servicios por year y filtrados por el estado del pago
+   * @param string $status 'QR PAGADO', 'PAGADO', 
+   * @param int $year
+   * @return array
+   */
+  public static function list_filters_all($status = 'SIN PAGO', $year = null) {
+    try {
+      $query = new QueryBuilder();
+      $year = $year ?? date('Y');
+      $statuswhere = $status == 'QR PAGADO' || $status == 'PAGADO' ? "WHERE b.status = '$status'" : "";
+      $statuswhere = $status == 'SIN PAGO' ? "WHERE b.status IS NULL" : $statuswhere;
+      $sql = "
+      WITH payments AS (
+        SELECT * 
+        FROM []tblPaymentsServices 
+        WHERE [year] = $year
+      )
+      SELECT [*]y.dep_number, tmp.* FROM []tblSubscriptions x 
+      INNER JOIN []tblDepartments y ON x.department_id = y.id_department
+      INNER JOIN (
+        SELECT 
+          a.subscription_id, 
+          a.[month], 
+          a.totalmes, 
+          b.id_payment_service, 
+          b.payment_id, 
+          b.status
+        FROM (
+          SELECT 
+              s.subscription_id,
+              d.[month], 
+              SUM(d.amount) AS totalmes 
+          FROM []tblServiceDetailPerMonth d
+          JOIN []tblServices s ON d.service_id = s.id_service
+          WHERE d.[year] = $year
+          GROUP BY s.subscription_id, d.[month]
+        ) a
+        LEFT JOIN payments b ON a.subscription_id = b.subscription_id AND a.[month] = b.[month]
+        $statuswhere
+      ) tmp 
+      ON tmp.subscription_id = x.id_subscription
+      ";
+      $res = $query->get_custom($sql);
+      return $res;
+    } catch (\Throwable $th) {
+      throw $th;
+    }
   }
 }
