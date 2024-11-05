@@ -20,16 +20,10 @@ $controller = $parts[0] ?? 'x';
 $action = $parts[1] ?? 'y';
 $controllerClass = "App\\Controllers\\" . $controller . "Controller";
 try {
-  if (!class_exists($controllerClass)) {
-    http_response_code(404);
-    echo json_encode(array('error' => 'Controlador no encontrado'));
-    exit;
-  }
-  if (!method_exists($controllerClass, $action)) {
-    http_response_code(404);
-    echo json_encode(array('error' => 'Metodo no encontrado'));
-    exit;
-  }
+  if (!class_exists($controllerClass))
+    Response::error_json(array('error' => 'Controlador no encontrado'), 404);
+  if (!method_exists($controllerClass, $action))
+    Response::error_json(array('error' => 'Metodo no encontrado'), 404);
   $controller = new $controllerClass();
 
   $payload = AuthMiddleware::check_jwt($url);

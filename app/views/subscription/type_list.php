@@ -19,10 +19,14 @@ if (count($data_subs) > 0) :
             <?php endforeach; ?>
           </ul>
         </div>
-        <!-- <div class="card-footer text-center">
-          <button type="button" class="btn btn-sm btn-primary" style="color:var(--bs-verde)" title="EDITAR" data-id="<?= $sub->id_subscription_type ?>"><i class="fa fa-solid fa-pencil"></i> Editar</button> -->
-        <!-- <button type="button" class="btn btn-sm btn-danger text-white" title="ELIMINAR" data-bs-toggle="modal" data-bs-target="#modal_delete_type" data-id="<?= $sub->id_subscription_type ?>" data-name="<?= $sub->name ?>"><i class="fa fa-solid fa-trash"></i></button> -->
-        <!-- </div> -->
+        <div class="card-footer text-center">
+          <button type="button" class="btn btn-sm btn-primary text-white" data-bs-toggle="modal" data-bs-target="#modal_edit_type" style="color:var(--bs-verde)" title="EDITAR" data-id="<?= $sub['id_subscription_type'] ?>"><i class="fa fa-solid fa-pencil"></i> Editar</button>
+          <?php if ($sub['status'] == 1): ?>
+            <button type="button" class="btn btn-sm btn-danger text-white" title="DAR DE BAJA" data-bs-toggle="modal" data-bs-target="#modal_delete_type" data-id="<?= $sub['id_subscription_type'] ?>" data-name="<?= $sub['name'] ?>"><i class="fa fa-solid fa-arrow-down"></i> Dar de baja</button>
+          <?php elseif ($sub['status'] == 0): ?>
+            <button type="button" class="btn btn-sm btn-info text-white" title="DAR DE ALTA" data-bs-toggle="modal" data-bs-target="#modal_delete_type" data-id="<?= $sub['id_subscription_type'] ?>" data-name="<?= $sub['name'] ?>"><i class="fa fa-solid fa-arrow-up"></i> Dar de alta</button>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
   <?php endforeach;

@@ -6,6 +6,8 @@
         <tr>
           <th>ID</th>
           <th>Nombre compania</th>
+          <th>Descripción</th>
+          <th>Página WEB|FACEBOOK</th>
           <th>Creado en</th>
           <th>Contacto</th>
           <th>Acciones</th>
@@ -16,6 +18,8 @@
           <tr>
             <td><?= $com['id_company'] ?></td>
             <td><?= $com['company'] ?></td>
+            <td><?= $com['description'] ?></td>
+            <td class="text-center"><?= $com['url'] == '' || $com['url'] == null ? 'No disponible' : '<a class="link" href="' . $com['url'] . '" target="_blank">Ver</a>' ?></td>
             <td><?= date('d/m/Y', strtotime($com['created_at'])) ?></td>
             <td><?= $com['phone'] ?></td>
             <td class="d-flex justify-content-between">

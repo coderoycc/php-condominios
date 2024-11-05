@@ -69,10 +69,14 @@ require_once("../helpers/middlewares/web_auth.php");
               <input type="text" class="form-control" name="phone" placeholder="Celular" required>
               <label for="phone">Celular </label>
             </div>
-            <!-- <div class="form-floating mb-3">
-              <input type="text" class="form-control" name="phone" placeholder="Celular">
-              <label for="phone"></label>
-            </div> -->
+            <div class="form-floating mb-3">
+              <textarea type="text" class="form-control" name="description" placeholder="Descripcion" style="height:100px;resize:none"></textarea>
+              <label for="phone">Descripción breve</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" name="url" placeholder="http://facebook.com/page/">
+              <label for="phone">Página web o facebook</label>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

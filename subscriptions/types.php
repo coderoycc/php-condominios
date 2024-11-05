@@ -81,18 +81,36 @@ require_once("../helpers/middlewares/web_auth.php");
     </div>
   </div>
 
+  <!-- MODAL EDIT TYPE -->
+  <div class="modal fade" id="modal_edit_type" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Editar Tipo de suscripción</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="content_edit"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="update()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- MODAL DELETE TYPE -->
   <div class="modal fade" id="modal_delete_type" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
+        <div class="modal-header bg-seconary ">
           <input type="hidden" id="delete_type_id">
-          <h1 class="modal-title fs-5">¿Eliminar suscripción <b id="delete_type"></b>?</h1>
+          <h1 class="modal-title fs-5">¿Dar de baja/alta a la suscripción <b id="delete_type"></b>?</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-footer d-flex justify-content-center">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_type()">Eliminar</button>
+          <button type="button" class="btn btn-success text-white" data-bs-dismiss="modal" onclick="down_up()">SI</button>
         </div>
       </div>
     </div>

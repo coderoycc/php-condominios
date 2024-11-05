@@ -93,7 +93,7 @@ async function saveCompany(e) {
   if (res.success) {
     toast('Agregado', res.message, 'success', 1500)
     setTimeout(() => {
-      location.reload();
+      getAdvertiserList()
     }, 1550);
   } else {
     toast('Error', res.message, 'error', 1500)

@@ -133,6 +133,24 @@ class QueryBuilder {
   }
 
   /**
+   * Actualiza o crear registros en todas las bases de datos
+   * @param string $sql
+   * @return bool
+   */
+  public function query_custom($sql) {
+    $matchNameDb = '[**]';
+    $sqls = [];
+    foreach ($this->db_names as $datadb) {
+      $dbname = $datadb['dbname'];
+      $sqlCustom = str_replace($matchNameDb, "[{$dbname}].[dbo].", $sql);
+      $sqls[] = $sqlCustom;
+    }
+    $sqlunion = join("; ", $sqls);
+    $stmt = $this->con->prepare($sqlunion);
+    return $stmt->execute();
+  }
+
+  /**
    * @param string $select
    * @return string[]
    */

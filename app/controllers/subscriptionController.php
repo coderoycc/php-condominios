@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Config\Database;
-use App\Models\Payment;
 use App\Models\Resident;
 use App\Models\Subscription;
 use App\Models\Subscriptiontype;
@@ -14,6 +14,7 @@ use Helpers\Resources\Response;
 
 use function App\Services\subscription;
 use function App\Services\pay;
+
 class SubscriptionController {
   public function types($data) {
     if (!Request::required(['pin'], $data))
@@ -58,14 +59,14 @@ class SubscriptionController {
       if ($payment->idPayment > 0 && $res_sub->id_subscription > 0) {
         pay()->add_sub($con, $res_sub->id_subscription, $payment->idPayment);
         Response::success_json('QR Generado', ['payment' => $payment, 'subscription' => $res_sub, 'qr' => $qrImage]);
-      } else 
+      } else
         Response::error_json(['message' => 'Error al generar QR', 'error' => true]);
     } else { // gratuito
       if (Subscription::verify_subscription_free($con, $type->id, $resident)) {
         $res_sub = subscription()->subscribe_free($con, $data_pay);
         if ($res_sub->id_subscription > 0)
           Response::success_json('Suscripción realizada', ['subscription' => $res_sub]);
-        else 
+        else
           Response::error_json(['message' => 'Error al suscribirse', 'error' => true], 200);
       } else {
         Response::error_json(['message' => 'Limite máximo de suscripciones gratuitas para el departamento', 'error' => true], 200);

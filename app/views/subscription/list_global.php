@@ -29,6 +29,7 @@
           <th scope="col">Celular</th>
           <th scope="col">Departamento</th>
           <th scope="col">Suscrito</th>
+          <th scope="col">Estado</th>
           <th scope="col">Tipo</th>
           <th scope="col">Fecha suscripción</th>
           <th scope="col">Fecha vencimiento</th>
@@ -38,7 +39,10 @@
       <tbody class="table-group-divider">
         <?php
         $i = 1;
-        foreach ($residents as $resident): ?>
+        foreach ($residents as $resident):
+          $fechaActual = strtotime(date('Y-m-d'));
+          $fechaVencimiento = strtotime($resident['expires_in']);
+        ?>
           <tr>
             <td><?= $i ?></td>
             <td><?= $resident['Condominio'] ?></td>
@@ -47,12 +51,14 @@
             <td><?= $resident['dep_number'] ?></td>
             <?php if ($resident['id_subscription']): ?>
               <td class="text-center"><span class="badge text-bg-success">SI</span></td>
+              <?php echo getStatus($resident['status'], $resident['expires_in']); ?>
               <td class="text-center"><?= strtoupper($resident['type_sub']) ?></td>
               <td class="text-center"><?= date('d/m/Y', strtotime($resident['subscribed_in'])) ?></td>
               <td class="text-center"><?= date('d/m/Y', strtotime($resident['expires_in'])) ?></td>
               </td>
             <?php else: ?>
               <td class="text-center"><span class="badge text-bg-warning">NO</span></td>
+              <td class="text-center">Sin suscripción</td>
               <td class="text-center"></td>
               <td class="text-center">Sin suscripción</td>
               <td class="text-center">Sin suscripción</td>
@@ -60,7 +66,9 @@
             <td class="text-center">
               <?php if ($resident['id_subscription']): ?>
                 <button type="button" data-bs-toggle="modal" data-bs-target="#modal_change_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-typeid="<?= $resident['type_id'] ?>" class="btn btn-sm btn-outline-info" title="Cambiar suscripción"><i class="fa-lg fa-solid fa-arrow-down-up-across-line"></i> Cambiar</button>
-                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_suspend" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-depnumber="<?= $resident['dep_number'] ?>" class="btn btn-sm btn-outline-danger mt-2" title="Supender suscripción"><i class="fa-lg fa-solid fa-circle-arrow-down"></i> Suspender</button>
+                <?php if ($resident['status'] != 'SUSPENDIDO'): ?>
+                  <button type="button" data-bs-toggle="modal" data-bs-target="#modal_suspend" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-depnumber="<?= $resident['dep_number'] ?>" class="btn btn-sm btn-outline-danger mt-2" title="Supender suscripción"><i class="fa-lg fa-solid fa-circle-arrow-down"></i> Suspender</button>
+                <?php endif; ?>
               <?php else: ?>
                 <button type="button" data-bs-toggle="modal" data-bs-target="#modal_add_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Agregar una suscripción"><i class="fa-lg fa-solid fa-square-caret-up"></i> Nuevo</button>
               <?php endif; ?>
@@ -74,3 +82,18 @@
     </table>
   </div>
 </div>
+
+<?php
+function getStatus($status, $expires_in) {
+  $fechaActual = strtotime(date('Y-m-d'));
+  $fechaVencimiento = strtotime($expires_in);
+  if ($status == 'SUSPENDIDO') {
+    return '<td class="text-center"><span class="badge text-bg-warning">SUSPENDIDO</span></td>';
+  }
+  if ($fechaActual > $fechaVencimiento) {
+    return '<td class="text-center"><span class="badge text-bg-danger">VENCIDO</span></td>';
+  } else {
+    return '<td class="text-center"><span class="badge text-bg-success">VIGENTE</span></td>';
+  }
+}
+?>

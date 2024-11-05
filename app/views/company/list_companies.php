@@ -6,6 +6,7 @@
         <tr>
           <th>ID</th>
           <th>Nombre compania</th>
+          <th>Descripción</th>
           <th>Creado en</th>
           <th>Contacto</th>
           <th>Acciones</th>
@@ -16,6 +17,7 @@
           <tr>
             <td><?= $com['id_company'] ?></td>
             <td><?= $com['company'] ?></td>
+            <td><?= $com['descripcion'] ?></td>
             <td><?= date('d/m/Y', strtotime($com['created_at'])) ?></td>
             <td><?= $com['phone'] ?></td>
             <td class="d-flex justify-content-between">

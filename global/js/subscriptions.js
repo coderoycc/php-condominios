@@ -50,21 +50,26 @@ async function loadModalData(e) {
   htmlOptionsTypes(res.data, btn.dataset.typeid)
 }
 function htmlOptionsTypes(types, currentId) {
+  console.log('Carga de opciones', types, currentId);
   let html = '';
   types.forEach(type => {
-    if (type.id_subscription_type == currentId) {
+    console.log(type.id, currentId)
+    if (type.id == currentId) {
       $("#current_price").val(type.price)
-      html += `<option value="${type.id_subscription_type}" selected data-price="${type.price}">${type.name}</option>`;
+      html += `<option value="${type.id}" selected data-price="${type.price}">${type.name}</option>`;
     } else {
-      html += `<option value="${type.id_subscription_type}" data-price="${type.price}">${type.name}</option>`;
+      html += `<option value="${type.id}" data-price="${type.price}">${type.name}</option>`;
     }
   });
   $("#option_type_sub").html(html)
 }
 function changePriceToAdd(e) {
   const option = $(this).find('option:selected');
+  console.log(option)
   const price = option[0].dataset.price ?? '0';
   const currentPrice = $("#current_price").val();
+
+  console.log(price, currentPrice)
   const newPrice = parseFloat(price) - parseFloat(currentPrice);
   $("#current_price_new").val(price)
   $("#price_to_add").val(newPrice.toFixed(2))

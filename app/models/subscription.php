@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-require_once __DIR__ . '/subscriptiontype.php';
-
 use App\Models\Subscriptiontype;
 use Exception;
 use PDO;
