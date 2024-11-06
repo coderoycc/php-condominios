@@ -27,7 +27,7 @@ async function get_residents(data = {}) {
     info: false,
     scrollX: true,
     columnDefs: [
-      { orderable: false, targets: [5, 7, 8, 9] }
+      { orderable: false, targets: [5, 6, 8, 9, 10] }
     ],
     searching: false,
   });

@@ -1,10 +1,41 @@
 $(document).ready(() => {
-  list_subscriptions_enable();
+  loadDataByQuery();
 })
 
 $(document).on('submit', '#fill_amounts_form', send_amounts)
 $(document).on('submit', '#update_amounts', update_amounts)
 $(document).on('change', '#year_codes', load_data_year)
+$(document).on('show.bs.modal', '#modal_register_payment', modalRegisterOpen)
+async function modalRegisterOpen(e) {
+  const key = e.relatedTarget.dataset.key;
+  const id = e.relatedTarget.dataset.id;
+  fill_amounts(id, key)
+}
+function changeButtons(req) {
+  $(".btn-menu").removeClass('active')
+  $(`#btn-${req}`).addClass('active');
+}
+function loadDataByQuery() {
+  const query = getQueryValueFromUrl('req') || 'add';
+  changeButtons(query);
+  console.log(query)
+  switch (query) {
+    case 'add':
+      list_subscriptions_enable()
+      break;
+    case 'view':
+      list_service_btn('process')
+      break;
+    case 'history':
+      list_service_btn('history')
+      break;
+    case '':
+      list_service_btn('pagar')
+      break;
+    default:
+      break;
+  }
+}
 
 function list_service_btn(type) {
   if (type == 'history') {
@@ -92,14 +123,14 @@ async function see_codes(id, year = null) {
   });
   $("#panel_content").html(res);
 }
-async function fill_amounts(id) {
+async function fill_amounts(id, key) {
   const res = await $.ajax({
     url: '../app/services/fill_amounts',
-    data: { id },
+    data: { id, key },
     type: 'GET',
     dataType: 'html'
   });
-  $("#panel_content").html(res);
+  $("#data_add_amounts").html(res);
 }
 async function send_amounts(e) {
   e.preventDefault();

@@ -260,3 +260,8 @@ async function changeSession(e) {
     toast('Ocurrió un error', res.message, 'error', 2000)
   }
 }
+
+function getQueryValueFromUrl(key) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(key);
+}

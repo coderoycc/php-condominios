@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Config\Database;
 use App\Models\Department;
 use App\Models\ServiceDetail;
 use App\Models\Services;
@@ -133,9 +134,14 @@ class ServicesController {
     $resp = Services::detail_for_month($con, $month, $year, $subscr->id_subscription);
     Response::success_json('Success Request', ["detail" => $resp]);
   }
-  public function fill_amounts($query) /*web*/ {
-    $con = DBWebProvider::getSessionDataDB();
-    $department = new Department($con, $query['id']);
+  public function fill_amounts($query) /*web global*/ {
+    // $con = DBWebProvider::getSessionDataDB();
+    if (!Request::required(['key'], $query))
+      Render::view('error_hmtl', ['message' => 'No se ha proporcionado la llave de acceso', 'message_detail' => 'Requerido la llave del condominio PIN']);
+    $key = $query['key'];
+    $con = Database::getInstanceByPin($key);
+    $subscription = new Subscription($con, $query['id']);
+    $department = new Department($con, $subscription->department_id);
     $services = Services::list_by_subscription($con, $query['id']);
     Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => true]);
   }

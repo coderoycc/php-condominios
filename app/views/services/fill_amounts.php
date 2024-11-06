@@ -1,10 +1,13 @@
 <div class="card shadow">
-  <div class="card-body">
+  <div class="card-header" style="display: flex;justify-content: space-between;align-items: center;">
     <?php if ($nuevo) : ?>
-      <p class="fw-bold fs-4">Agregar pagos departamento <i><?= $department->dep_number ?></i></p>
+      <p class="fw-bold fs-4 my-0">Agregar pagos departamento <i><?= $department->dep_number ?></i></p>
     <?php else : ?>
-      <p class="fw-bold fs-4">Editar pagos departamento <i><?= $department->dep_number ?></i></p>
+      <p class="fw-bold fs-4 my-0">Editar pagos departamento <i><?= $department->dep_number ?></i></p>
     <?php endif; ?>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="card-body">
     <div class="row">
       <div class="col-md-6 mx-auto">
         <?php if ($nuevo) : ?>
@@ -60,7 +63,7 @@
             </div>
           <?php else : ?>
             <div style="width:100%;display:flex;justify-content:space-between;">
-              <button type="button" class="btn btn-secondary" onclick="delete_panel()">Cancelar</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancelar</button>
               <button type="submit" class="btn btn-info text-white"><i class="fa fa-solid fa-save"></i> Actualizar</button>
             </div>
           <?php endif; ?>
@@ -70,16 +73,16 @@
   </div>
 </div>
 <script>
-  $(document).on('input', '.service_amount', (e) => {
-    let total = 0;
-    $(".service_amount").each((index, element) => {
-      const val = $(element).val() == '' ? 0 : parseFloat($(element).val());
-      total += val;
+  (function() {
+    $(document).off('input', '.service_amount');
+    $(document).on('input', '.service_amount', (e) => {
+      console.log(e.target.value);
+      let total = 0;
+      $(".service_amount").each((index, element) => {
+        const val = $(element).val() == '' ? 0 : parseFloat($(element).val());
+        total += val;
+      })
+      $("#total_services").text(total.toFixed(2));
     })
-    $("#total_services").text(total.toFixed(2));
-  })
-
-  function delete_panel() {
-    $("#panel_content ").html("");
-  }
+  }())
 </script>

@@ -20,7 +20,7 @@
             <td><?= $sub['tipo_sub'] ?></td>
             <td><?= $sub['dep_number'] ?></td>
             <td class="text-center">
-              <button type="button" title="REGISTRAR" class="btn btn-info text-white"><i class="fa-solid fa-calendar"></i> Registrar pagos del mes</button>
+              <button type="button" data-bs-toggle="modal" data-bs-target="#modal_register_payment" data-key="<?= $sub['key'] ?>" data-id="<?= $sub['id_subscription'] ?>" title="REGISTRAR" class="btn btn-info text-white"><i class="fa-solid fa-calendar"></i> Registra pago</button>
               <button class="btn btn-success" type="button"><i class="fa-solid fa-eye"></i></button>
             </td>
           </tr>

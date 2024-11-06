@@ -1,1 +1,4 @@
 [24]---------------------------------UPDATE tblShipping SET  WHERE id = ?
+SELECT IDENT_CURRENT('tblSubscriptionType') + 1 AS ProximoID;
+
+SET IDENTITY_INSERT tblSubscriptionType ON;
