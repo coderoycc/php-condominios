@@ -12,18 +12,17 @@
       <div class="col-md-6 mx-auto">
         <?php if ($nuevo) : ?>
           <label for="mes">Selecciona un mes:</label>
-          <input type="month" id="mes" name="mes" class="form-control" value="<?= date("Y-m") ?>">
+          <input type="month" id="date_add_new" class="form-control" value="<?= date("Y-m") ?>">
         <?php else : ?>
           <label for="mes">Mes:</label>
-          <input type="hidden" id="mes" name="mes" value="<?= $fecha ?>">
-          <?php $fecha = explode('-', $fecha); ?>
-          <input type="month" class="form-control" disabled value="<?= $fecha[0] . '-' . $fecha[1] ?>">
+          <input type="month" class="form-control" disabled value="<?= $year . '-' . $month ?>">
         <?php endif; ?>
       </div>
     </div>
     <div class="row">
       <form id="<?= $nuevo ? 'fill_amounts_form' : 'update_amounts' ?>">
-        <input type="hidden" name="id_department" value="<?= $department->id_department ?>">
+        <input type="hidden" name="sub_id" value="<?= $subscription->id_subscription ?>">
+        <input type="hidden" name="key" value="<?= $key ?>">
         <table class="table table-striped">
           <thead>
             <tr class="text-center">
@@ -44,7 +43,7 @@
                 <td>
                   <input type="hidden" name="id_detail[]" value="<?= $service['id_service_detail'] ?? '' ?>" />
                   <input type="hidden" name="ids[]" value="<?= $service['id_service'] ?>">
-                  <input type="number" name="amounts[]" class="form-control service_amount text-end" placeholder="0.0" step="any" value="<?= $service['amount'] ?? '' ?>">
+                  <input type="number" name="amounts[]" class="form-control service_amount text-end" placeholder="0.0" step="any" value="<?= $service['amount'] != null ? number_format($service['amount'], 2) : '' ?>">
                 </td>
               </tr>
             <?php endforeach; ?>

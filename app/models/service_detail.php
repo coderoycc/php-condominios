@@ -4,18 +4,23 @@ namespace App\Models;
 
 use PDO;
 
+/**
+ * Esquematiza y trabaja con la tabla tblServiceDetailPerMonth
+ */
 class ServiceDetail {
   private $con = null;
   public int $id_service_detail;
   public int $service_id;
   public float $amount;
-  public string $month;
+  public int $month;
+  public int $year;
+  public string $filename; // nombre del archivo comprobante
   public function __construct($con = null, $id_service_detail = null) {
     $this->objectNull();
     if ($con) {
       $this->con = $con;
       if ($id_service_detail) {
-        $sql = "SELECT * FROM tblServiceDetail WHERE id_service_detail = ?";
+        $sql = "SELECT * FROM tblServiceDetailPerMonth WHERE id_service_detail = ?";
         $stmt = $this->con->prepare($sql);
         $stmt->execute([$id_service_detail]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -29,21 +34,25 @@ class ServiceDetail {
     $this->id_service_detail = 0;
     $this->service_id = 0;
     $this->amount = 0;
-    $this->month = '';
+    $this->month = 0;
+    $this->year = 0;
+    $this->filename = "";
   }
   public function load($row) {
     $this->id_service_detail = $row['id_service_detail'];
     $this->service_id = $row['service_id'];
-    $this->amount = $row['amount'];
-    $this->month = $row['month'];
+    $this->amount = $row['amount'] ?? 0;
+    $this->month = $row['month'] ?? 0;
+    $this->year = $row['year'] ?? 0;
+    $this->filename = $row['filename'] ?? "";
   }
   public function insert(): int {
     if ($this->con == null)
       return -1;
     try {
-      $sql = "INSERT INTO tblServiceDetail(service_id,amount,month) VALUES(?,?,?);";
+      $sql = "INSERT INTO tblServiceDetailPerMonth(service_id,amount,[month],[year]) VALUES(?,?,?,?);";
       $stmt = $this->con->prepare($sql);
-      $stmt->execute([$this->service_id, $this->amount, $this->month]);
+      $stmt->execute([$this->service_id, $this->amount, $this->month, $this->year]);
       $this->id_service_detail = $this->con->lastInsertId();
       return $this->id_service_detail;
     } catch (\Throwable $th) {
@@ -55,7 +64,7 @@ class ServiceDetail {
     if ($this->con == null)
       return -1;
     try {
-      $sql = "UPDATE tblServiceDetail SET service_id = ?, amount = ? WHERE id_service_detail = ?";
+      $sql = "UPDATE tblServiceDetailPerMonth SET service_id = ?, amount = ? WHERE id_service_detail = ?";
       $stmt = $this->con->prepare($sql);
       $stmt->execute([$this->service_id, $this->amount, $this->id_service_detail]);
       return $this->id_service_detail;
@@ -71,14 +80,15 @@ class ServiceDetail {
    * @param PDO $con
    * @param int $month
    * @param int $year
-   * @param int $depa_id
+   * @param int $sub_id
    * @return bool
    */
-  public static function verify_exist($con, $month, $year, $depa_id) {
+  public static function verify_exist($con, $month, $year, $sub_id) {
     try {
-      $sql = "SELECT * FROM tblServices a INNER JOIN tblServiceDetail b 
-      ON a.id_service = b.service_id AND a.department_id = $depa_id
-      WHERE MONTH(b.month) = $month AND YEAR(b.month) = $year";
+      $sql = "SELECT * FROM tblServices a 
+              INNER JOIN tblServiceDetailPerMonth b
+              ON a.id_service = b.service_id AND a.subscription_id = $sub_id
+              WHERE b.[month] = $month AND b.[year] = $year;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -98,12 +108,22 @@ class ServiceDetail {
    * @param mixed $depa_id
    * @return array
    */
-  public static function list_depa_amounts($con, $date, $depa_id) {
+  public static function list_bysub_amounts($con, $year, $month, $sub_id) {
+    // otra forma
+    // WITH servicepay AS (
+    //   SELECT [month], [year], subscription_id, status FROM tblPaymentsServices WHERE subscription_id = 17 AND [year] = 2024
+    // ) 
+    // SELECT a.*, b.*, c. status FROM tblServiceDetailPerMonth a 
+    // INNER JOIN tblServices b ON a.service_id = b.id_service AND b.subscription_id = 17
+    // LEFT JOIN servicepay c ON a.[month] = c.[month] AND a.[year] = c.[year]
+    // WHERE a.[year] = 2024 AND a.[month] = 8;
     try {
-      $sql = "SELECT * FROM tblServices a 
-      LEFT JOIN tblServiceDetail b 
-      ON a.id_service = b.service_id AND a.department_id = $depa_id
-      WHERE b.[month] = '$date'";
+      $sql = "SELECT a.*, b.*, c.payment_id, c.status
+        FROM tblServiceDetailPerMonth a
+        INNER JOIN tblServices b 
+        ON a.service_id = b.id_service AND b.subscription_id = $sub_id
+        LEFT JOIN tblPaymentsServices c ON a.month = c.month AND a.year = c.year
+        WHERE a.year = $year AND a.month = $month;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);

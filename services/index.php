@@ -46,10 +46,16 @@ require_once("../helpers/middlewares/web_auth.php");
   </div>
 </div><!-- fin contenedor -->
 
-<!-- Modal -->
+<!-- Modal add payments -->
 <div class="modal fade" id="modal_register_payment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content" id="data_add_amounts"></div>
+  </div>
+</div>
+<!-- Modal update payments -->
+<div class="modal fade" id="modal_edit_payment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="data_edit_amounts"></div>
   </div>
 </div>
 <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>

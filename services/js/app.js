@@ -6,10 +6,18 @@ $(document).on('submit', '#fill_amounts_form', send_amounts)
 $(document).on('submit', '#update_amounts', update_amounts)
 $(document).on('change', '#year_codes', load_data_year)
 $(document).on('show.bs.modal', '#modal_register_payment', modalRegisterOpen)
+$(document).on('show.bs.modal', '#modal_edit_payment', modalEditOpen)
 async function modalRegisterOpen(e) {
   const key = e.relatedTarget.dataset.key;
   const id = e.relatedTarget.dataset.id;
   fill_amounts(id, key)
+}
+async function modalEditOpen(e) {
+  const key = e.relatedTarget.dataset.key;
+  const id = e.relatedTarget.dataset.id;
+  const year = e.relatedTarget.dataset.year;
+  const month = e.relatedTarget.dataset.month;
+  edit_amount(year, month, id, key)
 }
 function changeButtons(req) {
   $(".btn-menu").removeClass('active')
@@ -29,8 +37,8 @@ function loadDataByQuery() {
     case 'history':
       list_service_btn('history')
       break;
-    case '':
-      list_service_btn('pagar')
+    case 'topay':
+      getAllServicesToPay()
       break;
     default:
       break;
@@ -92,6 +100,14 @@ async function getAllServicesToPay() {
     dataType: 'html'
   });
   $("#table_services").html(res);
+  $("#table_services_content").DataTable({
+    language: lenguaje,
+    info: false,
+    scrollX: true,
+    columnDefs: [
+      { orderable: false, targets: [5] }
+    ],
+  })
 }
 async function getAllServicesHistory() {
   $("#type_list").html('Historial del pago de servicios')
@@ -135,9 +151,12 @@ async function fill_amounts(id, key) {
 async function send_amounts(e) {
   e.preventDefault();
   const data = $('#fill_amounts_form').serializeArray();
-  const mes = $("#mes").val()
-  data.push({ name: 'mes', value: mes })
-  if (mes == '') {
+  const fecha = $("#date_add_new").val()
+  const month = fecha.split('-')[1];
+  const year = fecha.split('-')[0];
+  data.push({ name: 'month', value: month })
+  data.push({ name: 'year', value: year })
+  if (fecha == '') {
     toast('Seleccione un mes', '', 'error', 2090);
     return;
   }
@@ -149,7 +168,10 @@ async function send_amounts(e) {
   });
   if (res.success) {
     toast('Montos Agregados', '', 'success', 2090);
-    $("#panel_content").children().remove();
+    $("#modal_register_payment").modal('hide');
+    setTimeout(() => {
+      window.location.href = `?req=view`
+    }, 2090);
   } else {
     toast('Error al agregar montos', res.message, 'error', 5000);
   }
@@ -163,7 +185,15 @@ async function update_amounts(e) {
     type: 'PUT',
     dataType: 'json'
   });
-  console.log(res)
+  if (res.success) {
+    toast('Montos Agregados', '', 'success', 2090);
+    $("#modal_edit_payment").modal('hide');
+    setTimeout(() => {
+      location.reload()
+    }, 2090);
+  } else {
+    toast('Error al actualizar montos', res.message, 'error', 5000);
+  }
 }
 async function load_data_year(e) {
   const year = e.target.value;
@@ -171,14 +201,12 @@ async function load_data_year(e) {
   see_codes(id, year);
 }
 
-async function edit_amount(month, depa_id) {
-  const year = $('#year_codes').val();
-  console.log(month, year, depa_id)
+async function edit_amount(year, month, sub_id, key) {
   const res = await $.ajax({
     url: '../app/services/edit_amounts',
-    data: { month, year, depa_id },
+    data: { month, year, sub_id, key },
     type: 'GET',
     dataType: 'html'
   });
-  $("#panel_content").html(res);
+  $("#data_edit_amounts").html(res);
 }

@@ -95,7 +95,7 @@ class ServicesController {
   public function history_all($query)/*web*/ {
     $services = Services::list_filters_all('PAGADO'); // todos los pagados
     $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-    Render::view('services/list_global_services', ['services' => $services, 'months' => $months]);
+    Render::view('services/list_history', ['services' => $services, 'months' => $months]);
   }
   public function codes_department($query) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
@@ -135,33 +135,41 @@ class ServicesController {
     Response::success_json('Success Request', ["detail" => $resp]);
   }
   public function fill_amounts($query) /*web global*/ {
-    // $con = DBWebProvider::getSessionDataDB();
     if (!Request::required(['key'], $query))
-      Render::view('error_hmtl', ['message' => 'No se ha proporcionado la llave de acceso', 'message_detail' => 'Requerido la llave del condominio PIN']);
+      Render::view('error_html', ['message' => 'No se ha proporcionado la llave de acceso', 'message_detail' => 'Requerido la llave del condominio PIN']);
     $key = $query['key'];
     $con = Database::getInstanceByPin($key);
     $subscription = new Subscription($con, $query['id']);
     $department = new Department($con, $subscription->department_id);
     $services = Services::list_by_subscription($con, $query['id']);
-    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => true]);
+    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => true, 'subscription' => $subscription, 'key' => $key]);
   }
-  public function edit_amounts($query) /*web*/ {
-    $con = DBWebProvider::getSessionDataDB();
-    $month = $query['month'];
+  public function edit_amounts($query) /*web global*/ {
+    if (!Request::required(['key', 'year', 'month', 'sub_id'], $query))
+      Render::view('error_html', ['message' => 'No se ha proporcionado la llave de acceso', 'message_detail' => 'Requerido la llave del condominio PIN']);
+
+    $key = $query['key'];
+    $con = Database::getInstanceByPin($key);
+    $month = $query['month'] > 9 ? $query['month'] : "0" . $query['month'];
     $year = $query['year'];
-    $fecha = $year . '-' . ($month > 9 ? $month : '0' . $month) . '-01';
-    $department = new Department($con, $query['depa_id']);
-    $services = ServiceDetail::list_depa_amounts($con, $fecha, $query['depa_id']);
-    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => false, 'fecha' => $fecha]);
+    $subscription = new Subscription($con, $query['sub_id']);
+    $department = new Department($con, $subscription->id_subscription);
+    $services = ServiceDetail::list_bysub_amounts($con, $year, $month, $subscription->id_subscription);
+    Render::view('services/fill_amounts', ['services' => $services, 'department' => $department, 'nuevo' => false, 'year' => $year, 'month' => $month, 'subscription' => $subscription, 'key' => $key]);
   }
-  public function add_amounts($body) /*web*/ {
-    $con = DBWebProvider::getSessionDataDB();
+  public function add_amounts($body) /*web global*/ {
+    if (!Request::required(['key', 'sub_id', 'year', 'month'], $body))
+      Response::error_json(['message' => 'Campos faltantes'], 200);
+
+    $key = $body['key'];
     $ids = $body['ids'];
     $amounts = $body['amounts'];
-    $department_id = $body['id_department'];
-    $mes = $body['mes'] . '-01';
+    $con = Database::getInstanceByPin($key);
+    $mes = $body['month'];
+    $year = $body['year'];
+    $sub_id = $body['sub_id'];
     $n = count($ids);
-    $exist = ServiceDetail::verify_exist($con, intval(explode('-', $mes)[1]), intval(explode('-', $mes)[0]), $department_id);
+    $exist = ServiceDetail::verify_exist($con, $mes, $year, $sub_id);
     if ($exist) {
       Response::error_json(['message' => 'Los montos para este mes ya fueron registrados'], 200);
     }
@@ -171,6 +179,7 @@ class ServicesController {
       $detail->service_id = intval($ids[$i]);
       $detail->amount = $amounts[$i];
       $detail->month = $mes;
+      $detail->year = $year;
       if ($detail->insert() <= 0) {
         $response = false;
         break;
@@ -181,8 +190,12 @@ class ServicesController {
     else
       Response::error_json(['message' => 'Error al agregar servicios'], 200);
   }
-  public function update_amounts($body) /* web */ {
-    $con = DBWebProvider::getSessionDataDB();
+  public function update_amounts($body) /* web global */ {
+    if (!Request::required(['key'], $body))
+      Response::error_json(['message' => 'Requerido llave de acceso'], 200);
+
+    $key = $body['key'];
+    $con = Database::getInstanceByPin($key);
     $detail_ids = $body['id_detail'];
     $amounts = $body['amounts'];
     $n = count($detail_ids);
@@ -194,16 +207,15 @@ class ServicesController {
     }
     Response::success_json('Actualizado correctamente', ['affected' => $updateds, 'total' => $n]);
   }
-  public function my_service_balance() {
-  }
   public function services_in_process($query) {
-    $services = Services::list_filters_all(); // vacio SIN PAGO
+    $year = $query['year'] ?? date('Y');
+    $services = Services::list_filters_all('SIN PAGO', $year); // vacio SIN PAGO
     $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-    Render::view('services/list_global_services', ['services' => $services, 'months' => $months]);
+    Render::view('services/list_global_services', ['services' => $services, 'months' => $months, 'year' => $year]);
   }
   public function services_to_pay($query) {
     $services = Services::list_filters_all('QR PAGADO'); // pagados por el residente
 
-    Render::view('services/list_global_services', ['services' => $services]);
+    Render::view('services/list_to_pay', ['services' => $services]);
   }
 }

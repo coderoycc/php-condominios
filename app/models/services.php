@@ -189,7 +189,8 @@ class Services extends BaseModel {
   }
   public static function list_by_subscription($con, $id_sub) {
     try {
-      $sql = "SELECT * FROM tblServices WHERE subscription_id = $id_sub;";
+      // monto nulo unicamente para conocer los servicios
+      $sql = "SELECT * , NULL as amount FROM tblServices WHERE subscription_id = $id_sub;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -199,7 +200,7 @@ class Services extends BaseModel {
     return [];
   }
   /**
-   * Listado de servicios por year y filtrados por el estado del pago
+   * Listado de servicios por year y filtrados por el estado del pago de un anio
    * @param string $status 'QR PAGADO', 'PAGADO', 
    * @param int $year
    * @return array
