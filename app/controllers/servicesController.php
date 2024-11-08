@@ -13,7 +13,10 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Utils\url_public_condominio;
+
 class ServicesController {
+  static $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
   public function add_code_service($body, $files = null) /* protected */ {
     if (!Request::required(['service_name', 'code', 'id_sername'], $body))
       Response::error_json(['message' => 'Campos faltantes [service_name, code, id_sername]']);
@@ -93,9 +96,10 @@ class ServicesController {
     Render::view('services/subs_enable', ['subscriptions' => $subscriptions]);
   }
   public function history_all($query)/*web*/ {
-    $services = Services::list_filters_all('PAGADO'); // todos los pagados
-    $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-    Render::view('services/list_history', ['services' => $services, 'months' => $months]);
+    $year = $query['year'] ?? date('Y');
+    $services = Services::list_filters_all('PAGADO', $year); // todos los pagados
+
+    Render::view('services/list_history', ['services' => $services, 'months' => self::$months, 'year' => $year]);
   }
   public function codes_department($query) /*web*/ {
     $con = DBWebProvider::getSessionDataDB();
@@ -210,12 +214,56 @@ class ServicesController {
   public function services_in_process($query) {
     $year = $query['year'] ?? date('Y');
     $services = Services::list_filters_all('SIN PAGO', $year); // vacio SIN PAGO
-    $months = ['', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-    Render::view('services/list_global_services', ['services' => $services, 'months' => $months, 'year' => $year]);
+    Render::view('services/list_global_services', ['services' => $services, 'months' => self::$months, 'year' => $year]);
   }
-  public function services_to_pay($query) {
-    $services = Services::list_filters_all('QR PAGADO'); // pagados por el residente
+  public function services_to_pay($query) /*web global*/ {
+    $year = $query['year'] ?? date('Y');
+    $services = Services::list_filters_all('QR PAGADO', $year); // pagados por el residente
+    Render::view('services/list_to_pay', ['services' => $services, 'months' => self::$months, 'year' => $year]);
+  }
+  public function detail_payment($query)/*web global*/ {
+    if (!Request::required(['id', 'month', 'year', 'key'], $query))
+      Render::view('error_html', ['message' => 'Campos faltantes', 'message_deatail' => 'Parametros requeridos no identificados.']);
 
-    Render::view('services/list_to_pay', ['services' => $services]);
+    $month = self::$months[intval($query['month'])];
+    $year = $query['year'];
+    $key = $query['key'];
+    $con = Database::getInstanceByPin($key);
+
+    $subscription = new Subscription($con, $query['id']);
+    $department = new Department($con, $subscription->id_subscription);
+    $services = ServiceDetail::list_bysub_amounts($con, $year, $query['month'], $subscription->id_subscription);
+
+    $url_name = url_public_condominio($key, 'vouchers');
+
+
+    Render::view('services/detail', ['department' => $department, 'services' => $services, 'month' => $month, 'year' => $year, 'key' => $key, 'urlbase' => $url_name]);
+  }
+  public function pay_voucher($query) {
+    if (!Request::required(['id', 'month', 'year', 'key'], $query))
+      Render::view('error_html', ['message' => 'Campos faltantes', 'message_deatail' => 'Parametros requeridos no identificados.']);
+
+    $month = self::$months[intval($query['month'])];
+    $year = $query['year'];
+    $key = $query['key'];
+    $con = Database::getInstanceByPin($key);
+
+    $subscription = new Subscription($con, $query['id']);
+    $department = new Department($con, $subscription->id_subscription);
+    $services = ServiceDetail::list_bysub_amounts($con, $year, $query['month'], $subscription->id_subscription);
+
+    Render::view('services/form_to_pay', ['department' => $department, 'services' => $services, 'month' => $month, 'year' => $year, 'key' => $key, 'subscription' => $subscription]);
+  }
+  public function add_vouchers_payment($body, $files) {
+    if (!Request::required(['key', 'id'], $body))
+      Response::error_json(['message' => 'Campos faltantes'], 200);
+
+    $key = $body['key'];
+    $con = Database::getInstanceByPin($key);
+
+    $subscription = new Subscription($con, $body['id']);
+    var_dump($files['files']['name']);
+    var_dump($files['files']['tmp_name']);
+    var_dump($body['ids'][0]);
   }
 }

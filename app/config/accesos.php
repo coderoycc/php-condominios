@@ -4,6 +4,7 @@ namespace App\Config;
 
 use App\Config\Database;
 use Helpers\Resources\Response;
+use PDO;
 
 class Accesos {
 
@@ -54,7 +55,7 @@ class Accesos {
       $sql = "SELECT * FROM tblCondominiosData WHERE pin = '$pin';";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+      $res = $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (\Throwable $th) {
       //throw $th;
     }

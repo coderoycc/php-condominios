@@ -4,13 +4,42 @@ $(document).ready(() => {
 
 $(document).on('submit', '#fill_amounts_form', send_amounts)
 $(document).on('submit', '#update_amounts', update_amounts)
+$(document).on('submit', '#pay_form', add_vouchers)
 $(document).on('change', '#year_codes', load_data_year)
 $(document).on('show.bs.modal', '#modal_register_payment', modalRegisterOpen)
 $(document).on('show.bs.modal', '#modal_edit_payment', modalEditOpen)
+$(document).on('show.bs.modal', '#modal_detail_payment', modalOpenDetailPayment)
+$(document).on('show.bs.modal', '#modal_pay_voucher', modalOpenPay)
 async function modalRegisterOpen(e) {
   const key = e.relatedTarget.dataset.key;
   const id = e.relatedTarget.dataset.id;
   fill_amounts(id, key)
+}
+async function modalOpenPay(e) {
+  const key = e.relatedTarget.dataset.key;
+  const id = e.relatedTarget.dataset.id;
+  const year = e.relatedTarget.dataset.year;
+  const month = e.relatedTarget.dataset.month;
+  const res = await $.ajax({
+    url: '../app/services/pay_voucher',
+    data: { key, id, year, month },
+    type: 'GET',
+    dataType: 'html'
+  });
+  $("#data_pay_amounts").html(res);
+}
+async function modalOpenDetailPayment(e) {
+  const key = e.relatedTarget.dataset.key;
+  const id = e.relatedTarget.dataset.id;
+  const year = e.relatedTarget.dataset.year;
+  const month = e.relatedTarget.dataset.month;
+  const res = await $.ajax({
+    url: '../app/services/detail_payment',
+    data: { key, id, year, month },
+    type: 'GET',
+    dataType: 'html'
+  });
+  $("#data_datail_amounts").html(res)
 }
 async function modalEditOpen(e) {
   const key = e.relatedTarget.dataset.key;
@@ -209,4 +238,19 @@ async function edit_amount(year, month, sub_id, key) {
     dataType: 'html'
   });
   $("#data_edit_amounts").html(res);
+}
+async function add_vouchers(e) {
+  e.preventDefault();
+  // enviar en un FormData el formulario
+  const formData = new FormData(document.getElementById('pay_form'));
+  const res = await $.ajax({
+    url: '../app/services/add_vouchers_payment',
+    data: formData,
+    type: 'POST',
+    dataType: 'json',
+    processData: false,
+    contentType: false,
+    cache: false,
+  });
+  console.log(res)
 }

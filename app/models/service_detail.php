@@ -113,7 +113,7 @@ class ServiceDetail {
     // WITH servicepay AS (
     //   SELECT [month], [year], subscription_id, status FROM tblPaymentsServices WHERE subscription_id = 17 AND [year] = 2024
     // ) 
-    // SELECT a.*, b.*, c. status FROM tblServiceDetailPerMonth a 
+    // SELECT a.*, b.*, c.status, c.payment_id FROM tblServiceDetailPerMonth a 
     // INNER JOIN tblServices b ON a.service_id = b.id_service AND b.subscription_id = 17
     // LEFT JOIN servicepay c ON a.[month] = c.[month] AND a.[year] = c.[year]
     // WHERE a.[year] = 2024 AND a.[month] = 8;
@@ -122,7 +122,7 @@ class ServiceDetail {
         FROM tblServiceDetailPerMonth a
         INNER JOIN tblServices b 
         ON a.service_id = b.id_service AND b.subscription_id = $sub_id
-        LEFT JOIN tblPaymentsServices c ON a.month = c.month AND a.year = c.year
+        LEFT JOIN tblPaymentsServices c ON a.month = c.month AND a.year = c.year AND c.subscription_id = $sub_id
         WHERE a.year = $year AND a.month = $month;";
       $stmt = $con->prepare($sql);
       $stmt->execute();

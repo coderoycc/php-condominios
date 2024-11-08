@@ -58,6 +58,20 @@ require_once("../helpers/middlewares/web_auth.php");
     <div class="modal-content" id="data_edit_amounts"></div>
   </div>
 </div>
+
+<!-- Modal detail payments -->
+<div class="modal fade" id="modal_detail_payment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="data_datail_amounts"></div>
+  </div>
+</div>
+<!-- Modal pay  -->
+<div class="modal fade" id="modal_pay_voucher" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="data_pay_amounts"></div>
+  </div>
+</div>
+
 <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="../js/scripts.js"></script>
 <script src="../assets/datatables/datatables.jquery.min.js"></script>
