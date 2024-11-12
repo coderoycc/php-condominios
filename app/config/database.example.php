@@ -4,7 +4,7 @@ namespace App\Config;
 
 use App\Config\Accesos;
 use Helpers\Resources\Response;
-use Throwable;
+use PDO;
 
 class Database {
   private static $serverName = "localhost";
@@ -67,7 +67,7 @@ class Database {
       $sql = "SELECT * FROM tblCondominiosData WHERE pin = '$pin';";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $res = $stmt->fetch();
+      $res = $stmt->fetch(PDO::FETCH_ASSOC);
 
       if (isset($res['dbname'])) {
         return self::getInstanceX($res['dbname']);
@@ -91,13 +91,13 @@ class Database {
       } else {
         return null;
       }
-    } catch (Throwable $th) {
+    } catch (\Throwable $th) {
       return null;
     }
   }
-  public static function getInstanceX($databaseName) {
+  public static function getInstanceX($databaseName): PDO {
     try {
-      self::$con = new \PDO("sqlsrv:Server=" . self::$serverName . ";Database=$databaseName;Encrypt=0;TrustServerCertificate=1", self::$username, self::$password);
+      self::$con = new PDO("sqlsrv:Server=" . self::$serverName . ";Database=$databaseName;Encrypt=0;TrustServerCertificate=1", self::$username, self::$password);
       self::$con->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     } catch (\PDOException $e) {
       self::$con = null;

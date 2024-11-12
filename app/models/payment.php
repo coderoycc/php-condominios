@@ -5,7 +5,10 @@ namespace App\Models;
 use Exception;
 use Ramsey\Uuid\Uuid;
 
-require_once(__DIR__ . '/QR.php');
+use const App\Config\BUSINESS_CODE;
+
+use function App\Services\pay;
+
 class Payment {
   private $con;
   public int $idPayment;
@@ -22,6 +25,7 @@ class Payment {
   public string $created_at;
   public int $id_qr;
   public string $expiration_qr;
+  public string $account;
   public function __construct($con = null, $idPayment = null) {
     $this->objectNull();
     if ($con) {
@@ -52,6 +56,7 @@ class Payment {
     $this->created_at = "";
     $this->id_qr = 0;
     $this->expiration_qr = "";
+    $this->account = "";
   }
   public function load($row) {
     $this->idPayment = $row['idPayment'];
@@ -68,29 +73,12 @@ class Payment {
     $this->created_at = $row['created_at'];
     $this->id_qr = $row['id_qr'] ?? 0;
     $this->expiration_qr = $row['expiration_qr'] ?? '1970-01-01 00:00:00';
+    $this->account = $row['account'] ?? '';
   }
-  public function pay_with_qr() {
-    $this->type = 'QR';
-    $this->currency = "BOB";
-    $this->serviceCode = '050';
-    $this->bussinessCode = '050';
-    $uuid = Uuid::uuid4();
-    $this->correlation_id = $uuid->toString();
-    $qr = QR::generarQR($this);
-    $resImage = "";
-    if ($qr->state == "00") {
-      $this->id_qr = $qr->data->id;
-      $resImage = $qr->data->qrImage;
-      $this->expiration_qr = $qr->data->expirationDate;
-      $this->save();
-    }
-    return $resImage;
-  }
-
   public function save() {
     if ($this->con) {
       try {
-        $sql = "INSERT INTO tblPayments (currency, amount, gloss, type, correlation_id, serviceCode, app_user_id, bussinessCode, id_qr) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO tblPayments (currency, amount, gloss, type, correlation_id, serviceCode, app_user_id, bussinessCode, id_qr, account) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = $this->con->prepare($sql);
         $stmt->execute([$this->currency, $this->amount, $this->gloss, $this->type, $this->correlation_id, $this->serviceCode, $this->app_user_id, $this->bussinessCode, $this->id_qr]);
         $this->idPayment = $this->con->lastInsertId();

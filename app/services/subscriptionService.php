@@ -2,14 +2,16 @@
 
 namespace App\Services;
 
+use App\Models\Payment;
 use App\Models\Subscription;
 use Helpers\Resources\HandleDates;
+use PDO;
 
 class SusbcriptionService {
   public function get($con, $id): Subscription {
     return new Subscription($con, $id);
   }
-  public function subscribe($con, $data, $annual = false) {
+  public function subscribe($con, $data, $annual = false): Subscription {
     $subscription = new Subscription($con, null);
     $period = $annual ? 12 : 6;
     $subscription->type_id = $data['type']->id;
@@ -45,6 +47,16 @@ class SusbcriptionService {
       return $subscription;
 
     return new Subscription();
+  }
+  /**
+   * Relaciona la suscripcion con el pago realizado
+   * @param PDO $con
+   * @param int $id_subscription
+   * @param int $id_payment
+   * @return void
+   */
+  public function add_sub($con, $id_subscription, $id_payment) {
+    Payment::relation_payment_subscription($con, $id_payment, $id_subscription);
   }
 }
 if (!function_exists('subscription')) {

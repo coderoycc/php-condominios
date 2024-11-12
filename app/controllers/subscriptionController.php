@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Config\Accesos;
 use App\Config\Database;
 use App\Models\Resident;
 use App\Models\Subscription;
@@ -42,6 +43,7 @@ class SubscriptionController {
       Response::error_json(['message' => 'Parametros faltantes dd']);
 
     $con = Database::getInstanceByPin($data['pin']);
+    $condominio = Accesos::getCondominio($data['pin']);
     $type = new Subscriptiontype($con, $data['type_id']);
     $resident = new Resident($con, $data['user_id']);
     // existe departamento con suscripcion
@@ -53,11 +55,12 @@ class SubscriptionController {
 
     if ($type->price > 0) {
       $annual = $data['annual'] && $data['annual'] == '1' ? false : true;
-      $payment = pay()->subscription($con, $data_pay, $annual);
-      $qrImage = $payment->pay_with_qr();
+      $response = pay()->subscription($con, $data_pay, $annual, $condominio);
+      $payment = $response['payment'];
+      $qrImage = $response['qrImage'];
       $res_sub = subscription()->subscribe($con, $data_pay, $annual);
       if ($payment->idPayment > 0 && $res_sub->id_subscription > 0) {
-        pay()->add_sub($con, $res_sub->id_subscription, $payment->idPayment);
+        subscription()->add_sub($con, $res_sub->id_subscription, $payment->idPayment);
         Response::success_json('QR Generado', ['payment' => $payment, 'subscription' => $res_sub, 'qr' => $qrImage]);
       } else
         Response::error_json(['message' => 'Error al generar QR', 'error' => true]);

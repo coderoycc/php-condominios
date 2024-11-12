@@ -1,6 +1,7 @@
 /.vscode/
 /app/config/database.php
 /app/vendor/*
+/app/config/constants.php
 /public/domain/
 /tcpdf/
 /public/*
