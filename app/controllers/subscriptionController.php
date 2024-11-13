@@ -20,7 +20,7 @@ class SubscriptionController {
   public function types($data) {
     if (!Request::required(['pin'], $data))
       Response::error_json(['message' => 'Datos faltantes: [pin] requerido']);
-    $data = Subscription::getTypes($data['pin']);
+    $data = Subscription::getTypes($data['pin'], false);
     $response = [];
     foreach ($data as $type) {
       $subType = new Subscriptiontype();
@@ -32,7 +32,7 @@ class SubscriptionController {
   public function types_web($data) /*web*/ {
     $condominio = DBWebProvider::session_get_condominio();
     if (isset($condominio->pin)) {
-      $data_subs = Subscription::getTypes($condominio->pin);
+      $data_subs = Subscription::getTypes($condominio->pin, false);
       Render::view('subscription/type_list', ['data_subs' => $data_subs]);
     } else {
       Render::view('error_html', ['message' => 'PIN no encontrado', 'message_detail' => 'Inicie sesión']);

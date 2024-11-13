@@ -78,9 +78,9 @@ class Payment {
   public function save() {
     if ($this->con) {
       try {
-        $sql = "INSERT INTO tblPayments (currency, amount, gloss, type, correlation_id, serviceCode, app_user_id, bussinessCode, id_qr, account) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        $sql = "INSERT INTO tblPayments (currency, amount, gloss, type, correlation_id, serviceCode, app_user_id, bussinessCode, account) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         $stmt = $this->con->prepare($sql);
-        $stmt->execute([$this->currency, $this->amount, $this->gloss, $this->type, $this->correlation_id, $this->serviceCode, $this->app_user_id, $this->bussinessCode, $this->id_qr]);
+        $stmt->execute([$this->currency, $this->amount, $this->gloss, $this->type, $this->correlation_id, $this->serviceCode, $this->app_user_id, $this->bussinessCode, $this->account]);
         $this->idPayment = $this->con->lastInsertId();
         return $this->idPayment;
       } catch (\Throwable $th) {

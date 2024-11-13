@@ -98,16 +98,23 @@ class Subscriptiontype {
     }
     return false;
   }
-  public static function getTypes($pin = null, $con = null) {
+  /**
+   * Devuelve los tipos de habilitador por defecto
+   * @param mixed $pin
+   * @param mixed $con
+   * @return mixed
+   */
+  public static function getTypes($pin = null, $con = null, $enables = true) {
     try {
+      $where = $enables ? " WHERE status = 1" : "";
       if ($pin) {
         $con = Database::getInstanceByPin($pin);
-        $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
+        $stmt = $con->prepare("SELECT * FROM tblSubscriptionType $where");
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;
       } else if ($con) {
-        $stmt = $con->prepare("SELECT * FROM tblSubscriptionType");
+        $stmt = $con->prepare("SELECT * FROM tblSubscriptionType $where");
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $rows;

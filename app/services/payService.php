@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+require_once(__DIR__ . '/interfaces/IPay.php');
+
 use App\Models\Payment;
 use App\Services\Interfaces\IPay;
+use App\Utils\HandlerPays;
 use Ramsey\Uuid\Nonstandard\Uuid;
 
 use const App\Config\BUSINESS_CODE;
 use const App\Config\SERVICE_CODE;
 
 class PayService implements IPay {
-  public function new($con, $condominio, $amount, $gloss, $phoneNumber, $payment): mixed {
-    return [];
-  }
   public function subscription($con, $data, $annual, $condominio): array {
     $payment = new Payment($con);
     $payment->currency = 'BOB';
@@ -27,13 +27,22 @@ class PayService implements IPay {
     $payment->account = 'SUB';
     $payment->type = 'QR';
     $payment->amount = $annual ? $type->annual_price : $type->price;
+    $payment->save();
     // realizamos la peticion api qr
+    $pay = new HandlerPays();
+    $res_qr = $pay->load(
+      $payment,
+      $condominio,
+      1
+    );
+    if ($payment->idPayment > 0) {
+    }
 
-    return [];
+    return ['payment' => $payment, 'qr_data' => $res_qr];
   }
 
-  public function get_qr_byid($con, $qr_id, $condominio): mixed {
-    return new Payment();
+  public function get_qr_byid($con, $qr_id, $condominio): array {
+    return [];
   }
 }
 if (!function_exists('pay')) {

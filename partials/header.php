@@ -1,3 +1,21 @@
+<!-- Style header -->
+<style>
+  .select_cond {
+    background-color: var(--bs-success);
+    border: 0;
+    color: var(--bs-white);
+    padding: 12px;
+    outline: none;
+  }
+
+  .select_cond:active {
+    border: 0;
+  }
+
+  .select_cond:focus-visible {
+    border: 0;
+  }
+</style>
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-primary">
   <!-- <a class="navbar-brand ps-3" id="select_condominio" href="#!"><b><?= strtoupper($condominio->name ?? '') ?></b></a> -->
   <select class="h4 select_cond" id="select_condominio">
@@ -18,7 +36,7 @@
       <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
         <li><a class="dropdown-item" href="#!">Usuario: <b><?= $user->username ?? '' ?></b></a></li>
-        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+        <li><a class="dropdown-item" href="../dash/">Ir al panel </a></li>
         <li>
           <hr class="dropdown-divider" />
         </li>

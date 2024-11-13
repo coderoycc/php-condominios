@@ -31,53 +31,41 @@ require_once("../helpers/middlewares/web_auth.php");
           </ol>
 
           <div class="row">
-            <?php if ($user->role != 'ALMACEN') : ?>
-              <div class="col-xl-3 col-md-6">
-                <div class="card bg-primary text-white mb-4 shadow">
-                  <div class="card-body">
-                    <h4><i class="fa fa-plus"></i> Nuevo Envio</h4>
-                  </div>
-                  <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="text-white stretched-link" href="../envios/nuevo.php">Nuevo envio</a>
-                    <div class="small text-white"><i class="fa fa-angle-right"></i></div>
-                  </div>
+
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-primary text-white mb-4 shadow">
+                <div class="card-body">
+                  <h4><i class="fa fa-users"></i> Ver a residentes</h4>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                  <a class="text-white stretched-link" href="../global/residents.php">Ver</a>
+                  <div class="small text-white"><i class="fa fa-angle-right"></i></div>
                 </div>
               </div>
-              <div class="col-xl-3 col-md-6">
-                <div class="card bg-info text-white mb-4 shadow">
-                  <div class="card-body">
-                    <h4><i class="fa fa-eye"></i> Mis envios</h4>
-                  </div>
-                  <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="text-white stretched-link" href="../envios/">Envios</a>
-                    <div class="small text-white"><i class="fa fa-angle-right"></i></div>
-                  </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-info text-white mb-4 shadow">
+                <div class="card-body">
+                  <h4><i class="fa fa-eye"></i> Ver Suscripciones</h4>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                  <a class="text-white stretched-link" href="../global/subscriptions.php">Ir</a>
+                  <div class="small text-white"><i class="fa fa-angle-right"></i></div>
                 </div>
               </div>
-              <div class="col-xl-3 col-md-6">
-                <div class="card bg-success text-white mb-4 shadow">
-                  <div class="card-body">
-                    <h4><i class="fa fa-solid fa-dolly"></i> Recepción</h4>
-                  </div>
-                  <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="../recepcion/">Lista</a>
-                    <div class="text-white"><i class="fa fa-angle-right"></i></div>
-                  </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+              <div class="card bg-success text-white mb-4 shadow">
+                <div class="card-body">
+                  <h4><i class="fa fa-solid fa-dolly"></i> Servicios a pagar</h4>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                  <a class="small text-white stretched-link" href="../services/?req=topay">Ver lista</a>
+                  <div class="text-white"><i class="fa fa-angle-right"></i></div>
                 </div>
               </div>
-            <?php else : ?>
-              <div class="col-xl-3 col-md-6">
-                <div style="background-color:var(--bs-teal);" class="card text-white mb-4 shadow">
-                  <div class="card-body">
-                    <h4><i class="fa fa-solid fa-dolly"></i> Ver Almacén</h4>
-                  </div>
-                  <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="text-white stretched-link" href="../recepcion/almacen.php">Almacén</a>
-                    <div class="small text-white"><i class="fa fa-angle-right"></i></div>
-                  </div>
-                </div>
-              </div>
-            <?php endif; ?>
+            </div>
+
           </div>
         </div>
       </main>

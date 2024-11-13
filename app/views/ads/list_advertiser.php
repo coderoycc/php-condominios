@@ -1,5 +1,5 @@
 <div class="row m-2">
-  <p class="text-muted fw-semibold fs-4"><i class="fa-solid fa-handshake"></i> Lista de anunciantes</p>
+  <p class="text-muted fw-semibold fs-4"><i class="fa-solid fa-handshake"></i> Lista de Empresas</p>
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>

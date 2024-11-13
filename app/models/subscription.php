@@ -153,8 +153,8 @@ class Subscription {
     }
     return 0;
   }
-  public static function getTypes($pin) {
-    return Subscriptiontype::getTypes($pin, null);
+  public static function getTypes($pin, $enables = false) {
+    return Subscriptiontype::getTypes($pin, null, $enables);
   }
   public static function getSusbscriptionUser($con = null, $id_user): Subscription {
     $subscription = new Subscription($con);
