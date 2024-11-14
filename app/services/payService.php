@@ -3,6 +3,7 @@
 namespace App\Services;
 
 require_once(__DIR__ . '/interfaces/IPay.php');
+require_once(__DIR__ . '/../utils/pays/handlerPay.php');
 
 use App\Models\Payment;
 use App\Services\Interfaces\IPay;
@@ -26,16 +27,23 @@ class PayService implements IPay {
     $payment->gloss = 'Suscripcion ' . $type->name;
     $payment->account = 'SUB';
     $payment->type = 'QR';
+    $payment->account = '1';
     $payment->amount = $annual ? $type->annual_price : $type->price;
     $payment->save();
     // realizamos la peticion api qr
-    $pay = new HandlerPays();
-    $res_qr = $pay->load(
-      $payment,
-      $condominio,
-      1
-    );
+    $res_qr = [];
     if ($payment->idPayment > 0) {
+      $pay = new HandlerPays();
+      $res_qr = $pay->load(
+        $payment,
+        $condominio,
+        '1'
+      )->pay();
+      var_dump($res_qr);
+      if ($res_qr['state'] == '00') {
+        $payment->id_qr = $res_qr['data']['id'];
+        $payment->update_qr();
+      }
     }
 
     return ['payment' => $payment, 'qr_data' => $res_qr];

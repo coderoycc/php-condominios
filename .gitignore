@@ -6,3 +6,5 @@
 /tcpdf/
 /public/*
 /PHPExcel/*
+/app/config/cert.pem
+/app/config/BCP_SANDBOX.pfx

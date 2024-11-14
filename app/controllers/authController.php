@@ -18,13 +18,16 @@ class AuthController {
 
     $condominioData = Accesos::getCondominio($data['pin']);
     if (!empty($condominioData)) {
-      $auth = new AuthProvider(null, $condominioData['dbname']);
+      $dbname = $condominioData['dbname'];
+      unset($condominioData['dbname']);
+      $auth = new AuthProvider(null, $dbname);
       $data_login = $auth->auth($data['user'], $data['password']);
+      $data_login['condominio'] = $condominioData;
       $user = $data_login['user'];
       if ($user->id_user > 0) { // existe el usuario        
         if (!$data_login['expired'] && $data_login['status'] == 'VALIDO') { //suscripcion no vencida
-          $validez = time() + 3600 * 24;
-          $codicationdb = base64_encode(base64_encode($condominioData['dbname']));
+          $validez = time() + 3600 * 24; // 1 dia
+          $codicationdb = base64_encode(base64_encode($dbname));
           $codificationPIN = base64_encode(base64_encode($data['pin']));
           $sub = $data_login['subscription'];
           $sub_data = base64_encode(base64_encode('S-' . $sub->id_subscription));

@@ -2,6 +2,8 @@
 
 namespace App\Utils;
 
+require_once(__DIR__ . '/../../providers/qrDataProvider.php');
+
 use App\Models\Payment;
 use App\Providers\QrDataProvider;
 
@@ -15,8 +17,10 @@ class HandlerPays {
   private $instance = null;
   public function __construct($method = 'POST') {
     $this->instance = curl_init();
+    curl_setopt($this->instance, CURLOPT_URL, URLBASE_API_QR . '/Generated');
     curl_setopt($this->instance, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($this->instance, CURLOPT_CUSTOMREQUEST, $method);
+    // curl_setopt($this->instance, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1 | CURL_SSLVERSION_TLSv1_1 | CURL_SSLVERSION_TLSv1_3);
   }
   /**
    * 
@@ -71,12 +75,19 @@ class HandlerPays {
     curl_setopt($this->instance, CURLOPT_USERPWD, $data->get_auth());
     curl_setopt($this->instance, CURLOPT_SSLCERTTYPE, 'PEM');
     curl_setopt($this->instance, CURLOPT_SSLCERT, $data->get_cert());
+    curl_setopt($this->instance, CURLOPT_SSLKEY, $data->get_cert());
+    // curl_setopt($this->instance, CURLOPT_CAINFO, __DIR__ . '/../../config/cacert.pem');
+    curl_setopt($this->instance, CURLOPT_SSL_VERIFYHOST, 2);
+    curl_setopt($this->instance, CURLOPT_SSL_VERIFYPEER, true);
+
+    // curl_setopt($this->instance, CURLOPT_SSLCERTPASSWD, $data->get_cert_pass());
     return $this;
   }
   public function pay() {
-    curl_setopt($this->instance, CURLOPT_URL, URLBASE_API_QR . '/Generated');
+
     try {
       $response = curl_exec($this->instance);
+      var_dump($response);
       if (curl_errno($this->instance)) {
         throw new \Exception(curl_error($this->instance));
       }

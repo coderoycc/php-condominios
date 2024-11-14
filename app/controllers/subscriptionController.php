@@ -54,7 +54,7 @@ class SubscriptionController {
     $data_pay = ['resident' => $resident, 'type' => $type, 'nit' => $data['nit'] ?? '000'];
 
     if ($type->price > 0) {
-      $annual = $data['annual'] && $data['annual'] == '1' ? false : true;
+      $annual = $data['annual'] && $data['annual'] == '1' ? true : false;
       $response = pay()->subscription($con, $data_pay, $annual, $condominio);
       $payment = $response['payment'];
       $qrImage = $response['qrImage'];

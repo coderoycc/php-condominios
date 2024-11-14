@@ -104,6 +104,20 @@ class Payment {
       return false;
     }
   }
+  public function update_qr() {
+    if ($this->con) {
+      try {
+        $sql = "UPDATE tblPayments SET id_qr = ? WHERE idPayment = ? ";
+        $stmt = $this->con->prepare($sql);
+        $res = $stmt->execute([$this->id_qr, $this->idPayment]);
+        if ($res)
+          return true;
+      } catch (\Throwable $th) {
+        var_dump($th);
+      }
+      return false;
+    }
+  }
   public static function relation_payment_subscription($con, $id_payment, $id_subscription) {
     if ($con) {
       try {
