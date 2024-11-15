@@ -219,7 +219,7 @@ class Subscription {
           ON a.user_id = b.id_user
           WHERE a.subscription_id IN (
             SELECT id_subscription FROM tblSubscriptions WHERE type_id = $type_id AND YEAR(expires_in) >= $year AND department_id = $resident->department_id
-          ) AND b.status = 'VALIDO'";
+          ) AND b.status = 1";
         $stmt = $con->prepare($sql);
         $stmt->execute();
         $cantidad = $stmt->fetch()['cantidad'];

@@ -40,7 +40,7 @@ class SubscriptionController {
   }
   public function subscribe($data, $files = null) {
     if (!Request::required(['type_id', 'user_id', 'pin', 'annual'], $data))
-      Response::error_json(['message' => 'Parametros faltantes dd']);
+      Response::error_json(['message' => 'Parametros faltantes']);
 
     $con = Database::getInstanceByPin($data['pin']);
     $condominio = Accesos::getCondominio($data['pin']);
@@ -48,7 +48,7 @@ class SubscriptionController {
     $resident = new Resident($con, $data['user_id']);
     // existe departamento con suscripcion
     $subsDepa = Subscription::get_department_subscription($con, $resident->department_id, ['status' => 'VALIDO', 'no_expired' => true]);
-    if (count($subsDepa)) {
+    if (count($subsDepa) > 0) {
       Response::error_json(['success' => false, 'message' => 'El departamento ya tiene una suscripción valida', 'error' => true], 200);
     }
     $data_pay = ['resident' => $resident, 'type' => $type, 'nit' => $data['nit'] ?? '000'];
@@ -56,8 +56,12 @@ class SubscriptionController {
     if ($type->price > 0) {
       $annual = $data['annual'] && $data['annual'] == '1' ? true : false;
       $response = pay()->subscription($con, $data_pay, $annual, $condominio);
+      if (!isset($response['qr_data']['data']))
+        Response::error_json(['message' => 'Error al generar QR', 'error' => true]);
+
+
       $payment = $response['payment'];
-      $qrImage = $response['qrImage'];
+      $qrImage = $response['qr_data']['data']['qrImage'];
       $res_sub = subscription()->subscribe($con, $data_pay, $annual);
       if ($payment->idPayment > 0 && $res_sub->id_subscription > 0) {
         subscription()->add_sub($con, $res_sub->id_subscription, $payment->idPayment);

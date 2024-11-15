@@ -42,7 +42,9 @@ class QrDataProvider {
       $this->certpass = PASSWORD_SSL;
       $this->pfxfile = URL_CERT_PFX;
     }
-    // $this->loadpem();
+    if (!file_exists(URL_CERT)) {
+      $this->loadpem();
+    }
   }
   protected function loadpem() {
     $contenidoPfx = file_get_contents($this->pfxfile);

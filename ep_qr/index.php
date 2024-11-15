@@ -1,66 +1,98 @@
 <?php
 
-namespace EPQr;
+use const App\Config\PASSWORD_SSL;
+use const App\Config\PWD_1;
+use const App\Config\URL_CERT_PFX;
+use const App\Config\URLBASE_API_QR;
+use const App\Config\USER_1;
 
-use App\Config\Database;
-use App\Models\Payment;
-use App\Models\Subscription;
-use App\Models\Subscriptiontype;
-use App\Models\User;
-use Helpers\Resources\HandleDates;
+require_once(__DIR__ . '/../app/config/constants.php');
+// URL de la API a la que deseas hacer la petición
+$url = URLBASE_API_QR . '/Generated';
 
-// require_once(__DIR__ . '/../app/models/');
-require_once(__DIR__ . '/../app/config/accesos.php');
-require_once(__DIR__ . '/../app/config/database.php');
-require_once(__DIR__ . '/../app/models/payment.php');
-require_once(__DIR__ . '/../app/models/subscription.php');
-require_once(__DIR__ . '/../helpers/resources/dates.php');
+// Inicializar cURL
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_VERBOSE, true);
 
-header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
+// Configurar opciones de cURL
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_SSLCERTTYPE, "P12");
+curl_setopt($curl, CURLOPT_SSLCERT, URL_CERT_PFX);
+curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_3);
+// var_dump(URL_CERT_PFX);
+// var_dump(PASSWORD_SSL);
+// if (file_exists(URL_CERT_PFX)) {
+//   echo 'existe CERTIFICADO PFX';
+// }
+curl_setopt($curl, CURLOPT_SSLCERTPASSWD, PASSWORD_SSL);
 
-$data = file_get_contents('php://input');
-$body = json_decode($data, true);
+// Verificar cadena de CA
+curl_setopt($curl, CURLOPT_CAINFO, __DIR__ . '/../app/config/crt.pem');
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
 
-if ($body['ResponseCode'] == '000' && $body['state']) {
-  $collectors = $body['Collectors'];
-  $service_data = $collectors[0]['value'];
-  $payment_data = $collectors[1]['value'];
-  $pin = $service_data['pin'];
-  $depa_id = $service_data['depa_id'];
-  $user_id = $service_data['user_id'];
-  $pay_id = $payment_data['pay_id'];
-  $type_id = $payment_data['type_id'];
-  $period = $payment_data['period'];
-  $period = intval($period);
-  $con = Database::getInstanceByPinExterno($pin);
 
-  if ($con) {
-    $payment = new Payment($con, $pay_id);
-    $user = new User($con, $user_id);
-    $type = new Subscriptiontype($con, $type_id);
-    if ($payment->idPayment > 0) {
-      $payment->transaction_response = $data;
-      $subscription = new Subscription($con, null);
-      $subscription->type_id = $type_id;
-      $subscription->paid_by = $user->id_user;
-      $subscription->paid_by_name = $user->first_name;
-      $subscription->period = 0;
-      $subscription->nit = '000';
-      $subscription->department_id = $depa_id;
-      $subscription->expires_in = HandleDates::date_expire_month($period * $type->months_duration);
-      $subscription->status = 'VALIDO';
-      $subscription->code = $subscription->genCode();
-      $subscription->limit = 1;
-      if ($subscription->insert() > 0) {
-        echo json_encode(['State' => '000', 'Message' => 'Transaccion exitosa', 'Data' => ['Id' => $subscription->id_subscription]]);
-      } else {
-        echo json_encode(['State' => '666', 'Message' => 'Transaccion errorea', 'Data' => ['Id' => 'E-0000']]);
+// $pfxPassword = PASSWORD_SSL;
+
+curl_setopt(
+  $curl,
+  CURLOPT_HTTPHEADER,
+  [
+    'Content-Type: application/json',
+    'Correlation-Id:7854-74585-OPO99'
+  ]
+);
+curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+curl_setopt($curl, CURLOPT_USERPWD, USER_1 . ':' . PWD_1);
+curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+
+
+
+// curl_setopt($curl, CURLOPT_SSLCERTPASSWD, $pfxPassword);
+$body = '{
+  "appUserId":"SMARTUser01112024",
+  "currency":"BOB",
+  "amount":115.11,
+  "gloss":"Pago qr test",
+  "serviceCode":"050",
+  "businessCode":"0327",
+  "singleUse":false,
+  "city":"LA PAZ",
+  "phoneNumber":"25478785",
+  "enableBank":"ALL",
+  "teller":"Caja 1",
+  "branchOffice":"Condominio Santa Cruz",
+  "publicToken":"C3AD15DB-7D0B-43C1-BE6B-9724A9780805",
+  "expiration":"1/00:00",
+  "collectors":[
+      {
+        "name":"pay_id",
+        "parameter":"number",
+        "value":23
+      },
+      {
+        "name":"key",
+        "parameter":"string",
+        "value":"bar3"
       }
-    }
-  } else {
-    echo json_encode(['State' => '666', 'Message' => 'Transaccion errorea', 'Data' => ['Id' => 'E-0000']]);
-  }
+    ]
+  }';
+
+// convertir el body a array
+$body = json_decode($body, true);
+
+curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+
+// Ejecutar la petición
+$response = curl_exec($curl);
+
+// Comprobar si hubo algún error
+if (curl_errno($curl)) {
+  echo 'Curl error: ' . curl_error($curl);
 } else {
-  echo json_encode(['State' => '666', 'Message' => 'Transaccion errorea', 'Data' => ['Id' => 'E-0000']]);
+  echo 'Respuesta de la API: ' . $response;
 }
+
+// Cerrar la sesión de cURL
+curl_close($curl);

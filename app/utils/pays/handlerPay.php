@@ -6,21 +6,31 @@ require_once(__DIR__ . '/../../providers/qrDataProvider.php');
 
 use App\Models\Payment;
 use App\Providers\QrDataProvider;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 use const App\Config\EXPIRATION_QR;
+use const App\Config\PWD_1;
 use const App\Config\URLBASE_API_QR;
+use const App\Config\USER_1;
 
 /**
  * Clase que maneja las credenciales de pago de la aplicacion todo se ejecuta con CURL, este maneja una instancia
  */
 class HandlerPays {
-  private $instance = null;
-  public function __construct($method = 'POST') {
-    $this->instance = curl_init();
-    curl_setopt($this->instance, CURLOPT_URL, URLBASE_API_QR . '/Generated');
-    curl_setopt($this->instance, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($this->instance, CURLOPT_CUSTOMREQUEST, $method);
-    // curl_setopt($this->instance, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1 | CURL_SSLVERSION_TLSv1_1 | CURL_SSLVERSION_TLSv1_3);
+  private $client = null;
+  private $endpoint_base = '/Web_ApiQr/api/v4/Qr';
+  private $account = null;
+  private $body = null;
+  private $options = null;
+  public function __construct($account) {
+    $this->account = $account;
+    $data = new QrDataProvider($account);
+    $this->client = new Client([
+      'base_uri' => URLBASE_API_QR,
+      'cert' => $data->get_cert(),
+      'verify' => false // ignorar verificacion
+    ]);
   }
   /**
    * 
@@ -31,9 +41,9 @@ class HandlerPays {
    * @param boolean $collector datos a enviar para recibir en el rollback
    * @return HandlerPays
    */
-  public function load($payment, $condominio, $account, $singleuse = true) {
+  public function load($payment, $condominio, $singleuse = true) {
     // obtener variables de acuerdo a la cuenta
-    $data = new QrDataProvider($account); // cuenta 1
+    $data_body = new QrDataProvider($payment->account);
     $collector = [
       [
         "name" => "pay_id",
@@ -46,12 +56,12 @@ class HandlerPays {
         "value" => $condominio['pin']
       ]
     ];
-    $body = [
+    $this->body = array_merge([
       'currency' => $payment->currency,
       'amount' => $payment->amount,
       'gloss' => $payment->gloss,
-      'serviceCode' => $payment->serviceCode,
-      'sigleUse' => $singleuse,
+      'ServiceCode' => '050',
+      'singleUse' => $singleuse,
       'enableBank' => 'ALL',
       'city' => $condominio['city'],
       "branchOffice" => 'Condominio ' . $condominio['name'],
@@ -59,42 +69,35 @@ class HandlerPays {
       'phoneNumber' => $condominio['phone'] ?? '000000',
       'expiration' => EXPIRATION_QR,
       'collectors' => $collector
+    ], $data_body->get_body());
+    // var_dump($this->body);
+    $this->options = [
+      'headers' => [
+        'Content-Type' => 'application/json', // Indicar que el contenido es JSON
+        'Accept' => '*',      // Esperar respuesta en JSON
+        'Correlation-Id' => $payment->correlation_id
+      ],
+      'json' => $this->body, // Serializa automáticamente $data a JSON,
+      'auth' => [USER_1, PWD_1]
     ];
-    $body = array_merge($body, $data->get_body());
-    $body = json_encode($body);
-    curl_setopt($this->instance, CURLOPT_POSTFIELDS, $body);
-    curl_setopt(
-      $this->instance,
-      CURLOPT_HTTPHEADER,
-      [
-        'Content-Type: application/json',
-        'Correlation-Id:' . $payment->correlation_id
-      ]
-    );
-    curl_setopt($this->instance, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-    curl_setopt($this->instance, CURLOPT_USERPWD, $data->get_auth());
-    curl_setopt($this->instance, CURLOPT_SSLCERTTYPE, 'PEM');
-    curl_setopt($this->instance, CURLOPT_SSLCERT, $data->get_cert());
-    curl_setopt($this->instance, CURLOPT_SSLKEY, $data->get_cert());
-    // curl_setopt($this->instance, CURLOPT_CAINFO, __DIR__ . '/../../config/cacert.pem');
-    curl_setopt($this->instance, CURLOPT_SSL_VERIFYHOST, 2);
-    curl_setopt($this->instance, CURLOPT_SSL_VERIFYPEER, true);
 
-    // curl_setopt($this->instance, CURLOPT_SSLCERTPASSWD, $data->get_cert_pass());
     return $this;
   }
   public function pay() {
-
+    $response = [];
     try {
-      $response = curl_exec($this->instance);
-      var_dump($response);
-      if (curl_errno($this->instance)) {
-        throw new \Exception(curl_error($this->instance));
+      $response = $this->client->post($this->endpoint_base . '/Generated', $this->options);
+      $response = json_decode($response->getBody(), true);
+    } catch (RequestException $e) {
+      // Capturar el error y obtener detalles
+      $res_error = $e->getResponse(); // Obtener la respuesta completa de la excepción
+      if ($res_error) {
+        // var_dump($res_error);
+        $body = $res_error->getBody();
+        // echo "Error Status Code: " . $res_error->getStatusCode() . "\n";
+        $response = json_decode($body, true);
       }
-      return json_decode($response, true);
-    } catch (\Throwable $th) {
-      var_dump($th);
     }
-    return [];
+    return $response;
   }
 }

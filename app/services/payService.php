@@ -33,16 +33,17 @@ class PayService implements IPay {
     // realizamos la peticion api qr
     $res_qr = [];
     if ($payment->idPayment > 0) {
-      $pay = new HandlerPays();
+      $pay = new HandlerPays('1');
       $res_qr = $pay->load(
         $payment,
         $condominio,
-        '1'
+        true
       )->pay();
-      var_dump($res_qr);
-      if ($res_qr['state'] == '00') {
-        $payment->id_qr = $res_qr['data']['id'];
-        $payment->update_qr();
+      if (isset($res_qr['state'])) {
+        if ($res_qr['state'] == '00') {
+          $payment->id_qr = $res_qr['data']['id'];
+          $payment->update_qr();
+        }
       }
     }
 
