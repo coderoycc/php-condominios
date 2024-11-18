@@ -22,12 +22,18 @@ class AdsController {
    */
   public function list_ad($query)/*web*/ {
     $con = Database::getInstaceCondominios();
-    $ads = Ads::all($con);
+    $ads = Ads::all($con, 'WHERE b.status = 1');
     Render::view('ads/list_ad', ['ads' => $ads]);
   }
   public function form_new_ad($query)/*web*/ {
     $advertisers = Company::get_companies([]);
     Render::view('ads/form_new_ad', ['advertisers' => $advertisers]);
+  }
+  public function form_edit_ad($query)/*web*/ {
+    $con = Database::getInstaceCondominios();
+    $ad = new Ads($con, $query['id']);
+    $advertisers = Company::get_companies([]);
+    Render::view('ads/form_edit_ad', ['advertisers' => $advertisers, 'ad' => $ad]);
   }
   /**
    * Crea un anuncio
@@ -61,6 +67,22 @@ class AdsController {
       Response::error_json(['message' => 'Error al crear el anuncio'], 200);
     }
   }
+  public function update($body)/*web*/ {
+    if (!Request::required(['id', 'company_id', 'start_date', 'end_date', 'description'], $body))
+      Response::error_json(['message' => 'Error, parametros faltantes']);
+    $con = Database::getInstaceCondominios();
+    $ad = new Ads($con, $body['id']);
+    $ad->company_id = intval($body['company_id']);
+    $ad->description = $body['description'];
+    $ad->direct_to = $body['direct_to'] ?? '';
+    $ad->start_date = $body['start_date'];
+    $ad->end_date = $body['end_date'];
+    if ($ad->update()) {
+      Response::success_json('Anuncio actualizado correctamente', ['ad' => $ad]);
+    } else {
+      Response::error_json(['message' => 'Error al actualizar el anuncio'], 200);
+    }
+  }
   public function today($query) /*protected*/ {
     $con = Database::getInstaceCondominios();
     $today = date('Y-m-d');
@@ -75,5 +97,17 @@ class AdsController {
       $res_ads[] = $new_ad;
     }
     Response::success_json('Anuncios obtenidos correctamente', $res_ads);
+  }
+  public function delete($body)/*web*/ {
+    if (!Request::required(['id'], $body))
+      Response::error_json(['message' => 'Error, parametros faltantes'], 200);
+
+    $con = Database::getInstaceCondominios();
+    $ad = new Ads($con, $body['id']);
+    if ($ad->delete()) {
+      Response::success_json('Anuncio eliminado correctamente', ['ad' => $ad]);
+    } else {
+      Response::error_json(['message' => 'Error al eliminar el anuncio'], 200);
+    }
   }
 }

@@ -9,7 +9,7 @@ if (count($data_subs) > 0) :
             <div style="width:80%;color:var(--bs-verde)">
               <p class="m-0"><?= $sub['tag'] ?></p>
               <p class="m-0 d-flex justify-content-between"><b>Precio <?= $sub['months_duration'] ?> meses</b> <span><?= $sub['price'] == 0 ? 'Gratis' : $sub['price'] ?></span></p>
-              <p class="m-0 d-flex justify-content-between"><b>Precio 1 año</b> <span><?= $sub['annual_price'] == 0 ? 'No válido' : $sub['annual_price'] ?></span></p>
+              <!-- <p class="m-0 d-flex justify-content-between"><b>Precio 1 año</b> <span><?= $sub['annual_price'] == 0 ? 'No válido' : $sub['annual_price'] ?></span></p> -->
             </div>
           </div>
           <ul>

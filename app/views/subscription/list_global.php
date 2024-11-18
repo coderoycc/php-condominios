@@ -10,7 +10,7 @@
       <select class="form-select" name="type">
         <option value="">TODOS</option>
         <?php foreach ($types_sub as $type): ?>
-          <option value="<?= $type ?>" <?= $type_selected == $type ? 'selected' : '' ?>><?= strtoupper($type) ?></option>
+          <option value="<?= $type['name'] ?>" <?= $type_selected == $type['name'] ? 'selected' : '' ?>><?= strtoupper($type['name']) ?></option>
         <?php endforeach; ?>
       </select>
       <label for="option">Tipo de suscripción</label>
@@ -70,7 +70,7 @@
                   <button type="button" data-bs-toggle="modal" data-bs-target="#modal_suspend" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-depnumber="<?= $resident['dep_number'] ?>" class="btn btn-sm btn-outline-danger mt-2" title="Supender suscripción"><i class="fa-lg fa-solid fa-circle-arrow-down"></i> Suspender</button>
                 <?php endif; ?>
               <?php else: ?>
-                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_add_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Agregar una suscripción"><i class="fa-lg fa-solid fa-square-caret-up"></i> Nuevo</button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_add_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Agregar una suscripción" disabled><i class="fa-lg fa-solid fa-square-caret-up"></i> Nuevo</button>
               <?php endif; ?>
 
             </td>

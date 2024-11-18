@@ -64,8 +64,42 @@ class Ads {
     }
     return 0;
   }
+  public function update() {
+    try {
+      $sql = "UPDATE tblAds SET description = ?, direct_to = ?, company_id = ?, start_date = ?, end_date = ? WHERE id_ad = ?;";
+      $stmt = $this->con->prepare($sql);
+      $res = $stmt->execute([$this->description, $this->direct_to, $this->company_id, $this->start_date, $this->end_date, $this->id_ad]);
+      return $res;
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return false;
+  }
+  public function delete() {
+    try {
+      $this->delete_file();
+      $sql = "DELETE FROM tblAds WHERE id_ad = ?;";
+      $stmt = $this->con->prepare($sql);
+      $res = $stmt->execute([$this->id_ad]);
+      return $res;
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+    return false;
+  }
+  public function delete_file() {
+    try {
+      $file = $this->content;
+      $file = __DIR__ . "/../../public/ads/$file";
+      if (file_exists($file)) {
+        unlink($file);
+      }
+    } catch (\Throwable $th) {
+      var_dump($th);
+    }
+  }
   /**
-   * Retorna todos los publicitadores
+   * Retorna todos los publicitadores 'a' tblAds, 'b' tblCompanies
    * @param PDO $con
    * @return mixed
    */

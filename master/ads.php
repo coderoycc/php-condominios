@@ -56,11 +56,10 @@ require_once("../helpers/middlewares/web_auth.php");
       <div class="modal-content">
         <form id="form_company">
           <div class="modal-header">
-            <h1 class="modal-title fs-5"><i class="fa-solid fa-briefcase"></i> Nuevo anunciante</h1>
+            <h1 class="modal-title fs-5"><i class="fa-solid fa-briefcase"></i> Nueva empresa</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-
             <div class="form-floating mb-3">
               <input type="text" class="form-control" name="name" placeholder="Nombre" required>
               <label for="name">Anunciante (nombre empresa)</label>
@@ -86,46 +85,72 @@ require_once("../helpers/middlewares/web_auth.php");
       </div>
     </div>
   </div>
-
-  <!-- Modal edit name service -->
-  <div class="modal fade" id="service_edit" tabindex="-1" aria-hidden="true">
+  <!-- Modal edit company -->
+  <div class="modal fade" id="modal_edit_company" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5">Editar nombre de servicio</h1>
+        <form id="form_company_edit">
+          <input type="hidden" name="id" id="id_company_edit">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5"><i class="fa-solid fa-briefcase"></i> Editar empresa</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="name_edit" name="name" placeholder="Nombre" required>
+              <label for="name">Anunciante (nombre empresa)</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="phone_edit" name="phone" placeholder="Celular" required>
+              <label for="phone">Celular </label>
+            </div>
+            <div class="form-floating mb-3">
+              <textarea type="text" class="form-control" id="description_edit" name="description" placeholder="Descripcion" style="height:100px;resize:none"></textarea>
+              <label for="phone">Descripción breve</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="url_edit" name="url" placeholder="http://facebook.com/page/">
+              <label for="phone">Página web o facebook</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DELETE CONFIRM AD -->
+  <div class="modal fade" id="delete_confirm_ad" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h1 class="modal-title fs-5">¿Eliminar Anuncio?</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <input type="hidden" id="id_service_edit">
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="name_edit" placeholder="Nombre">
-            <label for="name_service">Nombre servicio</label>
-          </div>
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="acronimo_edit" placeholder="Acronimo">
-            <label for="acronimo">Acrónimo</label>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="update_nameservice()">Guardar</button>
+        <input type="hidden" id="id_ad_delete">
+        <div class="modal-footer d-flex justify-content-center">
+          <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_ad()">Eliminar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal edit name service -->
-  <div class="modal fade" id="service_delete" tabindex="-1" aria-hidden="true">
+  <!-- MODAL DELETE CONFIRM COMPANY -->
+  <div class="modal fade" id="delete_confirm_company" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header bg-danger text-white">
-          <h1 class="modal-title fs-5">¿Eliminar Servicio?</h1>
+          <h1 class="modal-title fs-5">¿Eliminar empresa?</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <input type="hidden" id="id_service_delete">
+        <input type="hidden" id="id_company_delete">
         <div class="modal-footer d-flex justify-content-center">
           <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_nameservice()">Eliminar</button>
+          <button type="button" class="btn btn-danger text-white" data-bs-dismiss="modal" onclick="delete_company()">Eliminar</button>
         </div>
       </div>
     </div>

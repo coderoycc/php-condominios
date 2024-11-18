@@ -23,7 +23,10 @@
             <td><?= date('d/m/Y', strtotime($com['created_at'])) ?></td>
             <td><?= $com['phone'] ?></td>
             <td class="d-flex justify-content-between">
-              <button class="btn btn-sm btn-outline-danger" type="button"><i class="fa fa-fw fa-trash"></i></button>
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modal_edit_company" data-id="<?= $com['id_company'] ?>" data-name="<?= $com['company'] ?>" data-description="<?= $com['description'] ?>" data-url="<?= $com['url'] ?>" data-phone="<?= $com['phone'] ?>"><i class="fa fa-lg fa-solid fa-pen"></i></button>
+                <button type="button" class="btn btn-danger text-white" data-bs-toggle="modal" data-bs-target="#delete_confirm_company" data-id="<?= $com['id_company'] ?>"><i class="fa fa-lg fa-solid fa-trash"></i></button>
+              </div>
             </td>
           </tr>
         <?php endforeach; ?>

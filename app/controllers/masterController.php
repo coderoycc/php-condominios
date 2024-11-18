@@ -5,7 +5,9 @@ namespace App\Controllers;
 use App\Config\Database;
 use App\Models\LockerContent;
 use App\Models\Master;
+use App\Models\Subscriptiontype;
 use App\Providers\DBAppProvider;
+use App\Providers\DBWebProvider;
 use App\Utils\Queries\QueryBuilder;
 use Helpers\Resources\Render;
 use Helpers\Resources\Request;
@@ -94,12 +96,16 @@ class MasterController {
     $search = $query['q'] ?? '';
     $type = $query['type'] ?? '';
     $option = '';
+    // obtener la conexion del condominio 
+    $con = DBWebProvider::getSessionDataDB();
+    $types = Subscriptiontype::getTypes(null, $con, true);
+
     if ($type == 'Sin Suscripción') {
       $option = "AND e.id_subscription IS NULL AND c.id_department IS NOT NULL";
     } else if ($type != '') {
       $option = "AND f.name LIKE '" . $type . "'";
     }
-    $types = ['Sin Suscripción', 'Gratuito', 'Standard', 'Premium', 'Premium VIP'];
+    // $types = ['Sin Suscripción', 'Gratuito', 'Standard', 'Premium', 'Premium VIP'];
 
     $sql = new QueryBuilder();
     $residents = [];

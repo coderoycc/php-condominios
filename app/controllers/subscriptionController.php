@@ -20,7 +20,7 @@ class SubscriptionController {
   public function types($data) {
     if (!Request::required(['pin'], $data))
       Response::error_json(['message' => 'Datos faltantes: [pin] requerido']);
-    $data = Subscription::getTypes($data['pin'], false);
+    $data = Subscription::getTypes($data['pin'], true);
     $response = [];
     foreach ($data as $type) {
       $subType = new Subscriptiontype();

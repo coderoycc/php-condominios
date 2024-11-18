@@ -37,6 +37,21 @@ class CompanyController {
     } else
       Response::error_json(['success' => false, 'message' => 'Error al eliminar la empresa'], 200);
   }
+  public function update($body)/*web*/ {
+    if (!Request::required(['id', 'name', 'description', 'phone'], $body))
+      Response::error_json(['message' => 'Parametros faltantes'], 200);
+    $con = Database::getInstaceCondominios();
+    $company = new Company($con, $body['id']);
+    $company->company = $body['name'];
+    $company->description = $body['description'];
+    $company->phone = $body['phone'];
+    $company->url = $body['url'] ?? '';
+    if ($company->update() > 0) {
+      Response::success_json('Empresa actualizada', ['company' => $company], 200);
+    } else {
+      Response::error_json(['message' => 'Error al actualizar la empresa'], 200);
+    }
+  }
   public function all($query)/*web*/ {
     $companies = Company::get_companies($query);
     Response::success_json('Empresas', $companies, 200);
