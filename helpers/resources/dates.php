@@ -9,6 +9,12 @@ class HandleDates {
     $date = date('Y-m-d H:i:s', strtotime("+$meses months"));
     return $date;
   }
+  public static function add_months_to_date(string $date, int $months): string {
+    $newDate = new DateTime($date);
+    $newDate->modify("+$months month");
+    $newDate->setTime(23, 59, 59);
+    return $newDate->format('Y-m-d\TH:i:s');
+  }
   /**
    * Devuelve un string con una fecha anterior de acuerdo al parametro enviado (Hoy - X meses)
    * @param mixed $months Cantidad de meses que desea retroceder
@@ -41,10 +47,10 @@ class HandleDates {
     return $today->getTimestamp() > $expire->getTimestamp();
   }
   public static function date_expire_month($months): string {
-    $current = time();
-    $with_n_months = intval($months) * 2592000; // 30*24*60*60
-    $date_expire = date('Y-m-d', $current + $with_n_months) . 'T23:59:59';
-    return $date_expire;
+    $newDate = new DateTime();
+    $newDate->modify("+$months month");
+    $newDate->setTime(23, 59, 59);
+    return $newDate->format('Y-m-d\TH:i:s');
   }
   public static function date_format_db($date = null) {
     if ($date) {

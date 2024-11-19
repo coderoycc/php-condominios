@@ -65,8 +65,8 @@
             <?php endif; ?>
             <td class="text-center">
               <?php if ($resident['id_subscription']): ?>
-                <button type="button" data-bs-toggle="modal" data-bs-target="#modal_change_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-typeid="<?= $resident['type_id'] ?>" class="btn btn-sm btn-outline-info" title="Cambiar suscripción"><i class="fa-lg fa-solid fa-arrow-down-up-across-line"></i> Cambiar</button>
                 <?php if ($resident['status'] != 'SUSPENDIDO'): ?>
+                  <button type="button" data-bs-toggle="modal" data-bs-target="#modal_change_subscription" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-typeid="<?= $resident['type_id'] ?>" class="btn btn-sm btn-outline-info" title="Cambiar suscripción"><i class="fa-lg fa-solid fa-arrow-down-up-across-line"></i> Cambiar</button>
                   <button type="button" data-bs-toggle="modal" data-bs-target="#modal_suspend" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" data-idsub="<?= $resident['id_subscription'] ?>" data-depnumber="<?= $resident['dep_number'] ?>" class="btn btn-sm btn-outline-danger mt-2" title="Supender suscripción"><i class="fa-lg fa-solid fa-circle-arrow-down"></i> Suspender</button>
                 <?php endif; ?>
               <?php else: ?>

@@ -11,12 +11,12 @@
     </div>
     <div class="form-floating mb-3">
       <input type="number" class="form-control" value="<?= $type->price ?>" name="price" placeholder="numero" step="any" min="0">
-      <label>Precio 6 meses</label>
+      <label>Precio por <?= $type->months_duration ?> mes</label>
     </div>
-    <div class="form-floating mb-3">
+    <!-- <div class="form-floating mb-3">
       <input type="number" class="form-control" name="annual_price" value="<?= $type->annual_price ?>" placeholder="numero" step="any" min="0">
       <label>Precio Anual</label>
-    </div>
+    </div> -->
     <div class="form-floating mb-3">
       <input type="number" class="form-control" name="max_users" value="<?= $type->max_users ?>" placeholder="Cantidad" step="1" min="1">
       <label>Cantidad maxima de usuarios</label>

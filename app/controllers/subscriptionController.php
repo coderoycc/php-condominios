@@ -262,4 +262,16 @@ class SubscriptionController {
     } else
       Response::error_json(['message' => 'No existe la suscripción'], 200);
   }
+  public function new_plan($body) {
+    if (!Request::required(['key', 'user_id', 'sub_id', 'type_id', 'date_start'], $body))
+      Response::error_json(['message' => 'Parametros necesarios no enviados', 'data' => []], 200);
+
+    $suspend = isset($body['suspend']);
+    $con = Database::getInstanceByPin($body['key']);
+    $sub = subscription()->new_plan($con, $body['sub_id'], $body['type_id'], $body['user_id'], $body['date_start'], $suspend);
+    if ($sub->id_subscription > 0) {
+      Response::success_json('Se ha cambiado el plan', $sub, 200);
+    } else
+      Response::error_json(['message' => 'Ocurrio un error'], 200);
+  }
 }

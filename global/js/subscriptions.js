@@ -41,6 +41,12 @@ async function loadModalData(e) {
   const btn = e.relatedTarget;
   $("#id_sub_current").val(btn.dataset.idsub);
   $("#key_sub_data").val(btn.dataset.key)
+  $("#id_user_change").val(btn.dataset.user)
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const formattedDate = tomorrow.toISOString().split('T')[0];
+  $("#date_start_sub").val(formattedDate);
+  change_date_id(formattedDate)
   const res = await $.ajax({
     url: '../app/subscription/types',
     type: 'GET',
@@ -51,9 +57,10 @@ async function loadModalData(e) {
 }
 function htmlOptionsTypes(types, currentId) {
   console.log('Carga de opciones', types, currentId);
-  let html = '';
+  let html = '<option value="" data-price="0">-- seleccione --</option>';
   types.forEach(type => {
-    console.log(type.id, currentId)
+    // console.log(type.id, currentId)
+    if (type.price == 0) return;
     if (type.id == currentId) {
       $("#current_price").val(type.price)
       html += `<option value="${type.id}" selected data-price="${type.price}">${type.name}</option>`;
@@ -65,20 +72,15 @@ function htmlOptionsTypes(types, currentId) {
 }
 function changePriceToAdd(e) {
   const option = $(this).find('option:selected');
-  console.log(option)
   const price = option[0].dataset.price ?? '0';
-  const currentPrice = $("#current_price").val();
-
-  console.log(price, currentPrice)
-  const newPrice = parseFloat(price) - parseFloat(currentPrice);
-  $("#current_price_new").val(price)
-  $("#price_to_add").val(newPrice.toFixed(2))
+  $("#current_price").val(price);
 }
 async function sendChangePlan(e) {
   e.preventDefault()
   const data = $("#form_change_subscription").serializeArray()
+  console.log(data);
   const res = await $.ajax({
-    url: '../app/subscription/change_plan',
+    url: '../app/subscription/new_plan',
     type: 'POST',
     data,
     dataType: 'json',
@@ -146,4 +148,15 @@ async function supendSub() {
   } else {
     toast('Ocurrio un error', res.message, 'error', 2500)
   }
+}
+
+function change_dates(e) {
+  const value = e.target.value;
+  change_date_id(value);
+}
+function change_date_id(value) {
+  const end = new Date(value);
+  end.setMonth(end.getMonth() + 1);
+  const end_date = end.toISOString().split('T')[0];
+  $("#end_date_sub").val(end_date);
 }

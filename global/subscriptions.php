@@ -38,8 +38,9 @@ require_once("../helpers/middlewares/web_auth.php");
     <div class="modal-dialog">
       <div class="modal-content">
         <form id="form_change_subscription">
-          <input type="hidden" name="idsub" id="id_sub_current" />
+          <input type="hidden" name="sub_id" id="id_sub_current" />
           <input type="hidden" name="key" id="key_sub_data" />
+          <input type="hidden" name="user_id" id="id_user_change" />
           <div class="modal-header">
             <h1 class="modal-title fs-5">Cambiar suscripción</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -48,27 +49,36 @@ require_once("../helpers/middlewares/web_auth.php");
             <div class="row">
               <div class="col-md-12 mb-2">
                 <div class="form-floating">
-                  <select class="form-select" name="type" id="option_type_sub"></select>
+                  <select class="form-select" name="type_id" id="option_type_sub"></select>
                   <label for="option">Tipo de suscripción</label>
                 </div>
               </div>
-              <div class="text-muted fw-semibold">Precios</div>
-              <div class="col-md-4 mb-2">
+              <div class="text-muted fw-semibold">Suscripción x 1 mes</div>
+              <div class="col-md-6 mb-2">
+                <div class="form-floating">
+                  <input class="form-control" placeholder="Inicio" name="date_start" id="date_start_sub" onchange="change_dates(event)" type="date" />
+                  <label for="date">Inicio suscripción</label>
+                </div>
+              </div>
+              <div class="col-md-6 mb-2">
+                <div class="form-floating">
+                  <input class="form-control" placeholder="Final" id="end_date_sub" type="date" disabled />
+                  <label for="final">Fin suscripción</label>
+                </div>
+              </div>
+              <div class="text-muted fw-semibold">Precio</div>
+              <div class="col-md-12 mb-2">
                 <div class="form-floating">
                   <input class="form-control" placeholder="Precio" type="number" id="current_price" disabled />
-                  <label for="current_price">Actual</label>
+                  <label for="current_price">Mensual</label>
                 </div>
               </div>
-              <div class="col-md-4 mb-2">
-                <div class="form-floating">
-                  <input class="form-control" placeholder="Precio" type="number" id="current_price_new" disabled />
-                  <label for="current_price">Nuevo</label>
-                </div>
-              </div>
-              <div class="col-md-4 mb-2">
-                <div class="form-floating">
-                  <input class="form-control" placeholder="Precio" type="number" id="price_to_add" disabled />
-                  <label for="price_to_add">Diferencia</label>
+              <div class="col-md-12 mb-2 d-flex justify-content-center">
+                <div class="form-check">
+                  <input class="form-check-input" name="suspend" type="checkbox" checked value="1" id="defaultCheck1">
+                  <label class="form-check-label fw-semibold" for="defaultCheck1">
+                    Suspender suscripcion anterior
+                  </label>
                 </div>
               </div>
             </div>
