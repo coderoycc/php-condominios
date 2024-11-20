@@ -35,41 +35,6 @@ class UserController {
       Response::error_json(['message' => 'Error conexion instancia'], 200);
     }
   }
-  public function changepass($data, $files = null) {
-    $id = $data['idUsuario'];
-    $pass = $data['pass'];
-    $new = $data['newPass'];
-    $usuario = new User($id);
-    if ($usuario->id_user == 0) {
-      echo json_encode(array('status' => 'error', 'message' => 'No existe el usuario | idUsuario incorrecto'));
-    } else if ($usuario->password != hash('sha256', $pass)) {
-      echo json_encode(array('status' => 'error', 'message' => 'La contraseña anterior es incorrecta'));
-    } else {
-      $res = $usuario->newPass($new);
-      if ($res > 0) {
-        echo json_encode(array('status' => 'success', 'message' => 'La contraseña fue cambiada exitosamente'));
-      } else {
-        echo json_encode(array('status' => 'error', 'message' => 'Ocurrió un error al cambiar la contraseña, intenta más tarde'));
-      }
-    }
-  }
-
-  // public function changecolor($data, $files = null) {
-  //   $id = $data['idUsuario'];
-  //   $color = $data['color'];
-  //   $user = new Usuario($id);
-  //   if ($user->idUsuario != 0 && $color != '') {
-  //     $user->color = $color;
-  //     $res = $user->save();
-  //     if ($res > 0) {
-  //       echo json_encode(['status' => 'success', 'message' => 'Cambio correcto']);
-  //     } else {
-  //       echo json_encode(['status' => 'error', 'message' => 'Error inesperado']);
-  //     }
-  //   } else {
-  //     echo json_encode(['status' => 'error', 'message' => 'No de puede guardar, datos faltantes']);
-  //   }
-  // }
 
   public function delete($data) /* WEB */ {
     $id = $data['idUsuario'];
@@ -176,5 +141,60 @@ class UserController {
     $user = new User($con, $query['user_id']);
     unset($user->password);
     Response::success_json('Usuario', ['user' => $user, 'condominio' => $condominio]);
+  }
+  public function newpass($body) /*protected*/ {
+    if (!Request::required(['old', 'new'], $body))
+      Response::error_json(['message' => 'Campos requeridos'], 400);
+
+    $user_id = DBAppProvider::get_payload_value('user_id');
+    $con = DBAppProvider::get_connection();
+    $user = new User($con, $user_id);
+    if ($user->id_user > 0) {
+      if ($user->password == hash('sha256', $body['old'])) {
+        if ($user->newPass($body['new'])) {
+          Response::success_json('Contraseña cambiada', []);
+        } else
+          Response::error_json(['message' => 'No se pudo cambiar la contraseña'], 400);
+      } else
+        Response::error_json(['message' => 'Contraseña anterior incorrecta'], 400);
+    } else
+      Response::error_json(['message' => 'Usuario no asociado al token'], 404);
+  }
+  public function upload_photo($body, $files)/*protected */ {
+    $condominio = DBAppProvider::get_enterprise();
+    $user_id = DBAppProvider::get_payload_value('user_id');
+    $con = DBAppProvider::get_connection();
+    $user = new User($con, $user_id);
+    if (!isset($files['photo'])) Response::error_json(['message' => 'Foto requerida <<photo>>'], 400);
+    $tipos_permitidos = array("image/jpeg", "image/png");
+    $tipo = $files['photo']['type'];
+    if (!in_array($tipo, $tipos_permitidos)) Response::error_json(['message' => 'Tipo de archivo no permitido'], 400);
+    if ($user->id_user == 0) Response::error_json(['message' => 'Usuario no encontrado'], 400);
+    if ($user->addphoto($files['photo'], $condominio['pin'], $condominio['name'])) {
+      unset($user->password);
+      Response::success_json('Foto actualizada', ['user' => $user]);
+    } else
+      Response::error_json(['message' => 'No se pudo actualizar la foto'], 400);
+  }
+  public function update_data($body)/*protected*/ {
+    $con = DBAppProvider::get_connection();
+    $user_id = DBAppProvider::get_payload_value('user_id');
+    $pin = DBAppProvider::get_enterprise()['pin'];
+    $user = new User($con, $user_id);
+    if ($user->id_user == 0) Response::error_json(['message' => 'Usuario no encontrado', 'user' => $user], 400);
+
+    $cellphone = $body['cellphone'] ?? $user->cellphone;
+    $exist = User::usernameExist($cellphone, $pin, "AND id_user != $user->id_user");
+    if ($exist) Response::error_json(['message' => 'El celular ya está registrado'], 400);
+
+    $user->first_name = $body['first_name'] ?? $user->first_name;
+    $user->last_name = $body['last_name'] ?? $user->last_name;
+    $user->cellphone = $cellphone;
+    $user->gender = $body['gender'] ?? $user->gender;
+    if ($user->save() > 0) {
+      unset($user->password);
+      Response::success_json('Datos actualizados', ['user' => $user]);
+    } else
+      Response::error_json(['message' => 'No se pudo actualizar los datos'], 400);
   }
 }

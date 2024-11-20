@@ -3,18 +3,34 @@
 namespace App\Utils;
 
 use App\Config\Accesos;
+use Exception;
 
 /**
- * Devuelve el directorio publico donde se guarda un archivo 
+ * Retorna el nombre de condominio en formato de directorio
+ * @param string $condominio_name
+ * @return string
+ */
+function directory($condominio_name) {
+  $name = strtolower($condominio_name);
+  $name = str_replace(' ', '_', $name);
+  return $name;
+}
+/**
+ * Devuelve el directorio publico donde se guarda un archivo, util para guardar archivos 
+ * > DEBE USARSE DESDE APP
  * @param string $pin pin del condominio
- * @param string $prefix subruta dentro del directorio donde se guardara el archivo
+ * @param string $prefix subruta dentro del directorio donde se guardara el archivo ('photos', 'vouchers', etc);
  * @return string
  */
 function directorio_publico_condominio($pin, $prefix) {
   $condominio = Accesos::getCondominio($pin);
-  $name = strtolower($condominio['name']);
-  $name = str_replace(' ', '_', $name);
-  $urlfile = __DIR__ . "\\..\\..\\public\\$name\\$prefix\\";
+  $name = directory($condominio['name']);
+  $urlfile = __DIR__ . "\\..\\..\\..\\public\\$name\\$prefix";
+  if (!is_dir($urlfile)) {
+    if (!mkdir($urlfile, 0755, true)) {
+      throw new Exception('No se pudo crear el directorio: ' . $urlfile);
+    }
+  }
   return $urlfile;
 }
 

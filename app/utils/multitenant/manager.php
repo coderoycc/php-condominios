@@ -18,11 +18,12 @@ class Manager {
    * @param mixed $country Pais del condominio, por defecto Bolivia
    * @return array
    */
-  public static function create($name, $pin, $address, $city = '', $country = 'Bolivia') {
+  public static function create($name, $pin, $address, $city = '', $country = 'Bolivia', $enable_qr = 0) {
     if (self::pin_exist($pin))  return ['state' => false, 'message' => 'El PIN ya existe'];
     $response = ['state' => false, 'message' => ''];
     try {
       $dbname = strtolower($name);
+      $dbname = trim($dbname);
       $dbname = str_replace('  ', ' ', $dbname);
       $dbname = str_replace(' ', '_', $dbname);
       $res = self::create_database($dbname);

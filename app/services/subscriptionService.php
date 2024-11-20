@@ -6,7 +6,6 @@ use App\Models\Payment;
 use App\Models\Resident;
 use App\Models\Subscription;
 use App\Models\Subscriptiontype;
-use App\Models\User;
 use Helpers\Resources\HandleDates;
 use PDO;
 

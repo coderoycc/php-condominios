@@ -13,6 +13,8 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Services\tenant;
+
 class MasterController {
   public function add_service_name($body, $files = null) {
     if (!Request::required(['name', 'acronym'], $body))
@@ -140,6 +142,17 @@ class MasterController {
       ->orderBy('a.dep_number DESC')
       ->get();
     Response::success_json('Departamentos', ['departments' => $data], 200);
+  }
+  public function new_condominio($body, $files = null)/*web*/ {
+    if (!Request::required(['name', 'pin', 'address', 'city', 'phone', 'qr'], $body))
+      Response::error_json(['message' => 'Parámetros faltantes'], 200);
+
+    $enable_qr = $body['qr'] == 'SI' ? true : false;
+    $res = tenant()->new($body['name'], $body['pin'], $body['address'], $body['city'], 'Bolivia', $body['phone'], $enable_qr);
+    if ($res['state']) {
+      Response::success_json('Condominio creado', [], 200);
+    } else
+      Response::error_json(['message' => $res['message']], 200);
   }
 
   public static function get_where_filter($option, $value) {

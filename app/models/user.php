@@ -4,6 +4,9 @@ namespace App\Models;
 use App\Config\Accesos;
 use App\Config\Database;
 
+use function App\Utils\directorio_publico_condominio;
+use function App\Utils\directory;
+
 class User {
   private $con;
   public int $id_user;
@@ -17,6 +20,7 @@ class User {
   public string $cellphone;
   public string $gender;
   public int $status;
+  public string $photo;
   public object $suscription;
 
   // public string $color; // color de menu
@@ -48,6 +52,7 @@ class User {
     $this->cellphone = '';
     $this->gender = '';
     $this->status = 0;
+    $this->photo = '';
   }
   public function resetPass() {
     if ($this->con == null)
@@ -93,10 +98,11 @@ class User {
           $this->con->rollBack();
         }
       } else { // update
-        $sql = "UPDATE tblUsers SET username = :username, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone, gender = :gender, status = :status WHERE id_user = :id_user";
-        $params = ['username' => $this->username, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status, 'id_user' => $this->id_user];
+        $sql = "UPDATE tblUsers SET username = :username, first_name = :first_name, last_name = :last_name, device_id = :device_id, role = :role, cellphone = :cellphone, gender = :gender, status = :status, photo = :photo WHERE id_user = :id_user";
+        $params = ['username' => $this->username, 'first_name' => $this->first_name, 'last_name' => $this->last_name, 'device_id' => $this->device_id, 'role' => $this->role, 'cellphone' => $this->cellphone, 'gender' => $this->gender, 'status' => $this->status, 'photo' => $this->photo, 'id_user' => $this->id_user];
         $stmt = $this->con->prepare($sql);
-        if ($stmt->execute($params)) {
+        $res = $stmt->execute($params);
+        if ($res) {
           $this->con->commit();
           $resp = $this->id_user;
         } else {
@@ -112,6 +118,24 @@ class User {
     }
   }
 
+  public function addphoto($file, $pin, $condominio_name) {
+    if ($this->con) {
+      $prefix = 'photos';
+      $ruta_base = directorio_publico_condominio($pin, $prefix);
+      // guardar el archivo
+      $nombre_archivo = 'U' . $this->id_user . '_' . date('Ymd_Hi');
+      $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+      $ruta_archivo = $ruta_base . '/' . $nombre_archivo . '.' . $extension;
+      $tmp_nombre = $file['tmp_name'];
+      if (move_uploaded_file($tmp_nombre, $ruta_archivo)) {
+        $base_condominio = directory($condominio_name); // nombre de condominio
+        $this->photo = $base_condominio . '/' . $prefix . '/' . $nombre_archivo . '.' . $extension;
+        $this->save();
+        return true;
+      }
+    }
+    return false;
+  }
   public function load($row) {
     $this->id_user = $row['id_user'];
     $this->first_name = $row['first_name'];
@@ -141,10 +165,10 @@ class User {
     }
   }
 
-  public static function usernameExist($user, $pin = null): bool {
+  public static function usernameExist($user, $pin = null, $where = ''): bool {
     if ($pin) {
       $con = Database::getInstanceByPin($pin);
-      $sql = "SELECT * FROM tblUsers WHERE username = ? OR cellphone = ?;";
+      $sql = "SELECT * FROM tblUsers WHERE (username = ? OR cellphone = ?) $where;";
       $stmt = $con->prepare($sql);
       $stmt->execute([$user, $user]);
       $row = $stmt->fetch();

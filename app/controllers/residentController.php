@@ -5,7 +5,9 @@ namespace App\COntrollers;
 use App\Models\Department;
 use App\Models\Resident;
 use App\Models\Subscription;
+use App\Models\User;
 use App\Providers\DBAppProvider;
+use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
 class ResidentController {
@@ -24,6 +26,6 @@ class ResidentController {
       $cantidad = Subscription::get_users_connected($con, $resident->subscription->id_subscription);
       Response::success_json('Resident data', ['resident' => $resident, 'condominio' => $condominio, 'cantidad_sub' => $cantidad]);
     } else
-      Response::error_json(['success' => false, 'message' => 'Usuario no asociado'], 400);
+      Response::error_json(['message' => 'Usuario no asociado'], 400);
   }
 }

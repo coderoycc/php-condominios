@@ -13,7 +13,7 @@ use Helpers\Resources\Request;
 
 class AuthController {
   public function login_app($data, $files = null) /*app*/ {
-    if (!Request::required(['user', 'password', 'pin'], $data))
+    if (!Request::required(['user', 'password', 'pin', 'device_id'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
     $condominioData = Accesos::getCondominio($data['pin']);
@@ -24,7 +24,9 @@ class AuthController {
       $data_login = $auth->auth($data['user'], $data['password']);
       $data_login['condominio'] = $condominioData;
       $user = $data_login['user'];
-      if ($user->id_user > 0) { // existe el usuario        
+      if ($user->id_user > 0) { // existe el usuario
+        $user->device_id = $data['device_id'];
+        $user->save();
         if (!$data_login['expired'] && $data_login['status'] == 'VALIDO') { //suscripcion no vencida
           $validez = time() + 3600 * 24; // 1 dia
           $codicationdb = base64_encode(base64_encode($dbname));
@@ -35,9 +37,8 @@ class AuthController {
           $token = JWT::encode($payload);
           $data_login['token'] = $token;
           Response::success_json('Login Correcto', $data_login);
-        } else {
+        } else
           Response::error_json(['message' => 'Su suscripción ha expirado', 'data' => $data_login], 401);
-        }
       } else  // no existe el usuario
         Response::error_json(['message' => 'Credenciales incorrectas'], 401);
     } else
