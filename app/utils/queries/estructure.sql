@@ -3,7 +3,8 @@ CREATE TABLE [dbo].[tblDepartments] (
   [id_department] int  IDENTITY(1,1) NOT NULL,
   [dep_number] varchar(10) COLLATE Modern_Spanish_CI_AS  NULL,
   [bedrooms] int  NULL,
-  [description] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL
+  [description] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL,
+  [status] bit DEFAULT 1 NULL
 )
 GO
 
@@ -24,10 +25,21 @@ EXEC sp_addextendedproperty
 'COLUMN', N'bedrooms'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'0: Inactivo, 1: Activo',
+'SCHEMA', N'dbo',
+'TABLE', N'tblDepartments',
+'COLUMN', N'status'
+GO
+
 
 -- ----------------------------
 -- Table structure for tblLockerContent
 -- ----------------------------
+IF EXISTS (SELECT * FROM sys.all_objects WHERE object_id = OBJECT_ID(N'[dbo].[tblLockerContent]') AND type IN ('U'))
+	DROP TABLE [dbo].[tblLockerContent]
+GO
+
 CREATE TABLE [dbo].[tblLockerContent] (
   [id_content] int  IDENTITY(1,1) NOT NULL,
   [locker_id] int  NOT NULL,
@@ -79,10 +91,6 @@ EXEC sp_addextendedproperty
 'COLUMN', N'shipping_id'
 GO
 
-
--- ----------------------------
--- Table structure for tblLockers
--- ----------------------------
 CREATE TABLE [dbo].[tblLockers] (
   [id_locker] int  IDENTITY(1,1) NOT NULL,
   [locker_number] int  NULL,
@@ -116,10 +124,6 @@ EXEC sp_addextendedproperty
 'COLUMN', N'in_out'
 GO
 
-
--- ----------------------------
--- Table structure for tblPayments
--- ----------------------------
 CREATE TABLE [dbo].[tblPayments] (
   [idPayment] int  IDENTITY(1,1) NOT NULL,
   [currency] varchar(10) COLLATE Modern_Spanish_CI_AS  NULL,
@@ -134,7 +138,8 @@ CREATE TABLE [dbo].[tblPayments] (
   [confirmed] bit DEFAULT 0 NULL,
   [created_at] datetime DEFAULT getdate() NULL,
   [id_qr] int  NULL,
-  [expiration_qr] datetime  NULL
+  [expiration_qr] datetime  NULL,
+  [account] varchar(10) COLLATE Modern_Spanish_CI_AS  NULL
 )
 GO
 
@@ -211,10 +216,12 @@ EXEC sp_addextendedproperty
 'COLUMN', N'expiration_qr'
 GO
 
-
--- ----------------------------
--- Table structure for tblPaymentShipping
--- ----------------------------
+EXEC sp_addextendedproperty
+'MS_Description', N'Relacion con una cuenta',
+'SCHEMA', N'dbo',
+'TABLE', N'tblPayments',
+'COLUMN', N'account'
+GO
 
 CREATE TABLE [dbo].[tblPaymentShipping] (
   [payment_id] int  NOT NULL,
@@ -225,16 +232,13 @@ GO
 ALTER TABLE [dbo].[tblPaymentShipping] SET (LOCK_ESCALATION = TABLE)
 GO
 
-
--- ----------------------------
--- Table structure for tblPaymentsServices
--- ----------------------------
 CREATE TABLE [dbo].[tblPaymentsServices] (
   [id_payment_service] int  IDENTITY(1,1) NOT NULL,
   [payment_id] int  NULL,
-  [department_id] int  NULL,
-  [target_date] date  NULL,
-  [status] bit  NULL
+  [subscription_id] int  NULL,
+  [month] int  NULL,
+  [year] int  NULL,
+  [status] varchar(100) COLLATE Modern_Spanish_CI_AS DEFAULT 'PENDIENTE' NULL
 )
 GO
 
@@ -242,23 +246,12 @@ ALTER TABLE [dbo].[tblPaymentsServices] SET (LOCK_ESCALATION = TABLE)
 GO
 
 EXEC sp_addextendedproperty
-'MS_Description', N'Del mes que se pago (GENERAR QR)',
-'SCHEMA', N'dbo',
-'TABLE', N'tblPaymentsServices',
-'COLUMN', N'target_date'
-GO
-
-EXEC sp_addextendedproperty
-'MS_Description', N'0: Aun no pagado por administrador, 1: pagado por administrador',
+'MS_Description', N'PENDIENTE: generado por el usuario, QR PAGADO: pagado por el residente, PAGADO: pagado por el administrador',
 'SCHEMA', N'dbo',
 'TABLE', N'tblPaymentsServices',
 'COLUMN', N'status'
 GO
 
-
--- ----------------------------
--- Table structure for tblPaymentSubscriptions
--- ----------------------------
 CREATE TABLE [dbo].[tblPaymentSubscriptions] (
   [payment_id] int  NOT NULL,
   [subscription_id] int  NOT NULL
@@ -268,10 +261,6 @@ GO
 ALTER TABLE [dbo].[tblPaymentSubscriptions] SET (LOCK_ESCALATION = TABLE)
 GO
 
-
--- ----------------------------
--- Table structure for tblResidents
--- ----------------------------
 CREATE TABLE [dbo].[tblResidents] (
   [user_id] int  NOT NULL,
   [department_id] int  NULL,
@@ -297,41 +286,53 @@ EXEC sp_addextendedproperty
 'COLUMN', N'details'
 GO
 
-
--- ----------------------------
--- Table structure for tblServiceDetail
--- ----------------------------
-CREATE TABLE [dbo].[tblServiceDetail] (
+CREATE TABLE [dbo].[tblServiceDetailPerMonth] (
   [id_service_detail] int  IDENTITY(1,1) NOT NULL,
   [service_id] int  NULL,
   [amount] float(53)  NULL,
-  [month] date  NULL
+  [month] int  NULL,
+  [year] int  NULL,
+  [filename] varchar(200) COLLATE Modern_Spanish_CI_AS  NULL
 )
 GO
 
-ALTER TABLE [dbo].[tblServiceDetail] SET (LOCK_ESCALATION = TABLE)
+ALTER TABLE [dbo].[tblServiceDetailPerMonth] SET (LOCK_ESCALATION = TABLE)
 GO
---**separation
--- ----------------------------
--- Table structure for tblServices
--- ----------------------------
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Mes correspondiente ',
+'SCHEMA', N'dbo',
+'TABLE', N'tblServiceDetailPerMonth',
+'COLUMN', N'month'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Nombre del Archivo del comprobante',
+'SCHEMA', N'dbo',
+'TABLE', N'tblServiceDetailPerMonth',
+'COLUMN', N'filename'
+GO
+
 CREATE TABLE [dbo].[tblServices] (
   [id_service] int  IDENTITY(1,1) NOT NULL,
   [service_name] varchar(100) COLLATE Modern_Spanish_CI_AS  NOT NULL,
   [service_name_id] int  NULL,
   [code] varchar(80) COLLATE Modern_Spanish_CI_AS  NOT NULL,
   [user_id] int  NULL,
-  [department_id] int  NULL
+  [subscription_id] int  NULL
 )
 GO
 
 ALTER TABLE [dbo].[tblServices] SET (LOCK_ESCALATION = TABLE)
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'Usuario residente que crea el servicio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblServices',
+'COLUMN', N'user_id'
+GO
 
--- ----------------------------
--- Table structure for tblShipping
--- ----------------------------
 CREATE TABLE [dbo].[tblShipping] (
   [id] int  IDENTITY(1,1) NOT NULL,
   [name_origin] varchar(200) COLLATE Modern_Spanish_CI_AS  NULL,
@@ -460,10 +461,31 @@ EXEC sp_addextendedproperty
 'COLUMN', N'envelope'
 GO
 
+CREATE TABLE [dbo].[tblSubscriptionCompany] (
+  [subscription_id] int  NULL,
+  [subscribe_in] datetime DEFAULT getdate() NULL,
+  [company] varchar(250) COLLATE Modern_Spanish_CI_AS  NULL,
+  [company_id] int  NULL
+)
+GO
 
--- ----------------------------
--- Table structure for tblSubscriptions
--- ----------------------------
+ALTER TABLE [dbo].[tblSubscriptionCompany] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'id de la suscripcion de la APP',
+'SCHEMA', N'dbo',
+'TABLE', N'tblSubscriptionCompany',
+'COLUMN', N'subscription_id'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'empresa a la que suscribio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblSubscriptionCompany',
+'COLUMN', N'company'
+GO
+
 CREATE TABLE [dbo].[tblSubscriptions] (
   [id_subscription] int  IDENTITY(1,1) NOT NULL,
   [type_id] int  NOT NULL,
@@ -474,12 +496,13 @@ CREATE TABLE [dbo].[tblSubscriptions] (
   [nit] varchar(40) COLLATE Modern_Spanish_CI_AS  NULL,
   [department_id] int  NULL,
   [expires_in] datetime  NULL,
-  [valid] int  NULL,
   [code] varchar(6) COLLATE Modern_Spanish_CI_AS  NULL,
-  [limit] int  NULL
+  [limit] int  NULL,
+  [status] varchar(30) COLLATE Modern_Spanish_CI_AS DEFAULT '' NULL,
+  [suspended_in] date  NULL
 )
 GO
-
+--**separation
 ALTER TABLE [dbo].[tblSubscriptions] SET (LOCK_ESCALATION = TABLE)
 GO
 
@@ -498,13 +521,6 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
-'MS_Description', N'confirmacion transaccion ----> 0: no, 1: si',
-'SCHEMA', N'dbo',
-'TABLE', N'tblSubscriptions',
-'COLUMN', N'valid'
-GO
-
-EXEC sp_addextendedproperty
 'MS_Description', N'CODIGO autogenerado',
 'SCHEMA', N'dbo',
 'TABLE', N'tblSubscriptions',
@@ -518,10 +534,20 @@ EXEC sp_addextendedproperty
 'COLUMN', N'limit'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N' VALIDO | SUSPENDIDO | ELIMINADO ',
+'SCHEMA', N'dbo',
+'TABLE', N'tblSubscriptions',
+'COLUMN', N'status'
+GO
 
--- ----------------------------
--- Table structure for tblSubscriptionType
--- ----------------------------
+EXEC sp_addextendedproperty
+'MS_Description', N'Fecha que se suspendio la suscripcion',
+'SCHEMA', N'dbo',
+'TABLE', N'tblSubscriptions',
+'COLUMN', N'suspended_in'
+GO
+
 CREATE TABLE [dbo].[tblSubscriptionType] (
   [id_subscription_type] int  IDENTITY(1,1) NOT NULL,
   [name] varchar(200) COLLATE Modern_Spanish_CI_AS  NULL,
@@ -534,7 +560,9 @@ CREATE TABLE [dbo].[tblSubscriptionType] (
   [courrier] bit DEFAULT 0 NULL,
   [details] varchar(2048) COLLATE Modern_Spanish_CI_AS  NULL,
   [iva] bit  NULL,
-  [annual_price] float(53)  NULL
+  [annual_price] float(53)  NULL,
+  [status] int  NULL,
+  [max_users] int  NULL
 )
 GO
 
@@ -597,10 +625,44 @@ EXEC sp_addextendedproperty
 'COLUMN', N'annual_price'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'0: inactivo, 1:activo',
+'SCHEMA', N'dbo',
+'TABLE', N'tblSubscriptionType',
+'COLUMN', N'status'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Cantidad de usuarios maximos que se pueden pertenecer a este tipo de suscripcion',
+'SCHEMA', N'dbo',
+'TABLE', N'tblSubscriptionType',
+'COLUMN', N'max_users'
+GO
 
 -- ----------------------------
--- Table structure for tblUsers
+-- Records of tblSubscriptionType
 -- ----------------------------
+SET IDENTITY_INSERT [dbo].[tblSubscriptionType] ON
+GO
+
+INSERT INTO [dbo].[tblSubscriptionType] ([id_subscription_type], [name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price], [status], [max_users]) VALUES (N'1', N'Gratuito', N'Comienzo fácil', N'1', N'0', N'0', N'Esta suscripción te permite disfrutar de la aplicación por un mes de forma gratuita.', N'6', N'0', N'["Casilleros para recibir pedidos","Casilla con Número Postal Certificada para recibir correspondencia nacional e internacional (Amazon, Ebay, Alibaba, otros)","Notificación y Reporte de pedidos o correspondencia online.","Protege a mantener tu privacidad de número de teléfono.","Protege tus pedidos o correspondencia con protocolos de bioseguridad."]', N'0', N'0', N'1', N'5')
+GO
+
+INSERT INTO [dbo].[tblSubscriptionType] ([id_subscription_type], [name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price], [status], [max_users]) VALUES (N'2', N'Estandard', N'Experiencia optima', N'1', N'0', N'400', N'Permite recibir avisos sobre correspondencia en los casilleros.', N'1', N'0', N'["Casilleros para recibir pedidos","Casilla con N\u00famero Postal Certificada para recibir correspondencia nacional e internacional (Amazon, Ebay, Alibaba, otros)","Notificaci\u00f3n y Reporte de pedidos o correspondencia online.","Protege a mantener tu privacidad de n\u00famero de tel\u00e9fono.","Protege tus pedidos o correspondencia con protocolos de bioseguridad.","Asistencia y soporte"]', N'1', N'500', N'1', N'6')
+GO
+
+INSERT INTO [dbo].[tblSubscriptionType] ([id_subscription_type], [name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price], [status], [max_users]) VALUES (N'3', N'Premium', N'Solución personalizada', N'1', N'1', N'750', N'Permite recibir avisos de correspondencia y tambien la posibilidad de pagar tus servicios.', N'1', N'0', N'["Beneficios de suscripción Standard","Pago de Servicios Básicos.","Notificación y reporte de Pago de Servicios online.","Sistema de pago mediante QR.","Recepción del baucher de Pago de Servicios vía correo electrónico."]', N'1', N'900', N'1', N'4')
+GO
+
+
+SET IDENTITY_INSERT [dbo].[tblSubscriptionType] OFF
+GO
+-- ----------------------------
+-- Auto increment value for tblSubscriptionType
+-- ----------------------------
+DBCC CHECKIDENT ('[dbo].[tblSubscriptionType]', RESEED, 3)
+GO
+
 CREATE TABLE [dbo].[tblUsers] (
   [id_user] int  IDENTITY(1,1) NOT NULL,
   [first_name] varchar(100) COLLATE Modern_Spanish_CI_AS  NULL,
@@ -612,8 +674,12 @@ CREATE TABLE [dbo].[tblUsers] (
   [created_at] datetime DEFAULT getdate() NULL,
   [cellphone] varchar(50) COLLATE Modern_Spanish_CI_AS  NULL,
   [gender] varchar(1) COLLATE Modern_Spanish_CI_AS  NULL,
-  [status] int  NULL
+  [status] int  NULL,
+  [photo] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL
 )
+GO
+
+INSERT INTO [dbo].[tblUsers](first_name, last_name, username, role, password, device_id, cellphone, gender, status) VALUES ('Administrador', 'master', 'master', 'admin', 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', '000-00-000', '0000000', 'M', 1);
 GO
 
 ALTER TABLE [dbo].[tblUsers] SET (LOCK_ESCALATION = TABLE)
@@ -633,10 +699,13 @@ EXEC sp_addextendedproperty
 'COLUMN', N'status'
 GO
 
+EXEC sp_addextendedproperty
+'MS_Description', N'ruta + Nombre del archivo foto',
+'SCHEMA', N'dbo',
+'TABLE', N'tblUsers',
+'COLUMN', N'photo'
+GO
 
--- ----------------------------
--- Table structure for tblUsersSubscribed
--- ----------------------------
 CREATE TABLE [dbo].[tblUsersSubscribed] (
   [user_id] int  NOT NULL,
   [subscription_id] int  NOT NULL,
@@ -646,7 +715,6 @@ GO
 
 ALTER TABLE [dbo].[tblUsersSubscribed] SET (LOCK_ESCALATION = TABLE)
 GO
-
 
 
 -- ----------------------------
@@ -666,13 +734,22 @@ WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW
 ON [PRIMARY]
 GO
 
-
 -- ----------------------------
 -- Primary Key structure for table tblLockers
 -- ----------------------------
 ALTER TABLE [dbo].[tblLockers] ADD CONSTRAINT [PK__tblLocke__4AB6F3DCAD211247] PRIMARY KEY CLUSTERED ([id_locker])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Indexes structure for table tblPayments
+-- ----------------------------
+CREATE NONCLUSTERED INDEX [idx_account_payment]
+ON [dbo].[tblPayments] (
+  [account] ASC
+)
 GO
 
 
@@ -686,11 +763,20 @@ GO
 
 
 -- ----------------------------
--- Uniques structure for table tblPaymentsServices
+-- Indexes structure for table tblPaymentsServices
 -- ----------------------------
-ALTER TABLE [dbo].[tblPaymentsServices] ADD CONSTRAINT [uk_department_date] UNIQUE NONCLUSTERED ([target_date] ASC, [department_id] ASC)
-WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
-ON [PRIMARY]
+CREATE NONCLUSTERED INDEX [idx_month_year_pay_service]
+ON [dbo].[tblPaymentsServices] (
+  [month] ASC,
+  [year] DESC
+)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'index del mes y año del pago',
+'SCHEMA', N'dbo',
+'TABLE', N'tblPaymentsServices',
+'INDEX', N'idx_month_year_pay_service'
 GO
 
 
@@ -713,9 +799,43 @@ GO
 
 
 -- ----------------------------
--- Primary Key structure for table tblServiceDetail
+-- Indexes structure for table tblServiceDetailPerMonth
 -- ----------------------------
-ALTER TABLE [dbo].[tblServiceDetail] ADD CONSTRAINT [PK__tblServi__6837C632047D3C99] PRIMARY KEY CLUSTERED ([id_service_detail])
+CREATE NONCLUSTERED INDEX [idx_month_year_detail]
+ON [dbo].[tblServiceDetailPerMonth] (
+  [month] ASC,
+  [year] DESC
+)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Indice para busqueda',
+'SCHEMA', N'dbo',
+'TABLE', N'tblServiceDetailPerMonth',
+'INDEX', N'idx_month_year_detail'
+GO
+
+
+-- ----------------------------
+-- Uniques structure for table tblServiceDetailPerMonth
+-- ----------------------------
+ALTER TABLE [dbo].[tblServiceDetailPerMonth] ADD CONSTRAINT [idx_uq_month_year_detail] UNIQUE NONCLUSTERED ([month] ASC, [year] DESC, [service_id] ASC)
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
+ON [PRIMARY]
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Index unico para mes año y servicio',
+'SCHEMA', N'dbo',
+'TABLE', N'tblServiceDetailPerMonth',
+'CONSTRAINT', N'idx_uq_month_year_detail'
+GO
+
+
+-- ----------------------------
+-- Primary Key structure for table tblServiceDetailPerMonth
+-- ----------------------------
+ALTER TABLE [dbo].[tblServiceDetailPerMonth] ADD CONSTRAINT [PK__tblServi__6837C632047D3C99] PRIMARY KEY CLUSTERED ([id_service_detail])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
 GO
@@ -736,6 +856,16 @@ GO
 ALTER TABLE [dbo].[tblShipping] ADD CONSTRAINT [PK__tblShipp__3213E83F4481393B] PRIMARY KEY CLUSTERED ([id])
 WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)  
 ON [PRIMARY]
+GO
+
+
+-- ----------------------------
+-- Indexes structure for table tblSubscriptionCompany
+-- ----------------------------
+CREATE NONCLUSTERED INDEX [idx_company_external]
+ON [dbo].[tblSubscriptionCompany] (
+  [company_id] ASC
+)
 GO
 
 
@@ -805,7 +935,7 @@ GO
 -- ----------------------------
 -- Foreign Keys structure for table tblPaymentsServices
 -- ----------------------------
-ALTER TABLE [dbo].[tblPaymentsServices] ADD CONSTRAINT [fk_payment_department] FOREIGN KEY ([department_id]) REFERENCES [dbo].[tblDepartments] ([id_department]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[tblPaymentsServices] ADD CONSTRAINT [fk_services_pay_sub] FOREIGN KEY ([subscription_id]) REFERENCES [dbo].[tblSubscriptions] ([id_subscription]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
 ALTER TABLE [dbo].[tblPaymentsServices] ADD CONSTRAINT [fk_payment_payment] FOREIGN KEY ([payment_id]) REFERENCES [dbo].[tblPayments] ([idPayment]) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -833,16 +963,16 @@ GO
 
 
 -- ----------------------------
--- Foreign Keys structure for table tblServiceDetail
+-- Foreign Keys structure for table tblServiceDetailPerMonth
 -- ----------------------------
-ALTER TABLE [dbo].[tblServiceDetail] ADD CONSTRAINT [fk_service_details] FOREIGN KEY ([service_id]) REFERENCES [dbo].[tblServices] ([id_service]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[tblServiceDetailPerMonth] ADD CONSTRAINT [fk_service_details] FOREIGN KEY ([service_id]) REFERENCES [dbo].[tblServices] ([id_service]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
 
 -- ----------------------------
 -- Foreign Keys structure for table tblServices
 -- ----------------------------
-ALTER TABLE [dbo].[tblServices] ADD CONSTRAINT [fk_service_department] FOREIGN KEY ([department_id]) REFERENCES [dbo].[tblDepartments] ([id_department]) ON DELETE NO ACTION ON UPDATE NO ACTION
+ALTER TABLE [dbo].[tblServices] ADD CONSTRAINT [fk_service_subscirption] FOREIGN KEY ([subscription_id]) REFERENCES [dbo].[tblSubscriptions] ([id_subscription]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
 ALTER TABLE [dbo].[tblServices] ADD CONSTRAINT [fk_service_user] FOREIGN KEY ([user_id]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -856,6 +986,13 @@ ALTER TABLE [dbo].[tblShipping] ADD CONSTRAINT [fk_department_shipping] FOREIGN 
 GO
 
 ALTER TABLE [dbo].[tblShipping] ADD CONSTRAINT [fk_resident_shipping] FOREIGN KEY ([created_by]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE CASCADE ON UPDATE NO ACTION
+GO
+
+
+-- ----------------------------
+-- Foreign Keys structure for table tblSubscriptionCompany
+-- ----------------------------
+ALTER TABLE [dbo].[tblSubscriptionCompany] ADD CONSTRAINT [fk_companieSubscription_subcription] FOREIGN KEY ([subscription_id]) REFERENCES [dbo].[tblSubscriptions] ([id_subscription]) ON DELETE NO ACTION ON UPDATE NO ACTION
 GO
 
 
@@ -879,24 +1016,5 @@ ALTER TABLE [dbo].[tblUsersSubscribed] ADD CONSTRAINT [fk_user_subscribed] FOREI
 GO
 
 ALTER TABLE [dbo].[tblUsersSubscribed] ADD CONSTRAINT [fk_subscription_data] FOREIGN KEY ([subscription_id]) REFERENCES [dbo].[tblSubscriptions] ([id_subscription]) ON DELETE CASCADE ON UPDATE NO ACTION
-GO
-
--- DATA SEED TYPE SUBSCRIPTION
-
-INSERT INTO [dbo].[tblSubscriptionType] ([name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price]) VALUES (N'Gratuito', N'Comienzo fácil', N'1', N'0', N'0', N'Esta suscripción te permite disfrutar de la aplicación por un mes de forma gratuita.', N'2', N'0', N'["Casilleros para recibir pedidos","Casilla con Número Postal Certificada para recibir correspondencia nacional e internacional (Amazon, Ebay, Alibaba, otros)","Notificación y Reporte de pedidos o correspondencia online.","Protege a mantener tu privacidad de número de teléfono.","Protege tus pedidos o correspondencia con protocolos de bioseguridad."]', N'0', N'0')
-GO
-
-INSERT INTO [dbo].[tblSubscriptionType] ([name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price]) VALUES (N'Standard', N'Experiencia optima', N'1', N'0', N'400', N'Permite recibir avisos sobre correspondencia en los casilleros.', N'6', N'0', N'["Casilleros para recibir pedidos","Casilla con Número Postal Certificada para recibir correspondencia nacional e internacional (Amazon, Ebay, Alibaba, otros)","Notificación y Reporte de pedidos o correspondencia online.","Protege a mantener tu privacidad de número de teléfono.","Protege tus pedidos o correspondencia con protocolos de bioseguridad.","Asistencia y soporte"]', N'1', N'500')
-GO
-
-INSERT INTO [dbo].[tblSubscriptionType] ([name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price]) VALUES (N'Premium', N'Solución personalizada', N'1', N'1', N'750', N'Permite recibir avisos de correspondencia y tambien la posibilidad de pagar tus servicios.', N'6', N'0', N'["Beneficios de suscripción Standard","Pago de Servicios Básicos.","Notificación y reporte de Pago de Servicios online.","Sistema de pago mediante QR.","Recepción del baucher de Pago de Servicios vía correo electrónico."]', N'1', N'900')
-GO
-
-INSERT INTO [dbo].[tblSubscriptionType] ([name], [tag], [see_lockers], [see_services], [price], [description], [months_duration], [courrier], [details], [iva], [annual_price]) VALUES (N'Premium VIP', N'Solución avanzada', N'1', N'1', N'850', N'', N'6', N'1', N'["Beneficios de suscripción Premium","Recepción de las Facturas físicas de Pago de Servicios mediante la Casilla Postal."]', N'1', N'990')
-GO
-
-
--- DATA USER ADMIN;
-INSERT INTO [dbo].[tblUsers] ([first_name], [last_name], [username], [password], [role], [device_id], [cellphone], [gender], [status]) VALUES (N'Admin', N'Admin', N'admin', N'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3', N'admin', N'00-00-000', N'000',N'O', N'1')
 GO
 

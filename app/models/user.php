@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Config\Accesos;
 use App\Config\Database;
+use PDO;
 
 use function App\Utils\directorio_publico_condominio;
 use function App\Utils\directory;
@@ -148,18 +149,20 @@ class User {
     $this->gender = $row['gender'] ?? 'O';
     $this->cellphone = $row['cellphone'] ?? '000';
     $this->status = $row['status'] ?? 0;
+    $this->photo = $row['photo'] ?? '';
   }
   public function delete() {
     if ($this->con == null)
       return false;
     try {
       $this->con->beginTransaction();
-      $sql = "DELETE FROM tblUsers WHERE id_user = :id_user";
+      $sql = "UPDATE tblUsers SET status = 0 WHERE id_user = :id_user";
       $stmt = $this->con->prepare($sql);
       $stmt->execute(['id_user' => $this->id_user]);
       $this->con->commit();
       return 1;
     } catch (\Throwable $th) {
+      print_r($th);
       $this->con->rollBack();
       return -1;
     }
@@ -179,11 +182,18 @@ class User {
       }
     } else return false;
   }
+  /**
+   * Metodo para loggear a un usuario
+   * @param string $user_login
+   * @param string $pass
+   * @param PDO $con
+   * @return \App\Models\User
+   */
   public static function exist($user_login, $pass, $con): User {
     $user = new User($con, null);
     if ($con) {
       $sql = "SELECT * FROM tblUsers a LEFT JOIN tblResidents b ON a.id_user = b.user_id 
-        WHERE a.username = ? AND a.password = ?;";
+        WHERE a.username = ? AND a.password = ? AND a.status = 1;";
       $passHash = hash('sha256', $pass);
       $stmt = $con->prepare($sql);
       $stmt->execute([$user_login, $passHash]);
@@ -205,7 +215,7 @@ class User {
   public static function all_users($con) {
     $res = [];
     try {
-      $sql = "SELECT * FROM tblUsers WHERE role IN ('admin','conserje');";
+      $sql = "SELECT * FROM tblUsers WHERE role IN ('admin','conserje') AND status = 1;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Config\Database;
+use PDO;
 
 class Condominius {
   public static function search($q = '') {
@@ -16,5 +17,49 @@ class Condominius {
       //throw $th;
     }
     return [];
+  }
+  public static function all() {
+    try {
+      $con = Database::getInstaceCondominios();
+      $sql = "SELECT * FROM tblCondominiosData;";
+      $query = $con->prepare($sql);
+      $query->execute();
+      $data = $query->fetchAll(PDO::FETCH_ASSOC);
+      return $data;
+    } catch (\Throwable $th) {
+      throw $th;
+    }
+  }
+  public static function name_exist($name) {
+    try {
+      $con = Database::getInstaceCondominios();
+      $sql = "SELECT * FROM tblCondominiosData WHERE name = '$name';";
+      $query = $con->prepare($sql);
+      $query->execute();
+      $data = $query->fetchAll(PDO::FETCH_ASSOC);
+      if (count($data) > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (\Throwable $th) {
+      throw $th;
+    }
+  }
+  public static function pin_exist($pin) {
+    try {
+      $con = Database::getInstaceCondominios();
+      $sql = "SELECT * FROM tblCondominiosData WHERE pin = '$pin';";
+      $query = $con->prepare($sql);
+      $query->execute();
+      $data = $query->fetchAll(PDO::FETCH_ASSOC);
+      if (count($data) > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (\Throwable $th) {
+      throw $th;
+    }
   }
 }

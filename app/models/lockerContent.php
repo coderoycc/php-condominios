@@ -140,14 +140,14 @@ class LockerContent {
    */
   public static function last($con, $locker_id) {
     try {
-      $sql = "SELECT TOP 1 a.*, b.locker_number, b.locker_status, c.first_name, c.last_name, c.username, c.role, c.cellphone, c.gender, c.status, d.* FROM tblLockerContent a INNER JOIN tblLockers b 
+      $sql = "SELECT a.*, b.locker_number, b.locker_status, c.first_name, c.last_name, c.username, c.role, c.cellphone, c.gender, c.status, d.* FROM tblLockerContent a INNER JOIN tblLockers b 
       ON a.locker_id = b.id_locker 
       LEFT JOIN tblUsers c ON c.id_user = a.user_id_target
       LEFT JOIN tblDepartments d ON d.id_department = a.department_id
-      WHERE a.locker_id = $locker_id ORDER BY a.id_content DESC";
+      WHERE a.locker_id = $locker_id AND a.delivered = 0 ORDER BY a.id_content DESC";
       $stmt = $con->prepare($sql);
       $stmt->execute([$locker_id]);
-      return $stmt->fetch(PDO::FETCH_ASSOC);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (\Throwable $th) {
       var_dump($th);
     }

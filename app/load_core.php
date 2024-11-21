@@ -12,6 +12,7 @@ require_once './controllers/registerController.php';
 require_once './controllers/authController.php';
 require_once './utils/queries/QueryBuilder.php';
 require_once './utils/files/file.handler.php';
+require_once './utils/multitenant/manager.php';
 $entidades = ['user', 'resident', 'department', 'subscriptiontype', 'subscription', 'condominius', 'locker', 'payment', 'notification', 'services', 'master', 'servicesPay', 'ads', 'shipping', 'company', 'subscriptionCompany'];
 foreach ($entidades as $entidad) {
   require_once("models/" . $entidad . ".php");
@@ -22,7 +23,7 @@ $providers = ['auth', 'db_'];
 foreach ($providers as $provider) {
   require_once("providers/" . $provider . "Provider.php");
 }
-$services = ['pay', 'subscription'];
+$services = ['pay', 'subscription', 'tenant'];
 foreach ($services as $service) {
   require("services/" . $service . "Service.php");
 }

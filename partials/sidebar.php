@@ -2,7 +2,13 @@
   <nav class="sb-sidenav accordion bg-primary text-white" id="sidenavAccordion">
     <div class="sb-sidenav-menu">
       <div class="nav">
-        <div class="sb-sidenav-menu-heading">ADMINISTRACIÓN</div>
+        <div class="sb-sidenav-menu-heading">CONDOMINIOS</div>
+        <a class="nav-link" href="../condominiums/" data-route="condominiums/index">
+          <div class="sb-nav-link-icon"><i class="fa-solid fa-house"></i></div>
+          Administración de condominios
+        </a>
+
+        <div class="sb-sidenav-menu-heading">AGRUPADO POR CONDOMINIO</div>
         <a class="nav-link" href="../users" data-route="users">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-user-shield"></i></div>
           Usuarios del Sistema

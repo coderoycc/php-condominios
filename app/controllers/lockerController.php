@@ -124,7 +124,7 @@ class LockerController {
           $user_conserje->{'locker_number'} = $locker->locker_number;
           $user_conserje->{'dep_number'} = $resident->department->dep_number;
           $user_conserje->{'content'} = $data['content'];
-          $res_noti = Notification::send_id($resident->device_id, $message, "TeLoPago", $user_conserje, $buttons);
+          $res_noti = Notification::send_id($resident->device_id, $message, "SmartMail", $user_conserje, $buttons);
           if (!isset($res_noti['errors']))
             Response::success_json('Guardado y notificación enviada correctamente', ['notification' => $res_noti], 200);
           else
@@ -187,7 +187,7 @@ class LockerController {
       Response::error_json(['message' => 'Datos incompletos LOCKER ID']);
     $con = DBAppProvider::get_connection();
     $content = LockerContent::last($con, $query['locker_id']);
-    Response::success_json('Último contenido del casillero', ['content_info' => $content]);
+    Response::success_json('Último contenido del casillero', $content);
   }
   public function history_last($query)/*protected*/ {
     $con = DBAppProvider::get_connection();

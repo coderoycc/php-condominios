@@ -10,6 +10,14 @@ use Throwable;
  * Ayuda a crear nuevo condominio y manejar eventos
  */
 class Manager {
+  public static function dbname($name) {
+    $dbname = strtolower($name);
+    $dbname = trim($dbname);
+    $dbname = str_replace('  ', ' ', $dbname);
+    $dbname = str_replace(' ', '_', $dbname);
+    $dbname = "condominio_$dbname";
+    return $dbname;
+  }
   /**
    * @param mixed $name Nombre del condominio
    * @param mixed $pin Pin del condominio
@@ -19,13 +27,9 @@ class Manager {
    * @return array
    */
   public static function create($name, $pin, $address, $city = '', $country = 'Bolivia', $enable_qr = 0) {
-    if (self::pin_exist($pin))  return ['state' => false, 'message' => 'El PIN ya existe'];
     $response = ['state' => false, 'message' => ''];
     try {
-      $dbname = strtolower($name);
-      $dbname = trim($dbname);
-      $dbname = str_replace('  ', ' ', $dbname);
-      $dbname = str_replace(' ', '_', $dbname);
+      $dbname = self::dbname($name);
       $res = self::create_database($dbname);
       if ($res) {
         $estructure = self::create_structure($dbname);
@@ -90,18 +94,5 @@ class Manager {
       var_dump($th);
     }
     return false;
-  }
-  private static function pin_exist($pin) {
-    try {
-      $con = Database::master_instance();
-      $sql = "SELECT * FROM [condominios_master].[dbo].[tblCondominiosData] WHERE pin = '$pin';";
-      $stmt = $con->prepare($sql);
-      $stmt->execute();
-      $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      return count($res) > 0;
-    } catch (Throwable $th) {
-      var_dump($th);
-    }
-    return true;
   }
 }

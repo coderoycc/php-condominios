@@ -23,7 +23,7 @@ class AuthProvider {
       Response::error_json(['message' => 'AuthProvider Constructor' . $th->getMessage()], 500);
     }
   }
-  public function auth($user, $password): array {
+  public function auth($user, $password): array { // app
     $data = [];
     try {
       $user = User::exist($user, $password, $this->con);
