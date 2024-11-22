@@ -43,7 +43,7 @@ class SusbcriptionService {
     $subscription->expires_in = HandleDates::date_expire_month($data['type']->months_duration);
     $subscription->status = 'VALIDO';
     $subscription->code = $subscription->genCode();
-    $subscription->limit = 1;
+    $subscription->limit = $data['type']->max_users;
 
     if ($subscription->insert() > 0)
       return $subscription;

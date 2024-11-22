@@ -24,7 +24,7 @@ class Subscription {
   public Subscriptiontype $type;
   public Department $department;
 
-  public function __construct($db = null, $id_subscription = null) {
+  public function __construct($db = null, $id_subscription = null, $code = null) {
     $this->objectNull();
     if ($db) {
       $this->con = $db;
@@ -32,6 +32,13 @@ class Subscription {
         $stmt = $this->con->query("SELECT * FROM tblSubscriptions WHERE id_subscription = $id_subscription");
         $stmt->execute();
         $row = $stmt->fetch();
+        if ($row) {
+          $this->load($row);
+        }
+      } else if ($code) {
+        $stmt = $this->con->query("SELECT * FROM tblSubscriptions WHERE code = '$code'");
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) {
           $this->load($row);
         }
@@ -139,6 +146,20 @@ class Subscription {
   }
   public function genCode() {
     return strtoupper(substr(uniqid(), -6));
+  }
+  /**
+   * Cantidad de usuarios unidos con esta suscripcion
+   * @return int
+   */
+  public function users() {
+    if ($this->con) {
+      $sql = "SELECT count(*) as cantidad FROM tblUsersSubscribed WHERE subscription_id = $this->id_subscription;";
+      $stmt = $this->con->prepare($sql);
+      $stmt->execute();
+      $row = $stmt->fetch(PDO::FETCH_ASSOC);
+      return $row['cantidad'];
+    }
+    return 0;
   }
   public static function get_users_connected($con, $sub_id) {
     try {

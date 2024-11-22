@@ -36,6 +36,16 @@
         <label for="end_date">Fecha final</label>
       </div>
     </div>
+    <div class="col-md-4">
+      <div class="form-floating mb-3">
+        <select name="target" class="form-select">
+          <option value="O">TODOS</option>
+          <option value="F">FEMENINO</option>
+          <option value="M">MASCULINO</option>
+        </select>
+        <label for="target">Público objetivo</label>
+      </div>
+    </div>
   </div>
 
   <div class="row m-2">

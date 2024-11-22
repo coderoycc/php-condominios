@@ -72,7 +72,7 @@
         <div class="sb-sidenav-menu-heading">MASTER</div>
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapse_master" aria-expanded="false" aria-controls="collapse_master" data-route="master">
           <div class="sb-nav-link-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-          Configuraciones
+          Empresas y publicidad
           <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
         </a>
         <div class="collapse" id="collapse_master" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">

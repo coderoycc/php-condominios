@@ -41,6 +41,12 @@ class HandleDates {
     }
     return $message;
   }
+  /**
+   * Devuelve {true} si la fecha enviada ya expiro y {false} caso contrario
+   * > HOY (>) FECHA ENVIADA
+   * @param string $date
+   * @return bool
+   */
   public static function expired($date): bool {
     $today = new DateTime();
     $expire = new DateTime($date);

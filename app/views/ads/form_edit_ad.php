@@ -40,6 +40,16 @@
     </div>
     <div class="col-md-4">
       <div class="form-floating mb-3">
+        <select name="target" class="form-select">
+          <option value="O" <?= $ad->target == 'O' ? 'selected' : '' ?>>TODOS</option>
+          <option value="F" <?= $ad->target == 'F' ? 'selected' : '' ?>>FEMENINO</option>
+          <option value="M" <?= $ad->target == 'M' ? 'selected' : '' ?>>MASCULINO</option>
+        </select>
+        <label for="target">Público objetivo</label>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-floating mb-3">
         <input type="text" class="form-control" disbaled readonly placeholder="Tipo de archivo" value="<?= $ad->type ?>">
         <label for="type">Tipo de archivo</label>
       </div>

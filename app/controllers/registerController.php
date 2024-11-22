@@ -9,10 +9,38 @@ use App\Models\Department;
 use App\Models\Resident;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Providers\AuthProvider;
+use Helpers\Resources\HandleDates;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
 class RegisterController {
+  public function with_code($body, $files = null) {
+    if (!Request::required(['pin', 'cellphone', 'password', 'code'], $body))
+      Response::error_json(['message' => 'Campos requeridos [pin, cellphone, password, code]'], 400);
+    $con = Database::getInstanceByPin($body['pin']);
+    $subscription = new Subscription($con, null, $body['code']);
+    if ($subscription->id_subscription) {
+      if (!HandleDates::expired($subscription->expires_in)) {
+        $subscription->type();
+        if ($subscription->users() < $subscription->type->max_users) {
+          $resident = new Resident($con);
+          $resident->cellphone = $body['cellphone'];
+          $resident->username = $body['cellphone'];
+          $resident->role = 'resident';
+          $resident->status = 1;
+          $resident->password = hash('sha256', $body['password']);
+          $resident->department_id = $subscription->department_id;
+          $resident->save();
+          Subscription::addUserSubscription($con, $resident->id_user, $subscription->id_subscription);
+          Response::success_json('Registro exitoso', $resident, 200);
+        } else
+          Response::error_json(['message' => 'Se ha alcanzado el número máximo de usuarios'], 400);
+      } else
+        Response::error_json(['message' => 'La suscripción ya expiró'], 404);
+    } else
+      Response::error_json(['message' => 'Código no válido'], 404);
+  }
   public function searchCondominiums($query) {
     $q = $query['q'] ?? '';
     $condominiums = Condominius::search($q);

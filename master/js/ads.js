@@ -40,6 +40,7 @@ async function getAdsList(empresa = '0') {
   $("#table_ads").DataTable({
     language: lenguaje,
     info: false,
+    ordering: false
   })
   $("#table_ads_length").remove()
   $("#table_ads_filter").addClass('float-end')

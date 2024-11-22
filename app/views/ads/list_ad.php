@@ -19,19 +19,23 @@
         <th>Empresa</th>
         <th>Registrado en</th>
         <th>Tipo</th>
+        <th>Objetivo</th>
         <th>Inicio publicado</th>
         <th>Fin publicado</th>
         <th>Opciones</th>
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($ads as $ad): ?>
+      <?php
+      $targets = ['F' => 'FEMENINO', 'M' => 'MASCULINO', 'O' => 'TODOS'];
+      foreach ($ads as $ad): ?>
         <tr>
           <td><?= $ad['id_ad'] ?></td>
           <td><?= $ad['description'] ?></td>
           <td><?= $ad['company'] ?></td>
           <td><?= date('d/m/Y', strtotime($ad['created'])) ?></td>
           <td><?= $ad['type'] ?></td>
+          <td><?= isset($ad['target']) ? $targets[$ad['target']] : 'TODOS' ?></td>
           <td><?= date('d/m/Y', strtotime($ad['start_date'])) ?></td>
           <td><?= date('d/m/Y', strtotime($ad['end_date'])) ?></td>
           <td class="text-center">

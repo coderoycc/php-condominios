@@ -51,6 +51,7 @@ class AdsController {
     $ad->direct_to = $body['direct_to'] ?? '';
     $ad->start_date = $body['start_date'] ?? date('Y-m-d');
     $ad->end_date = $body['end_date'] ?? date('Y-m-d');
+    $ad->target = $body['target'] ?? 'O';
     if (isset($files['file'])) {
       $originalFilename = $files['file']['name'];
       $fileExtension = pathinfo($originalFilename, PATHINFO_EXTENSION);
@@ -77,6 +78,7 @@ class AdsController {
     $ad->direct_to = $body['direct_to'] ?? '';
     $ad->start_date = $body['start_date'];
     $ad->end_date = $body['end_date'];
+    $ad->target = $body['target'] ?? $ad->target;
     if ($ad->update()) {
       Response::success_json('Anuncio actualizado correctamente', ['ad' => $ad]);
     } else {

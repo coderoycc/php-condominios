@@ -15,6 +15,7 @@ class Ads {
   public string $created;
   public string $start_date;
   public string $end_date;
+  public string $target; // F: feminino, M: masculino, O: todos
   public function __construct($con = null, $id = null) {
     $this->objectNull();
     if ($con) {
@@ -40,6 +41,7 @@ class Ads {
     $this->content = "";
     $this->start_date = "";
     $this->end_date = "";
+    $this->target = "";
   }
   public function load($row) {
     $this->id_ad = $row['id_ad'];
@@ -51,12 +53,13 @@ class Ads {
     $this->company_id = $row['company_id'];
     $this->start_date = $row['start_date'];
     $this->end_date = $row['end_date'];
+    $this->target = $row['target'] ?? 'O';
   }
   public function insert() {
     try {
-      $sql = "INSERT INTO tblAds (description, direct_to, content, type, company_id, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?);";
+      $sql = "INSERT INTO tblAds (description, direct_to, content, type, company_id, start_date, end_date, target) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
       $stmt = $this->con->prepare($sql);
-      $stmt->execute([$this->description, $this->direct_to, $this->content, $this->type, $this->company_id, $this->start_date, $this->end_date]);
+      $stmt->execute([$this->description, $this->direct_to, $this->content, $this->type, $this->company_id, $this->start_date, $this->end_date, $this->target]);
       $this->id_ad = $this->con->lastInsertId();
       return $this->id_ad;
     } catch (\Throwable $th) {
@@ -66,9 +69,9 @@ class Ads {
   }
   public function update() {
     try {
-      $sql = "UPDATE tblAds SET description = ?, direct_to = ?, company_id = ?, start_date = ?, end_date = ? WHERE id_ad = ?;";
+      $sql = "UPDATE tblAds SET description = ?, direct_to = ?, company_id = ?, start_date = ?, end_date = ?, target = ? WHERE id_ad = ?;";
       $stmt = $this->con->prepare($sql);
-      $res = $stmt->execute([$this->description, $this->direct_to, $this->company_id, $this->start_date, $this->end_date, $this->id_ad]);
+      $res = $stmt->execute([$this->description, $this->direct_to, $this->company_id, $this->start_date, $this->end_date, $this->target, $this->id_ad]);
       return $res;
     } catch (\Throwable $th) {
       var_dump($th);
@@ -105,7 +108,7 @@ class Ads {
    */
   static function all($con, $where = '') {
     try {
-      $sql = "SELECT * FROM tblAds a INNER JOIN tblCompanies b ON b.id_company = a.company_id $where ORDER BY a.id_ad DESC";
+      $sql = "SELECT a.*, b.company, b.phone, b.description as description_company, b.url, b.status FROM tblAds a INNER JOIN tblCompanies b ON b.id_company = a.company_id $where ORDER BY a.id_ad DESC";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
