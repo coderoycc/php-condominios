@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Config\Accesos;
+use App\Config\Database;
 use App\Models\Department;
 use App\Providers\DBWebProvider;
 use Helpers\Resources\Render;
@@ -84,5 +86,21 @@ class DepartmentController {
       Render::view('department/content_subs', ['department' => $department]);
     } else
       Render::view('error_html', ['message' => 'Instancia de conexión', 'message_details' => 'Vuelva a iniciar sesion']);
+  }
+  public function add_new($body, $files = null) /*app*/ {
+    if (!Request::required(['number', 'pin'], $body))
+      Response::error_json(['message' => 'Parámetros faltantes'], 400);
+
+    $con = Database::getInstanceByPinExterno($body['pin']);
+    $department = new Department($con, null, $body['number']);
+    if ($department->id_department == 0) {
+      $department->dep_number = $body['number'];
+      $department->description = 'Creado desde la aplicacion';
+      $department->bedrooms = 0;
+      $department->save();
+      Response::success_json('Departamento creado', ['department' => $department], 201);
+    } else {
+      Response::error_json(['message' => 'No se creo departamento, porque ya existe', 'department' => $department], 200);
+    }
   }
 }

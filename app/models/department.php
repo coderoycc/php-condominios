@@ -11,7 +11,7 @@ class Department {
   public int $bedrooms;
   public string $description;
   public int $status; // 0 inactivo, 1 activo
-  public function __construct($con = null, $id_department = null) {
+  public function __construct($con = null, $id_department = null, $number = null) {
     $this->objectNull();
     if ($con) {
       $this->con = $con;
@@ -19,7 +19,13 @@ class Department {
         $sql = "SELECT * FROM tblDepartments WHERE id_department = :id_department";
         $stmt = $this->con->prepare($sql);
         $stmt->execute(['id_department' => $id_department]);
-        $row = $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) $this->load($row);
+      } else if ($number) {
+        $sql = "SELECT * FROM tblDepartments WHERE dep_number = :dep_number";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute(['dep_number' => $number]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) $this->load($row);
       }
     }

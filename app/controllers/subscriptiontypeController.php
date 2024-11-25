@@ -42,13 +42,14 @@ class SubscriptiontypeController {
       $type->name = $body['name'];
       $type->tag = $body['tag'] ?? $type->tag;
       $type->description = $body['description'] ?? $type->description;
-      $type->price = $body['price'] ?? 0;
-      $type->max_users = $body['max_users'];
-      $type->annual_price = $body['annual_price'] ?? 0;
+      $type->price = $body['price'] ?? $type->price;
+      $type->months_duration = $body['duration'] ?? $type->months_duration;
+      $type->max_users = $body['max_users'] ?? $type->max_users;
+      $type->annual_price = $body['annual_price'] ?? $type->annual_price;
       $type->courrier = isset($body['courrier']) ? 1 : 0;
       $type->see_services = isset($body['see_services']) ? 1 : 0;
       $type->see_lockers = isset($body['see_lockers']) ? 1 : 0;
-      $res = Subscriptiontype::update_all($type);
+      $res = Subscriptiontype::update_all($type); // actualiza a todas las bases de datos
       if ($res) {
         Response::success_json('Se actualizo el tipo', $res, 200);
       } else

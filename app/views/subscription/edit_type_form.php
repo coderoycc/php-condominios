@@ -9,10 +9,19 @@
       <input type="text" class="form-control" name="tag" placeholder="Texto etiqueta" value="<?= $type->tag ?>">
       <label for="tag">Etiqueta</label>
     </div>
-    <div class="form-floating mb-3">
-      <input type="number" class="form-control" value="<?= $type->price ?>" name="price" placeholder="numero" step="any" min="0">
-      <label>Precio por <?= $type->months_duration ?> mes</label>
-    </div>
+    <?php if ($type->price == 0):
+      // Cuand el precio sea 0 el tiempo de duracion es editable
+    ?>
+      <div class="form-floating mb-3">
+        <input type="number" class="form-control" value="<?= $type->months_duration ?>" name="duration" placeholder="numero" step="any" min="0">
+        <label>Meses de duración (gratuito)</label>
+      </div>
+    <?php else: ?>
+      <div class="form-floating mb-3">
+        <input type="number" class="form-control" value="<?= $type->price ?>" name="price" placeholder="numero" step="any" min="0">
+        <label>Precio por <?= $type->months_duration ?> mes</label>
+      </div>
+    <?php endif; ?>
     <!-- <div class="form-floating mb-3">
       <input type="number" class="form-control" name="annual_price" value="<?= $type->annual_price ?>" placeholder="numero" step="any" min="0">
       <label>Precio Anual</label>
