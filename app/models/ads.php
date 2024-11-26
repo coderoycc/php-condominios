@@ -108,7 +108,7 @@ class Ads {
    */
   static function all($con, $where = '') {
     try {
-      $sql = "SELECT a.*, b.company, b.phone, b.description as description_company, b.url, b.status FROM tblAds a INNER JOIN tblCompanies b ON b.id_company = a.company_id $where ORDER BY a.id_ad DESC";
+      $sql = "SELECT a.*, b.id_company, b.company, b.phone, b.description as description_company, b.url, b.status FROM tblAds a INNER JOIN tblCompanies b ON b.id_company = a.company_id $where ORDER BY a.id_ad DESC";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);

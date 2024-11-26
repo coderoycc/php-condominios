@@ -93,8 +93,8 @@ class AdsController {
     foreach ($ads as $ad) {
       $new_ad = new Ads();
       $new_ad->load($ad);
-      $company = new Company();
-      $company->load($ad);
+      $company = new Company($con, $ad['id_company']);
+      // $company->load($ad);
       $new_ad->{'company'} = $company;
       $res_ads[] = $new_ad;
     }
