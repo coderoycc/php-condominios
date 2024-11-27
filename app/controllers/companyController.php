@@ -20,9 +20,9 @@ class CompanyController {
     $company->line = $body['line'] ?? '';
     $company->url = $body['url'] ?? '';
     $company->description = $body['description'] ?? '';
-    if ($company->insert() > 0) {
+    if ($company->insert() > 0)
       Response::success_json('Empresa agregada', ['company' => $company], 200);
-    } else
+    else
       Response::error_json(['success' => false, 'message' => 'Error al crear la empresa'], 200);
   }
   public function delete($body)/*WEB*/ {
@@ -32,9 +32,9 @@ class CompanyController {
     $con = Database::getInstaceCondominios();
     $company = new Company($con, $body['id']);
     $company->status = 0;
-    if ($company->update() > 0) {
+    if ($company->update() > 0)
       Response::success_json('Empresa eliminada', ['company' => $company], 200);
-    } else
+    else
       Response::error_json(['success' => false, 'message' => 'Error al eliminar la empresa'], 200);
   }
   public function update($body)/*web*/ {
@@ -46,11 +46,10 @@ class CompanyController {
     $company->description = $body['description'];
     $company->phone = $body['phone'];
     $company->url = $body['url'] ?? '';
-    if ($company->update() > 0) {
+    if ($company->update() > 0)
       Response::success_json('Empresa actualizada', ['company' => $company], 200);
-    } else {
+    else
       Response::error_json(['message' => 'Error al actualizar la empresa'], 200);
-    }
   }
   public function all($query)/*web*/ {
     $companies = Company::get_companies($query);
