@@ -165,11 +165,17 @@ class UserController {
     $user_id = DBAppProvider::get_payload_value('user_id');
     $con = DBAppProvider::get_connection();
     $user = new User($con, $user_id);
-    if (!isset($files['photo'])) Response::error_json(['message' => 'Foto requerida <<photo>>'], 400);
-    $tipos_permitidos = array("image/jpeg", "image/png");
-    $tipo = $files['photo']['type'];
-    if (!in_array($tipo, $tipos_permitidos)) Response::error_json(['message' => 'Tipo de archivo no permitido'], 400);
-    if ($user->id_user == 0) Response::error_json(['message' => 'Usuario no encontrado'], 400);
+    if (!isset($files['photo']))
+      Response::error_json(['message' => 'Foto requerida <<photo>>'], 400);
+
+    $tipos_permitidos = array("jpeg", "png", "jpg");
+    $tipo = strtolower(pathinfo($files['photo']['name'], PATHINFO_EXTENSION));
+    if (!in_array($tipo, $tipos_permitidos))
+      Response::error_json(['message' => 'Tipo de archivo no permitido'], 400);
+
+    if ($user->id_user == 0)
+      Response::error_json(['message' => 'Usuario no encontrado'], 400);
+
     if ($user->addphoto($files['photo'], $condominio['pin'], $condominio['name'])) {
       unset($user->password);
       Response::success_json('Foto actualizada', ['user' => $user]);
