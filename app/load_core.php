@@ -19,7 +19,7 @@ foreach ($entidades as $entidad) {
   require_once("controllers/" . $entidad . "Controller.php");
 }
 
-$providers = ['auth', 'db_'];
+$providers = ['auth', 'db_', 'logger'];
 foreach ($providers as $provider) {
   require_once("providers/" . $provider . "Provider.php");
 }

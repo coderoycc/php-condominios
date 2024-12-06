@@ -2,13 +2,18 @@
 
 namespace Helpers\Resources;
 
+use function App\Providers\logger;
+
 class Response {
 
   public static function success_json(string $message, $data, $statusCode = 200) {
     header('Content-Type: application/json');
     http_response_code($statusCode);
     $arr = ['success' => true, 'data' => $data, 'message' => $message];
-    echo json_encode($arr);
+
+    $res = json_encode($arr);
+    logger()->response($res);
+    echo $res;
     die();
   }
 
@@ -17,7 +22,9 @@ class Response {
     http_response_code($statusCode);
     $arr = ['success' => false];
     $data = array_merge($arr, $data);
-    echo json_encode($data);
+    $res = json_encode($data);
+    logger()->response($res);
+    echo $res;
     die();
   }
 
@@ -31,6 +38,7 @@ class Response {
 class Render {
   public static function view(string $name_view, array $data): void {
     extract($data);
+    logger()->response("view $name_view");
     if (self::view_exist($name_view)) {
       ob_start();
       require_once __DIR__ . '/../../app/views/' . $name_view . '.php';

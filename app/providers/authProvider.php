@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use Helpers\Resources\HandleDates;
 use Helpers\Resources\Response;
+use Throwable;
 
 class AuthProvider {
   private $con = null;
@@ -19,7 +20,8 @@ class AuthProvider {
         $this->con = Database::getInstanceX($dbName);
       else
         $this->con = Database::getInstanceByPin($pin);
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
+      logger()->error($th);
       Response::error_json(['message' => 'AuthProvider Constructor' . $th->getMessage()], 500);
     }
   }
@@ -43,7 +45,8 @@ class AuthProvider {
           $data['message_subscription'] = '';
         }
       }
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
+      logger()->error($th);
       var_dump($th);
     }
     return $data;
@@ -60,7 +63,8 @@ class AuthProvider {
         }
       }
       return $data;
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
+      logger()->error($th);
       Response::error_json(['message' => 'Error Auth Provider names NULL' . $th->getMessage()]);
     }
     return $data;

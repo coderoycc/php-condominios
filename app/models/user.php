@@ -1,10 +1,12 @@
 <?php // propietario -> user principal
 namespace App\Models;
 
-use App\Config\Accesos;
 use App\Config\Database;
 use PDO;
+use Ramsey\Uuid\Nonstandard\Uuid;
+use Throwable;
 
+use function App\Providers\logger;
 use function App\Utils\directorio_publico_condominio;
 use function App\Utils\directory;
 
@@ -22,6 +24,8 @@ class User {
   public string $gender;
   public int $status;
   public string $photo;
+  public int $assigned_code; // 0: No se asigno codigo, 1: si se asigno codigo
+  public string $device_code; // codigo del telefono usuario
   public object $suscription;
 
   // public string $color; // color de menu
@@ -54,6 +58,8 @@ class User {
     $this->gender = '';
     $this->status = 0;
     $this->photo = '';
+    $this->assigned_code = 0;
+    $this->device_code = '';
   }
   public function resetPass() {
     if ($this->con == null)
@@ -63,9 +69,36 @@ class User {
       $stmt = $this->con->prepare($sql);
       $pass = hash('sha256', $this->username);
       return $stmt->execute(['password' => $pass, 'id_user' => $this->id_user]);
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
+      logger()->error($th);
       return false;
     }
+  }
+  public function generate_code() {
+    $this->device_code = Uuid::uuid4();
+  }
+  /**
+   * Verifica el codigo enviado por el usuario para validad el dispositivo
+   * @param string $code
+   * @return array <boolean, string>
+   */
+  public function verify_code($code) {
+    $response = ['status' => true, 'message' => 'Correcto'];
+    if ($this->assigned_code == 1) { // tiene cel registrado
+      if ($this->device_code != $code) {
+        $response['status'] = false;
+        $response['message'] = 'Ya tiene un dispositivo registrado, código no registrado';
+      }
+    } else if ($this->assigned_code == 0) { // no tiene cel registrado
+      $this->assigned_code = 1;
+      $this->generate_code();
+      $this->update_code_phone();
+      $response['message'] = 'Dispositivo nuevo registrado';
+    } else {
+      $response['status'] = false;
+      $response['message'] = 'Error al verificar el codigo';
+    }
+    return $response;
   }
   public function newPass($newPass) { /// cambio de password
     if ($this->con == null)
@@ -75,7 +108,8 @@ class User {
       $stmt = $this->con->prepare($sql);
       $pass = hash('sha256', $newPass);
       return $stmt->execute(['password' => $pass, 'id_user' => $this->id_user]);
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
+      logger()->error($th);
       return false;
     }
   }
@@ -112,8 +146,9 @@ class User {
         }
       }
       return $resp;
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
       print_r($th);
+      logger()->error($th);
       $this->con->rollBack();
       return -1;
     }
@@ -150,6 +185,28 @@ class User {
     $this->cellphone = $row['cellphone'] ?? '000';
     $this->status = $row['status'] ?? 0;
     $this->photo = $row['photo'] ?? '';
+    $this->assigned_code = $row['assigned_code'] ?? 0;
+    $this->device_code = $row['device_code'] ?? '';
+  }
+  /**
+   * Actualiza el codigo del telefono y el estado de asignacion
+   * @return bool
+   */
+  public function update_code_phone() {
+    if ($this->con) {
+      try {
+        $this->con->beginTransaction();
+        $sql = "UPDATE tblUsers SET assigned_code = :assigned_code, device_code = :device_code WHERE id_user = :id_user";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute(['id_user' => $this->id_user, 'assigned_code' => $this->assigned_code, 'device_code' => $this->device_code]);
+        $this->con->commit();
+        return true;
+      } catch (Throwable $th) {
+        logger()->error($th);
+        $this->con->rollBack();
+      }
+    }
+    return false;
   }
   public function delete() {
     if ($this->con == null)
@@ -161,8 +218,9 @@ class User {
       $stmt->execute(['id_user' => $this->id_user]);
       $this->con->commit();
       return 1;
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
       print_r($th);
+      logger()->error($th);
       $this->con->rollBack();
       return -1;
     }
@@ -218,8 +276,9 @@ class User {
       $sql = "SELECT * FROM tblUsers WHERE role IN ('admin','conserje') AND status = 1;";
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    } catch (\Throwable $th) {
+      $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $th) {
+      logger()->error($th);
       var_dump($th);
     }
     return $res;
@@ -231,9 +290,9 @@ class User {
 
       $stmt = $con->prepare($sql);
       $stmt->execute();
-      $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    } catch (\Throwable $th) {
-      //throw $th;
+      $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $th) {
+      logger()->error($th);
       var_dump($th);
     }
     return $res;

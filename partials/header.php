@@ -34,13 +34,22 @@
   <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
     <li class="nav-item dropdown">
       <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="width:250px">
         <li><a class="dropdown-item" href="#!">Usuario: <b><?= $user->username ?? '' ?></b></a></li>
         <li><a class="dropdown-item" href="../dash/">Ir al panel </a></li>
         <li>
           <hr class="dropdown-divider" />
         </li>
-        <li><a class="dropdown-item" href="#!" id="idLogout">Cerrar sesión</a></li>
+        <li class="d-grid mx-2 ">
+          <a class="btn btn-info text-white" type="button" href="#!" title="Cambiar contraseña" data-bs-toggle="modal" data-bs-target="#modal_usuario_pass">
+            Cambiar contraseña <i class="fa fa-lock fa-fw"></i>
+          </a>
+        </li>
+        <li class="d-grid mx-2 mt-2">
+          <a class="btn btn-danger text-white" type="button" href="#!" title="SALIR" id="idLogout">
+            <i class="fa fa-sign-out-alt fa-fw "></i> Salir
+          </a>
+        </li>
       </ul>
     </li>
     <li class="nav-item dropdown">
@@ -49,13 +58,13 @@
         <span class="position-absolute start-100 translate-middle badge rounded-pill bg-info">
           99+
         </span>
-      </a> -->
+      </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav_notify">
         <li>
           <a class="dropdown-item text-center" href="#!">SOLICITUDES DE ENVIO <span class="badge text-bg-secondary">4</span></a>
         </li>
         <li><a class="dropdown-item" href="#!">Something else here <span class="badge text-bg-secondary">4</span></a></li>
-      </ul>
+      </ul> -->
     </li>
   </ul>
 </nav>

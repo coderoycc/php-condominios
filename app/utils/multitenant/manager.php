@@ -3,13 +3,21 @@
 namespace App\Utils\Multitenant;
 
 use App\Config\Database;
+use App\Models\Condominius;
 use PDO;
 use Throwable;
+
+use function App\Providers\logger;
 
 /**
  * Ayuda a crear nuevo condominio y manejar eventos
  */
 class Manager {
+  /**
+   * Devuelve el nuevo nombre de la base de datos de acuerdo al nombre del condominio
+   * @param string $name
+   * @return string
+   */
   public static function dbname($name) {
     $dbname = strtolower($name);
     $dbname = trim($dbname);
@@ -34,6 +42,7 @@ class Manager {
       if ($res) {
         $estructure = self::create_structure($dbname);
         if ($estructure) {
+          self::insert_default_data($dbname);
           $master = self::add_row_master($dbname, $name, $pin, $address, $city, $country);
           if ($master) {
             $response['state'] = true;
@@ -91,8 +100,31 @@ class Manager {
       $res = $stmt->execute();
       return $res;
     } catch (Throwable $th) {
+      logger()->error($th);
       var_dump($th);
     }
     return false;
+  }
+  /**
+   * Agrega datos por defecto a la base de datos (tipo de suscripcion y usuario)
+   * @return void
+   */
+  private static function insert_default_data($dbname) {
+    try {
+      $condominios = Condominius::all();
+      $condominio = $condominios[0];
+      $sql = "USE [$dbname]; 
+      SET IDENTITY_INSERT [tblSubscriptionType] ON;
+      INSERT INTO [tblSubscriptionType] (id_subscription_type, name, tag, see_lockers, see_services, price, description, months_duration, courrier, details, iva, annual_price, status, max_users)
+      SELECT id_subscription_type, name, tag, see_lockers, see_services, price, description, months_duration, courrier, details, iva, annual_price, status, max_users FROM [" . $condominio['dbname'] . "].[dbo].[tblSubscriptionType];
+      SET IDENTITY_INSERT [tblSubscriptionType] OFF;";
+      logger()->debug($sql);
+      $con = Database::master_instance();
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+    } catch (Throwable $th) {
+      logger()->error($th);
+      throw $th;
+    }
   }
 }

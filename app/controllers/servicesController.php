@@ -55,9 +55,9 @@ class ServicesController {
     }
   }
   public function update_my_service($body) /*protected*/ {
-    if (!Request::required(['code', 'id'], $body)) {
+    if (!Request::required(['code', 'id'], $body))
       Response::error_json(['message' => 'Campos requeridos [code, id]']);
-    }
+
     $con = DBAppProvider::get_connection();
     $service = new Services($con, $body['id']);
     $newService = clone $service;

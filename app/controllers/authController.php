@@ -16,6 +16,7 @@ class AuthController {
     if (!Request::required(['user', 'password', 'pin', 'device_id'], $data))
       Response::error_json(['message' => 'Datos incompletos'], 401);
 
+    $device_code = $data['device_code'] ?? '';
     $condominioData = Accesos::getCondominio($data['pin']);
     if (!empty($condominioData)) {
       $dbname = $condominioData['dbname'];
@@ -25,6 +26,10 @@ class AuthController {
       $data_login['condominio'] = $condominioData;
       $user = $data_login['user'];
       if ($user->id_user > 0) { // existe el usuario
+        $res_log = $user->verify_code($device_code);
+        if (!$res_log['status']) // verificar si se loguea de otro celular
+          Response::error_json(['message' => $res_log['message']], 401);
+
         $user->device_id = $data['device_id'];
         $user->save();
         if (!$data_login['expired'] && $data_login['status'] == 'VALIDO') { //suscripcion no vencida

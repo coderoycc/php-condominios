@@ -203,4 +203,21 @@ class UserController {
     } else
       Response::error_json(['message' => 'No se pudo actualizar los datos'], 400);
   }
+
+  public function changepass($body)/*web*/ {
+    if (!Request::required(['pass', 'newPass'], $body))
+      Response::error_json(['message' => 'Campos requeridos'], 400);
+
+    $user = DBWebProvider::session_get_user();
+    if ($user->id_user == 0) Response::error_json(['message' => 'Login fallido, recarge la pagina'], 200);
+
+    $con = DBWebProvider::getSessionDataDB();
+    $userNew = new User($con, $user->id_user);
+    if ($userNew->password == hash('sha256', $body['pass'])) {
+      if ($userNew->newPass(hash('sha256', $body['newPass']))) {
+        Response::success_json('Contraseña cambiada', []);
+      } else Response::error_json(['message' => 'No se pudo cambiar la contraseña'], 200);
+    } else
+      Response::error_json(['message' => 'Contraseña anterior incorrecta'], 200);
+  }
 }

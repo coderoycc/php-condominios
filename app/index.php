@@ -8,6 +8,8 @@ include_once 'load_core.php';
 use Helpers\Middlewares\AuthMiddleware;
 use Helpers\Resources\Response;
 
+use function App\Providers\logger;
+
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 
 $parts = explode('/', $url);
@@ -24,7 +26,7 @@ try {
   $controller = new $controllerClass();
 
   $payload = AuthMiddleware::check_jwt($url);
-
+  logger()->request("$method $url");
   switch ($method) {
     case 'GET':
       $controller->$action($_GET);
@@ -44,5 +46,6 @@ try {
       echo json_encode(array('error' => 'Metodo no permitido'));
   }
 } catch (\Throwable $th) {
+  logger()->error($th);
   Response::error_json(array('error' => $th->getMessage(), 'detail' => $th->getFile() . ' 1##-->&&<--##' . $th->getLine()));
 }

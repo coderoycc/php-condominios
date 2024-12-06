@@ -55,7 +55,7 @@
           </div>
           <div class="form-floating mb-3">
             <input type="text" class="form-control" id="user_u_edit" placeholder="usuario" value="" name="usuario">
-            <label for="user_u_edit">Usuario</label>
+            <label for="user_u_edit">Usuario (Celular)</label>
           </div>
           <div class="mb-2">
             <div class="form-floating mb-3">

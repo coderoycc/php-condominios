@@ -59,7 +59,6 @@ $(document).on('click', '#idLogout', async () => {
     }
   } catch (error) {
     console.log(error)
-
   }
 })
 
@@ -100,7 +99,6 @@ $(document).on("hide.bs.modal", "#modal_usuario", function (event) {
 })
 
 const cambiarPass = async () => {
-  console.log('asdasdfasdfadsfadsfadsfdsadssd')
   if ($("#pass_repeat").val() == $('#n_pass').val() && $("#pass").val() != '') {
     data = {
       idUsuario: $("#id_user").val(),
@@ -110,11 +108,11 @@ const cambiarPass = async () => {
     console.log(data)
     const res = await $.ajax({
       data,
-      url: "../app/usuario/changepass",
+      url: "../app/user/changepass",
       type: "POST",
       dataType: "JSON",
     })
-    if (res.status == 'success') {
+    if (res.success) {
       $.toast({
         heading: 'Operación exitosa',
         icon: 'success',
