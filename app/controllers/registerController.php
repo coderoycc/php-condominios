@@ -25,10 +25,12 @@ class RegisterController {
         $subscription->type();
         if ($subscription->users() < $subscription->type->max_users) {
           $resident = new Resident($con);
-          $resident->cellphone = $body['cellphone'];
-          $resident->username = $body['cellphone'];
+          // nuevos obligatorios
           $resident->first_name = $body['name'];
           $resident->gender = $body['gender'];
+
+          $resident->cellphone = $body['cellphone'];
+          $resident->username = $body['cellphone'];
           $resident->role = 'resident';
           $resident->status = 1;
           $resident->password = hash('sha256', $body['password']);
