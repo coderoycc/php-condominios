@@ -13,7 +13,10 @@ class LoggerProvider {
     $this->file();
   }
   public function error(Throwable $error) {
-    $message = "[ERROR]\t\t" . date('Y-m-d H:i:s') . "\t-"  . $error->getMessage() . ' - ' . $error->getFile() . ' - ' . $error->getLine() . "\n";
+    if (!PRODUCTION) {
+      var_dump($error);
+    }
+    $message = "[ERROR]\t\t" . date('Y-m-d H:i:s') . "\t- "  . $error->getMessage() . ' - ' . $error->getFile() . ' - ' . $error->getLine() . "\n";
     file_put_contents($this->file, $message, FILE_APPEND);
   }
   public function request($message) {

@@ -19,3 +19,9 @@ const URL_CERT_PFX = __DIR__ . '/.pfx';
 
 
 const EXPIRATION_QR  = '01/00:00'; // UN DIA 
+
+const MAIL_HOST = '';
+const MAIL_USER   = '';
+const MAIL_PWD    = '';
+const MAIL_PORT   = 587;
+const MAIL_FROM   = '';

@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use PDO;
+use Throwable;
+
+use function App\Providers\logger;
 
 class Resident extends User {
   private $con;
@@ -10,7 +13,7 @@ class Resident extends User {
   public Department $department;
   public Subscription $subscription;
   public string $phone;
-  public string $details;
+  public string $email;
   public function __construct($db = null, $id_user = null) {
     $this->objectNull();
     if ($db) {
@@ -30,9 +33,9 @@ class Resident extends User {
     if ($resp > 0) {
       try {
         $this->con->beginTransaction();
-        $sql = "INSERT INTO tblResidents(user_id, department_id, phone, details) VALUES (?, ?, ?, ?);";
+        $sql = "INSERT INTO tblResidents(user_id, department_id, phone, email) VALUES (?, ?, ?, ?);";
         $stmt = $this->con->prepare($sql);
-        $rr = $stmt->execute([$this->id_user, $this->department_id, $this->phone, $this->details]);
+        $rr = $stmt->execute([$this->id_user, $this->department_id, $this->phone, $this->email]);
         if ($rr) {
           $this->con->commit();
           $resp = $this->id_user;
@@ -53,14 +56,14 @@ class Resident extends User {
     parent::objectNull();
     $this->department_id = 0;
     $this->phone = "";
-    $this->details = "";
+    $this->email = "";
     $this->role = "resident";
   }
   public function load($row) {
     parent::load($row);
     $this->department_id = $row["department_id"];
     $this->phone = $row["phone"] ?? '0';
-    $this->details = $row["details"] ?? '';
+    $this->email = $row["email"] ?? '';
   }
   public function department() {
     if ($this->con) {
@@ -100,6 +103,19 @@ class Resident extends User {
       $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
       if ($rows)
         return true;
+    }
+    return false;
+  }
+  public function change_email() {
+    if ($this->con == null)
+      return false;
+    try {
+      $sql = "UPDATE tblResidents SET email = ? WHERE user_id = ?";
+      $stmt = $this->con->prepare($sql);
+      $stmt->execute([$this->email, $this->id_user]);
+      return true;
+    } catch (Throwable $th) {
+      logger()->error($th);
     }
     return false;
   }

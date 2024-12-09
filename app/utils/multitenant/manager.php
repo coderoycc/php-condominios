@@ -4,7 +4,6 @@ namespace App\Utils\Multitenant;
 
 use App\Config\Database;
 use App\Models\Condominius;
-use PDO;
 use Throwable;
 
 use function App\Providers\logger;
@@ -88,7 +87,7 @@ class Manager {
       $res = $stmt2->execute();
       return $res;
     } catch (Throwable $th) {
-      var_dump($th);
+      logger()->error($th);
     }
     return false;
   }
@@ -101,7 +100,6 @@ class Manager {
       return $res;
     } catch (Throwable $th) {
       logger()->error($th);
-      var_dump($th);
     }
     return false;
   }

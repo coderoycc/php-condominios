@@ -265,7 +265,7 @@ CREATE TABLE [dbo].[tblResidents] (
   [user_id] int  NOT NULL,
   [department_id] int  NULL,
   [phone] varchar(100) COLLATE Modern_Spanish_CI_AS  NULL,
-  [details] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL
+  [email] varchar(255) COLLATE Modern_Spanish_CI_AS  NULL
 )
 GO
 
@@ -280,10 +280,10 @@ EXEC sp_addextendedproperty
 GO
 
 EXEC sp_addextendedproperty
-'MS_Description', N'Detalles objservaciones',
+'MS_Description', N'Correo del residente',
 'SCHEMA', N'dbo',
 'TABLE', N'tblResidents',
-'COLUMN', N'details'
+'COLUMN', N'email'
 GO
 
 CREATE TABLE [dbo].[tblServiceDetailPerMonth] (

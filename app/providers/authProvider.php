@@ -47,7 +47,6 @@ class AuthProvider {
       }
     } catch (Throwable $th) {
       logger()->error($th);
-      var_dump($th);
     }
     return $data;
   }
