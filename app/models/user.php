@@ -147,7 +147,6 @@ class User {
       }
       return $resp;
     } catch (Throwable $th) {
-      print_r($th);
       logger()->error($th);
       $this->con->rollBack();
       return -1;
@@ -219,7 +218,6 @@ class User {
       $this->con->commit();
       return 1;
     } catch (Throwable $th) {
-      print_r($th);
       logger()->error($th);
       $this->con->rollBack();
       return -1;
@@ -293,7 +291,6 @@ class User {
       $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Throwable $th) {
       logger()->error($th);
-      var_dump($th);
     }
     return $res;
   }

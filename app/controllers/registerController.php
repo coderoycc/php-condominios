@@ -16,7 +16,7 @@ use Helpers\Resources\Response;
 
 class RegisterController {
   public function with_code($body, $files = null) {
-    if (!Request::required(['pin', 'cellphone', 'password', 'code'], $body))
+    if (!Request::required(['pin', 'cellphone', 'password', 'code', 'gender', 'name'], $body))
       Response::error_json(['message' => 'Campos requeridos [pin, cellphone, password, code]'], 400);
     $con = Database::getInstanceByPin($body['pin']);
     $subscription = new Subscription($con, null, $body['code']);
@@ -27,6 +27,8 @@ class RegisterController {
           $resident = new Resident($con);
           $resident->cellphone = $body['cellphone'];
           $resident->username = $body['cellphone'];
+          $resident->first_name = $body['name'];
+          $resident->gender = $body['gender'];
           $resident->role = 'resident';
           $resident->status = 1;
           $resident->password = hash('sha256', $body['password']);
