@@ -10,6 +10,7 @@ $(document).ready(() => {
     });
   }
   activateRoute();
+  loadWebSocket();
 });
 $(document).on('change', '#select_condominio', changeSession);
 function activateRoute() {
@@ -262,4 +263,19 @@ async function changeSession(e) {
 function getQueryValueFromUrl(key) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(key);
+}
+
+function loadWebSocket() {
+  var socket = io('http://localhost:3000');
+
+  socket.on('connect', function () {
+    console.log('Conectado al servidor de WebSocket');
+  });
+
+  socket.emit('join-master', '');
+
+  socket.on('notification', function (data) {
+    console.log('Mensaje recibido:', data);
+    // Aquí puedes manejar los mensajes recibidos
+  });
 }

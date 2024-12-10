@@ -759,6 +759,46 @@ EXEC sp_addextendedproperty
 'INDEX', N'idx_month_year_pay_service'
 GO
 
+-- ----------------------
+-- tblUserTokenEvents
+-- ---------------------
+CREATE TABLE [dbo].[tblUserTokenEvents] (
+  [id] int IDENTITY(1,1) NOT NULL,
+  [token] varchar(64) NULL,
+  [created_at] datetime DEFAULT GETDATE() NULL,
+  [expires_at] datetime NULL,
+  [user_id] int NULL,
+  [used] bit DEFAULT 0 NULL,
+  [event] varchar(128) NULL,
+  PRIMARY KEY CLUSTERED ([id])
+WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON),
+  CONSTRAINT [fk_user_token_event] FOREIGN KEY ([user_id]) REFERENCES [dbo].[tblUsers] ([id_user]) ON DELETE CASCADE ON UPDATE CASCADE
+)
+GO
+
+ALTER TABLE [dbo].[tblUserTokenEvents] SET (LOCK_ESCALATION = TABLE)
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'TOKEN o CODIGO',
+'SCHEMA', N'dbo',
+'TABLE', N'tblUserTokenEvents',
+'COLUMN', N'token'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'0: NO usado | 1: usado',
+'SCHEMA', N'dbo',
+'TABLE', N'tblUserTokenEvents',
+'COLUMN', N'used'
+GO
+
+EXEC sp_addextendedproperty
+'MS_Description', N'Nombre del evento',
+'SCHEMA', N'dbo',
+'TABLE', N'tblUserTokenEvents',
+'COLUMN', N'event'
+GO
 
 -- ----------------------------
 -- Primary Key structure for table tblPaymentsServices

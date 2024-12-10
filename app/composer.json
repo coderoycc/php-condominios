@@ -15,6 +15,7 @@
     "ramsey/uuid": "^4.2",
     "cboden/ratchet": "^0.4.4",
     "guzzlehttp/guzzle": "^7.9",
-    "phpmailer/phpmailer": "^6.9"
+    "phpmailer/phpmailer": "^6.9",
+    "elephantio/elephant.io": "^4.12"
   }
 }

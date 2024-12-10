@@ -2,17 +2,15 @@
 
 namespace App\COntrollers;
 
-use App\Config\Accesos;
 use App\Config\Database;
-use App\Models\Department;
 use App\Models\Resident;
 use App\Models\Subscription;
-use App\Models\User;
 use App\Providers\DBAppProvider;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
-
-use function App\Utils\email;
+use ElephantIO\Client;
+use function App\Services\event;
+use function App\Services\email;
 
 class ResidentController {
   public function me($query) /*protected*/ {
@@ -32,7 +30,7 @@ class ResidentController {
     } else
       Response::error_json(['message' => 'Usuario no asociado'], 400);
   }
-  public function recover_pass($body)/*protected*/ {
+  public function forgottenpass($body)/*protected*/ {
     if (Request::required(['email'], $body))
       Response::error_json(['message' => 'Un correo electrónico es necesario para poder restablecer su contraseña'], 400);
 
@@ -42,9 +40,20 @@ class ResidentController {
     if ($resident->role != 'resident')
       Response::error_json(['message' => 'El usuario no es un residente'], 400);
 
-    $resp = '';
+    $resident->email = $body['email'];
+    $resident->change_email();
+    $event = event()->forgottenpass($con, $resident->id_user);
+    if ($event->id) {
+      $res = email()->send('Su codigo para restablecer su contraseña es: <b>' . $event->token . '</b>', true, $body['email'], 'Recuperar constraseña');
+      if ($res) {
+        Response::success_json('Correo enviado', ['event' => $event]);
+      } else {
+        Response::error_json(['message' => 'Error al enviar el correo'], 400);
+      }
+    } else
+      Response::error_json(['message' => 'Error al crear el evento'], 400);
   }
-  public function test($query) {
+  public function test2($query) {
     $con = Database::getInstanceByPin('bar1');
     $id = 1;
     $email = 'rcchambi4@gmail.com';
@@ -58,5 +67,15 @@ class ResidentController {
       }
     }
     Response::error_json(['message' => 'Usuario no asociado a residente'], 400);
+  }
+
+  public function test($query) {
+    $url = 'http://localhost:3000';
+    $options = ['client' => Client::CLIENT_4X];
+
+    $client = Client::create($url, $options);
+    $client->connect();
+    $client->emit('send-master', ['foo' => 'bar', 'pepe' => 'luis']);
+    $client->disconnect();
   }
 }
