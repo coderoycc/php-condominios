@@ -13,6 +13,7 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Services\event;
 use function App\Utils\url_public_condominio;
 
 class ServicesController {
@@ -25,6 +26,8 @@ class ServicesController {
     $subscription->type();
     if ($subscription->type->see_services) {
       $con = DBAppProvider::get_connection();
+      $pin = DBAppProvider::get_payload_value('pin');
+      $department = new Department($con, $subscription->department_id);
       $resident = DBAppProvider::get_resident();
       $code = $body['code'];
       if (Services::exist_code($con, $code, $subscription->id_subscription))
@@ -36,9 +39,11 @@ class ServicesController {
       $service->user_id = $resident->id_user;
       $service->subscription_id = $subscription->id_subscription;
       $service->service_name_id = $body['id_sername'];
-      if ($service->save() > 0)
+      if ($service->save() > 0) {
+        $event = event()->new('Nuevo servicio registrado', 'Se ha registrado servicio ' . $body['service_name'] . ' para el departamento ' . $department->dep_number, $pin, 'services', 'info');
+        event()->notify($event);
         Response::success_json('Success Request', ['service' => $service]);
-      else
+      } else
         Response::error_json(['message' => 'Error al crear servicio'], 200);
     } else {
       Response::error_json((['message' => 'Su suscripción no le permite agregar servicios']), 200);

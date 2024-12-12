@@ -1,3 +1,4 @@
+const icons = { residents: 'fa-user', services: 'fa-tag', subscriptions: 'fa-ticket', shipping: 'fa-box', other: 'fa-bell' };
 $(document).ready(() => {
   // Toggle the side navigation
   const sidebarToggle = document.body.querySelector('#sidebarToggle');
@@ -11,6 +12,7 @@ $(document).ready(() => {
   }
   activateRoute();
   loadWebSocket();
+  loadNotifications();
 });
 $(document).on('change', '#select_condominio', changeSession);
 function activateRoute() {
@@ -275,7 +277,72 @@ function loadWebSocket() {
   socket.emit('join-master', '');
 
   socket.on('notification', function (data) {
+    addNotification(data);
     console.log('Mensaje recibido:', data);
     // Aquí puedes manejar los mensajes recibidos
   });
+}
+
+function addNotification(data) {
+  const icon = icons[data['target']] ?? icons.other;
+  const type = data['type'] ?? 'black';
+  $badge = $("#q_notifications");
+
+  let html = getElement(icon, type, data['event']);
+
+  let cantidad = parseInt($badge.html());
+  if (cantidad >= 4) { // eliminar el ultimo 
+    $('#list_notifications li[data-identifier="notification"]').last().remove();
+    cantidad -= 1;
+  }
+  $("#list_notifications").prepend(html);
+
+  $badge.html(cantidad + 1);
+}
+
+function getElement(icon, type, event) {
+  return `<li data-identifier="notification">
+            <a class="dropdown-item text-ellipsis" href="#!"><i class="fa fa-solid ${icon} text-${type}"></i>
+              ${event}
+            </a>
+        </li>`;
+}
+
+async function loadNotifications() {
+  const res = await $.ajax({
+    url: '../app/logevent/no_seen',
+    type: 'GET',
+    dataType: 'JSON',
+    data: { qty: 4 }
+  });
+  if (res.success) {
+    const data = res.data;
+    loadHtmlNotificationes(data)
+  }
+}
+
+function loadHtmlNotificationes(data) {
+  $("#list_notifications").html('');
+  let footer = `
+    <li>
+      <hr class="dropdown-divider" />
+    </li>
+    <li>
+      <a class="dropdown-item btn btn-link link-info text-center" href="../dash/notifications.php">Ver todas</a>
+    </li>`;
+  const qty = data.length;
+  $("#q_notifications").html(qty);
+  if (qty == 0) {
+    $("#list_notifications").html('<li class="text-center">Sin notificaciones</li>');
+  } else {
+    data.forEach((element) => {
+      const icon = icons[element['target']] ?? icons.other;
+      const type = element['type'] ?? 'black';
+      const event = element['event'];
+      const html = getElement(icon, type, event);
+      $("#list_notifications").append(html);
+    });
+    $("#list_notifications").append(`<li class="text-center">...</li>`);
+  }
+  $("#list_notifications").append(footer);
 }

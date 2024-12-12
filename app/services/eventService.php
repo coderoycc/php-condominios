@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Logevent;
 use App\Models\TokenEvent;
 use ElephantIO\Client;
 use PDO;
@@ -42,6 +43,24 @@ class EventService {
     } catch (Throwable $th) {
       logger()->error($th);
     }
+  }
+  /**
+   * Agregar un nuevo evento en base de datos
+   * @param string $event evento a registrar
+   * @param string $pin pin del condominio al que pertenece el evento
+   * @param string $target entidad al que hace referencia el evento  
+   * @param string $type success | info | danger
+   * @return Logevent
+   */
+  public function new($event, $detail, $pin, $target, $type) {
+    $logEvent = new Logevent();
+    $logEvent->event = $event;
+    $logEvent->event_detail = $detail;
+    $logEvent->pin = $pin;
+    $logEvent->target = $target;
+    $logEvent->type = $type;
+    $logEvent->save();
+    return $logEvent;
   }
 }
 

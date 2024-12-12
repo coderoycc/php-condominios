@@ -17,6 +17,11 @@
   .select_cond:focus-visible {
     border: 0;
   }
+
+  .text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-primary">
   <!-- <a class="navbar-brand ps-3" id="select_condominio" href="#!"><b><?= strtoupper($condominio->name ?? '') ?></b></a> -->
@@ -55,18 +60,12 @@
       </ul>
     </li>
     <li class="nav-item dropdown">
-      <!-- <a class="rounded-pill nav-link dropdown-toggle" id="nav_notify" href="#" role="button" data-bs-toggle="dropdown" style="background-color:var(--bs-primary);" aria-expanded="false">
+      <a class="rounded-pill nav-link dropdown-toggle" id="nav_notify" href="#" role="button" data-bs-toggle="dropdown" style="background-color:var(--bs-primary);" aria-expanded="false">
         <i class="fas fa-bell fa-fw"></i>
-        <span class="position-absolute start-100 translate-middle badge rounded-pill bg-info">
-          99+
-        </span>
+        <span class="position-absolute start-100 translate-middle badge rounded-pill bg-info" id="q_notifications">0</span>
       </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav_notify">
-        <li>
-          <a class="dropdown-item text-center" href="#!">SOLICITUDES DE ENVIO <span class="badge text-bg-secondary">4</span></a>
-        </li>
-        <li><a class="dropdown-item" href="#!">Something else here <span class="badge text-bg-secondary">4</span></a></li>
-      </ul> -->
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav_notify" id="list_notifications" style="width:310px; min-width:280px;">
+      </ul>
     </li>
   </ul>
 </nav>

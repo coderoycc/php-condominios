@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Config\Accesos;
 use App\Config\Database;
 use PDO;
 use Throwable;
@@ -9,6 +10,7 @@ use Throwable;
 class Logevent {
   public int $id;
   public string $event;
+  public string $event_detail;
   public string $pin;
   public int $seen;
   public string $created_at;
@@ -35,6 +37,7 @@ class Logevent {
   public function load($row) {
     $this->id = $row['id'];
     $this->event = $row['event'];
+    $this->event_detail = $row['event_detail'];
     $this->pin = $row['pin'];
     $this->seen = $row['seen'];
     $this->created_at = $row['created_at'];
@@ -49,13 +52,14 @@ class Logevent {
     $this->created_at = '';
     $this->target = '';
     $this->type = '';
+    $this->event_detail = '';
   }
   public function save() {
     try {
       $con = Database::master_instance();
-      $sql = "INSERT INTO tblLogEvents (event, pin, target, type) VALUES (:event, :pin, :target, :type)";
+      $sql = "INSERT INTO tblLogEvents (event, pin, target, type, event_detail) VALUES (:event, :pin, :target, :type, :event_detail)";
       $stmt = $con->prepare($sql);
-      $stmt->execute(['event' => $this->event, 'pin' => $this->pin, 'target' => $this->target, 'type' => $this->type]);
+      $stmt->execute(['event' => $this->event, 'pin' => $this->pin, 'target' => $this->target, 'type' => $this->type, 'event_detail' => $this->event_detail]);
       $this->id = $con->lastInsertId();
       return $this->id;
     } catch (Throwable $th) {
@@ -64,10 +68,10 @@ class Logevent {
   }
   public static function all($top = 15, $filters = []) {
     try {
+      $where = isset($filters['no_seen']) ? 'WHERE seen = 0' : '';
       $where = isset($filters['seen']) ? 'WHERE seen = 1' : '';
-      // $where .= isset($filters['pin']) ? ' AND type = ' . $filters['type'] : '';
-      $con = Database::master_instance();
-      $sql = "SELECT * FROM tblLogEvents $where ORDER BY id DESC LIMIT $top";
+      $con = Database::getInstaceCondominios();
+      $sql = "SELECT TOP $top * FROM tblLogEvents $where ORDER BY id DESC";
       $stmt = $con->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -75,6 +79,10 @@ class Logevent {
       foreach ($rows as $row) {
         $event = new Logevent();
         $event->load($row);
+        $condominio = Accesos::getCondominio($event->pin);
+        unset($condominio['dbname']);
+        unset($condominio['pin']);
+        $event->{'condominio'} = $condominio;
         $events[] = $event;
       }
       return $events;

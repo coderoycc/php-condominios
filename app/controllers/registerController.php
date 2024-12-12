@@ -14,6 +14,8 @@ use Helpers\Resources\HandleDates;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Services\event;
+
 class RegisterController {
   public function with_code($body, $files = null) {
     if (!Request::required(['pin', 'cellphone', 'password', 'code', 'gender', 'name'], $body))
@@ -37,6 +39,8 @@ class RegisterController {
           $resident->department_id = $subscription->department_id;
           $resident->save();
           Subscription::addUserSubscription($con, $resident->id_user, $subscription->id_subscription);
+          $event = event()->new('Residente registrado', 'Nuevo residente registrado con codigo de suscripción ' . $body['code'], $body['pin'], 'residents', 'success');
+          event()->notify($event);
           Response::success_json('Registro exitoso', $resident, 200);
         } else
           Response::error_json(['message' => 'Se ha alcanzado el número máximo de usuarios'], 400);
@@ -95,6 +99,7 @@ class RegisterController {
         }
       }
 
+      $department = new Department($con, $data['depa_id']);
       $resident = new Resident($con, null);
       $resident->first_name = $data['name'];
       $resident->gender = $data['gender'];
@@ -113,6 +118,8 @@ class RegisterController {
             Response::error_json(['message' => 'Error al suscribir usuario']);
         }
         unset($resident->password);
+        $event = event()->new('Residente registrado', 'Nuevo residente registrado en el departamento ' . $department->dep_number, $data['pin'], 'residents', 'success');
+        event()->notify($event);
         Response::success_json('Registro exitoso', ['user' => $resident], 200);
       } else {
         Response::error_json(['message' => 'Registro fallido'], 500);
