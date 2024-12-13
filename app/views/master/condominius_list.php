@@ -21,9 +21,9 @@
           <td class="text-center"><?= $condominio['city'] ?></td>
           <td class="text-center"><?= $condominio['enable_qr'] == '0' ? 'NO' : 'SI' ?></td>
           <td class="text-center">
-            <div class="btn-group" role="group" aria-label="Basic example">
+            <!-- <div class="btn-group" role="group" aria-label="Basic example">
               <button type="button" data-bs-toogle="modal" data-bs-target="#editar_condominio" class="btn btn-info">Editar</button>
-            </div>
+            </div> -->
           </td>
         </tr>
       <?php endforeach; ?>

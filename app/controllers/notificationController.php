@@ -2,11 +2,17 @@
 
 namespace App\Controllers;
 
+use App\Config\Database;
 use App\Models\Notification;
 use App\Models\User;
 use App\Providers\DBAppProvider;
+use App\Providers\DBWebProvider;
+use App\Services\EventService;
+use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
+
+use function App\Services\event;
 
 class NotificationController {
   public function send_by_id($data, $file = null) /*protected*/ {
@@ -36,5 +42,33 @@ class NotificationController {
     } else {
       Response::error_json(['message' => 'Error instancia de conexión, token no valido'], 200);
     }
+  }
+  public function all($query)/*web*/ {
+    $notifications = event()->all_logs();
+
+    $tags = [
+      'residents' => [
+        'icon' => 'fa-user',
+        'redirect' => '../global/residents.php'
+      ],
+      'services' => [
+        'icon' => 'fa-tag',
+        'redirect' => '../services/'
+      ],
+      'subscriptions' => [
+        'icon' => 'fa-ticket',
+        'redirect' => '../global/subscriptions.php'
+      ],
+      'shipping' => [
+        'icon' => 'fa-box',
+        'redirect' => '#!'
+      ],
+      'other' => [
+        'icon' => 'fa-bell',
+        'redirect' => '#!'
+      ]
+    ];
+
+    Render::view('notifications/list', ['notifications' => $notifications, 'tags' => $tags]);
   }
 }

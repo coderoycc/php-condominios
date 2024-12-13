@@ -88,4 +88,18 @@ class Master {
     }
     return '';
   }
+
+  /**
+   * Devuelve los datos de la tabla config de condominios
+   */
+  public static function config_data() {
+    $con = Database::getInstaceCondominios();
+    if ($con) {
+      $sql = "SELECT * FROM tblConfig;";
+      $stmt = $con->prepare($sql);
+      $stmt->execute();
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    return null;
+  }
 }

@@ -7,6 +7,8 @@ use App\Config\Database;
 use PDO;
 use Throwable;
 
+use function App\Providers\logger;
+
 class Logevent {
   public int $id;
   public string $event;
@@ -19,7 +21,7 @@ class Logevent {
 
   public function __construct($id = null) {
     try {
-      $con = Database::master_instance();
+      $con = Database::getInstaceCondominios();
       $this->null_object();
       if ($id) {
         $sql = "SELECT * FROM tblLogEvents WHERE id = $id";
@@ -54,9 +56,19 @@ class Logevent {
     $this->type = '';
     $this->event_detail = '';
   }
+  public function update_seen() {
+    try {
+      $sql = "UPDATE tblLogEvents SET seen = ? WHERE id = ?";
+      $con = Database::getInstaceCondominios();
+      $stmt = $con->prepare($sql);
+      $stmt->execute([$this->seen, $this->id]);
+    } catch (Throwable $th) {
+      logger()->error($th);
+    }
+  }
   public function save() {
     try {
-      $con = Database::master_instance();
+      $con = Database::getInstaceCondominios();
       $sql = "INSERT INTO tblLogEvents (event, pin, target, type, event_detail) VALUES (:event, :pin, :target, :type, :event_detail)";
       $stmt = $con->prepare($sql);
       $stmt->execute(['event' => $this->event, 'pin' => $this->pin, 'target' => $this->target, 'type' => $this->type, 'event_detail' => $this->event_detail]);
@@ -66,10 +78,11 @@ class Logevent {
       throw $th;
     }
   }
+
   public static function all($top = 15, $filters = []) {
     try {
       $where = isset($filters['no_seen']) ? 'WHERE seen = 0' : '';
-      $where = isset($filters['seen']) ? 'WHERE seen = 1' : '';
+      $where = isset($filters['seen']) ? 'WHERE seen = 1' : $where;
       $con = Database::getInstaceCondominios();
       $sql = "SELECT TOP $top * FROM tblLogEvents $where ORDER BY id DESC";
       $stmt = $con->prepare($sql);

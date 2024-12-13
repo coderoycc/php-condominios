@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Logevent;
 use App\Models\TokenEvent;
+use DateTime;
 use ElephantIO\Client;
 use PDO;
 use Throwable;
@@ -26,6 +27,27 @@ class EventService {
     $event->event = 'forgotenpass';
     $event->new();
     return $event;
+  }
+  public function verify($con, $user_id, $token) {
+    $event = TokenEvent::verify($con, $user_id, $token);
+    $response = ['success' => false, 'message' => ''];
+    if ($event->id > 0) {
+      // fecha
+      $today = new DateTime();
+      $expire = new DateTime($event->expires_at);
+      if ($today->getTimestamp() < $expire->getTimestamp()) {
+        if ($event->used == 0) {
+          $event->used = 1;
+          $event->update_used();
+          $response['success'] = true;
+          $response['message'] = 'Token válido';
+        } else
+          $response['message'] = 'Token ya utilizado';
+      } else
+        $response['message'] = 'Token expirado';
+    } else
+      $response['message'] = 'Token no válido';
+    return $response;
   }
   /**
    * Notifica con socketio a los administradores (web - navegador)
@@ -61,6 +83,9 @@ class EventService {
     $logEvent->type = $type;
     $logEvent->save();
     return $logEvent;
+  }
+  public function all_logs() {
+    return Logevent::all();
   }
 }
 

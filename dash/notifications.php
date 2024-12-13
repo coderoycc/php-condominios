@@ -16,6 +16,18 @@ require_once("../helpers/middlewares/web_auth.php");
   <script src="../assets/fontawesome/fontawesome6.min.js"></script>
   <script src="../assets/jquery/jquery.js"></script>
   <script src="../assets/jquery/jqueryToast.min.js"></script>
+  <script src="../assets/bootstrap/js/popper.min.js"></script>
+  <style>
+    .custom-padding {
+      padding: 0px 90px;
+    }
+
+    @media screen and (max-width: 740px) {
+      .custom-padding {
+        padding: 10px 10px 0px 0px;
+      }
+    }
+  </style>
 </head>
 
 <body class="sb-nav-fixed">
@@ -24,10 +36,12 @@ require_once("../helpers/middlewares/web_auth.php");
     <?php include("../partials/sidebar.php"); ?>
     <div id="layoutSidenav_content">
       <main>
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-4 pb-3">
           <h2 class="mt-4">Notificaciones</h2>
 
-          <div class="row"></div>
+          <div class="row custom-padding">
+            <div class="card border-0 px-4" id="notification_list"></div>
+          </div>
         </div>
       </main>
     </div>
@@ -37,6 +51,7 @@ require_once("../helpers/middlewares/web_auth.php");
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>
   <script src="../assets/datatables/datatables.bootstrap5.min.js"></script>
+  <script src="./js/notification.js"></script>
 </body>
 
 </html>

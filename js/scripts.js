@@ -1,4 +1,4 @@
-const icons = { residents: 'fa-user', services: 'fa-tag', subscriptions: 'fa-ticket', shipping: 'fa-box', other: 'fa-bell' };
+const icons = { residents: { icon: 'fa-user', redirect: '../global/residents.php' }, services: { icon: 'fa-tag', redirect: '../services/' }, subscriptions: { icon: 'fa-ticket', redirect: '../global/subscriptions.php' }, shipping: { icon: 'fa-box', redirect: '#!' }, other: { icon: 'fa-bell', redirect: '#!' } };
 $(document).ready(() => {
   // Toggle the side navigation
   const sidebarToggle = document.body.querySelector('#sidebarToggle');
@@ -11,7 +11,7 @@ $(document).ready(() => {
     });
   }
   activateRoute();
-  loadWebSocket();
+  // loadWebSocket();
   loadNotifications();
 });
 $(document).on('change', '#select_condominio', changeSession);
@@ -284,11 +284,11 @@ function loadWebSocket() {
 }
 
 function addNotification(data) {
-  const icon = icons[data['target']] ?? icons.other;
+  const { icon, redirect } = icons[data['target']] ?? icons.other;
   const type = data['type'] ?? 'black';
   $badge = $("#q_notifications");
 
-  let html = getElement(icon, type, data['event']);
+  let html = getElement(icon, type, data['event'], redirect);
 
   let cantidad = parseInt($badge.html());
   if (cantidad >= 4) { // eliminar el ultimo 
@@ -300,9 +300,9 @@ function addNotification(data) {
   $badge.html(cantidad + 1);
 }
 
-function getElement(icon, type, event) {
+function getElement(icon, type, event, redirect = '#!') {
   return `<li data-identifier="notification">
-            <a class="dropdown-item text-ellipsis" href="#!"><i class="fa fa-solid ${icon} text-${type}"></i>
+            <a class="dropdown-item text-ellipsis" href="${redirect}"><i class="fa fa-solid ${icon} text-${type}"></i>
               ${event}
             </a>
         </li>`;
@@ -336,10 +336,10 @@ function loadHtmlNotificationes(data) {
     $("#list_notifications").html('<li class="text-center">Sin notificaciones</li>');
   } else {
     data.forEach((element) => {
-      const icon = icons[element['target']] ?? icons.other;
+      const { icon, redirect } = icons[element['target']] ?? icons.other;
       const type = element['type'] ?? 'black';
       const event = element['event'];
-      const html = getElement(icon, type, event);
+      const html = getElement(icon, type, event, redirect);
       $("#list_notifications").append(html);
     });
     $("#list_notifications").append(`<li class="text-center">...</li>`);
