@@ -48,6 +48,28 @@ require_once("../helpers/middlewares/web_auth.php");
     </div>
   </div>
 
+  <div class="modal fade" id="modal_enable_new_session" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">¿Resetear inicio de sesión?</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input id="id_user_reset_session" type="hidden">
+          <input id="pin_reset_session" type="hidden">
+          <div class="alert alert-warning" role="alert">
+            El inicio de sesión <a href="#" class="alert-link">se reiniciará</a> para el usuario <b id="name_reset_session"></b>. Unicamente se puede iniciar sesión desde un único celular (movil).
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="resetResidentSession()">Reiniciar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../js/scripts.js"></script>
   <script src="../assets/datatables/datatables.jquery.min.js"></script>

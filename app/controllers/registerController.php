@@ -40,7 +40,7 @@ class RegisterController {
           $resident->save();
           Subscription::addUserSubscription($con, $resident->id_user, $subscription->id_subscription);
           $event = event()->new('Residente registrado', 'Nuevo residente registrado con codigo de suscripción ' . $body['code'] . ' al departamento ' . $department->dep_number, $body['pin'], 'residents', 'success');
-          // event()->notify($event);
+          event()->notify($event);
           Response::success_json('Registro exitoso', $resident, 200);
         } else
           Response::error_json(['message' => 'Se ha alcanzado el número máximo de usuarios'], 400);
@@ -119,7 +119,7 @@ class RegisterController {
         }
         unset($resident->password);
         $event = event()->new('Residente registrado', 'Nuevo residente registrado en el departamento ' . $department->dep_number, $data['pin'], 'residents', 'success');
-        // event()->notify($event);
+        event()->notify($event);
         Response::success_json('Registro exitoso', ['user' => $resident], 200);
       } else {
         Response::error_json(['message' => 'Registro fallido'], 500);

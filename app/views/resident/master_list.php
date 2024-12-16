@@ -57,8 +57,8 @@
               <td class="text-center">Sin suscripción</td>
             <?php endif; ?>
             <td class="d-flex gap-2">
-              <button type="button" data-bs-toggle="modal" data-bs-target="#modal_content_lockers" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Pedidos y envios"><i class="fa fa-fw fa-door-closed"></i></button>
-              <!-- <button type="button" class="btn btn-sm btn-outline-primary"><i class="fa fa-fw fa-"></i></button> -->
+              <button type="button" data-bs-toggle="modal" data-bs-target="#modal_content_lockers" data-key="<?= $resident['key'] ?>" data-depa="<?= $resident['id_department'] ?>" data-user="<?= $resident['id_user'] ?>" class="btn btn-sm btn-outline-info" title="Pedidos y envios"><i class="fa fa-lg fa-door-closed"></i></button>
+              <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_enable_new_session" data-id="<?= $resident['id_user'] ?>" data-name="<?= $resident['first_name'] . ' ' . $resident['last_name'] ?>" data-key="<?= $resident['key'] ?>" title="Nuevo inicio de sesión"><i class="fa fa-lg fa-mobile"></i></button>
             </td>
           </tr>
         <?php

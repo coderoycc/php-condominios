@@ -12,6 +12,8 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Providers\logger;
+
 class UserController {
   public function create($data, $files) {
     $con = DBWebProvider::getSessionDataDB();
@@ -214,7 +216,7 @@ class UserController {
     $con = DBWebProvider::getSessionDataDB();
     $userNew = new User($con, $user->id_user);
     if ($userNew->password == hash('sha256', $body['pass'])) {
-      if ($userNew->newPass(hash('sha256', $body['newPass']))) {
+      if ($userNew->newPass($body['newPass'])) {
         Response::success_json('Contraseña cambiada', []);
       } else Response::error_json(['message' => 'No se pudo cambiar la contraseña'], 200);
     } else

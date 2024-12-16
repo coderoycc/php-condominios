@@ -41,7 +41,7 @@ class ServicesController {
       $service->service_name_id = $body['id_sername'];
       if ($service->save() > 0) {
         $event = event()->new('Nuevo servicio registrado', 'Se ha registrado servicio ' . $body['service_name'] . ' para el departamento ' . $department->dep_number, $pin, 'services', 'info');
-        // event()->notify($event);
+        event()->notify($event);
         Response::success_json('Success Request', ['service' => $service]);
       } else
         Response::error_json(['message' => 'Error al crear servicio'], 200);

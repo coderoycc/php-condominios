@@ -81,29 +81,18 @@ class ResidentController {
     } else
       Response::error_json(['message' => 'Usuario no asociado al token'], 404);
   }
-  public function test2($query) {
-    $con = Database::getInstanceByPin('bar1');
-    $id = 1;
-    $email = 'rcchambi4@gmail.com';
-    $resident = new Resident($con, $id);
-    if ($resident->role == 'resident') {
-      $res = email()->send('Hola desde otra cuenta', false, $email, 'Test nuevo de servicio');
-      if ($res) {
-        Response::success_json('Resident data', ['resident' => $resident]);
-      } else {
-        Response::error_json(['message' => 'Error al enviar el correo'], 400);
-      }
-    }
-    Response::error_json(['message' => 'Usuario no asociado a residente'], 400);
-  }
 
-  public function test($query) {
-    $url = 'http://localhost:3000';
-    $options = ['client' => Client::CLIENT_4X];
+  public function reset_session($body)/*web master*/ {
+    if (!Request::required(['id', 'key'], $body))
+      Response::error_json(['message' => 'El id y la llave son necesarios'], 400);
 
-    $client = Client::create($url, $options);
-    $client->connect();
-    $client->emit('send-master', ['foo' => 'bar', 'pepe' => 'luis']);
-    $client->disconnect();
+    $con = Database::getInstanceByPin($body['key']);
+    $user = new User($con, $body['id']);
+    if ($user->id_user > 0) {
+      $user->assigned_code = 0;
+      $user->update_code_phone();
+      Response::success_json('Sesión reiniciada', ['detail' => 'Vuelva a iniciar la sesion']);
+    } else
+      Response::error_json(['message' => 'Usuario no asociado'], 200);
   }
 }

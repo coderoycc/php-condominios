@@ -6,15 +6,29 @@ use App\Models\Logevent;
 use App\Models\TokenEvent;
 use DateTime;
 use ElephantIO\Client;
+use Error;
 use PDO;
 use Throwable;
 
 use function App\Providers\logger;
 
 use const App\Config\URL_WEBSOCKET;
+use const App\Config\WEBSOCKET_PORT;
 
 require_once(__DIR__ . '/../models/tokenEvent.php');
 class EventService {
+  private function check_connection() {
+    try {
+      $connected = @fsockopen(URL_WEBSOCKET, WEBSOCKET_PORT);
+      if ($connected) {
+        fclose($connected);
+        return true;
+      }
+      return false;
+    } catch (Throwable $th) {
+      return false;
+    }
+  }
   /**
    * Agrega un evento de password olvidado
    * @param PDO $con
@@ -55,9 +69,13 @@ class EventService {
    * @return void
    */
   public function notify($data) {
-    $url = URL_WEBSOCKET;
+    $url = URL_WEBSOCKET . ':' . WEBSOCKET_PORT;
     try {
-      $options = ['client' => Client::CLIENT_4X];
+      $options = ['client' => Client::CLIENT_4X, 'timeout' => 3];
+      if (!$this->check_connection()) {
+        logger()->error(new Error('No hay conexion al websocket'));
+        return;
+      }
       $client = Client::create($url, $options);
       $client->connect();
       $client->emit('send-master', $data);

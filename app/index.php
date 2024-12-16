@@ -10,6 +10,8 @@ use Helpers\Resources\Response;
 
 use function App\Providers\logger;
 
+require_once 'errors.config.php';
+
 $url = isset($_GET['url']) ? $_GET['url'] : '';
 
 $parts = explode('/', $url);

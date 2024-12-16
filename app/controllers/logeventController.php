@@ -6,6 +6,8 @@ use App\Models\Logevent;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Services\event;
+
 class LogEventController {
   public function no_seen($query) {
     $logs = Logevent::all($query['qty'] ?? 3, ['no_seen' => true]);
@@ -19,5 +21,10 @@ class LogEventController {
     $event->seen = $event->seen == 0 ? 1 : 0;
     $event->update_seen();
     Response::success_json('OK', $event, 200);
+  }
+  public function test($query) {
+    $pela = $query['asdfasdf'];
+    event()->notify(['message' => 'En evento', 'new' => 'asdfasdf', 'del' => 3]);
+    Response::success_json('OK', $pela, 200);
   }
 }

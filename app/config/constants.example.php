@@ -3,6 +3,7 @@
 namespace App\Config;
 
 const PRODUCTION     = false;
+const SHOW_ERRORS    = false; // muestra errores en logger provider y (WRNING - NOTICE) de PHP en index.php
 const URLBASE_API_QR = 'https://sandbox.openbanking.bcp.com.bo/Web_ApiQr/api/v4/Qr';
 const BUSINESS_CODE  = '';
 const SERVICE_CODE   = '';
@@ -18,10 +19,10 @@ const URL_CERT_PFX = __DIR__ . '/BCP_SANDBOX.pfx';
 const EXPIRATION_QR  = '01/00:00'; // UN DIA 
 
 
-const MAIL_HOST = 'smtp.gmail.com';
-const MAIL_USER   = 'XXXXXX@gmail.com';
+
 const MAIL_PWD    = '';
 const MAIL_PORT   = 587;
 const MAIL_FROM   = '';
 
-const URL_WEBSOCKET = 'http://localhost:3000';
+const URL_WEBSOCKET = 'http://localhost';
+const WEBSOCKET_PORT = 3000;

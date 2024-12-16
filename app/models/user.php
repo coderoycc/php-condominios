@@ -24,7 +24,11 @@ class User {
   public string $gender;
   public int $status;
   public string $photo;
-  public int $assigned_code; // 0: No se asigno codigo, 1: si se asigno codigo
+  /**
+   *  0: No se asigno codigo, 1: si se asigno codigo
+   * @var int
+   */
+  public int $assigned_code;
   public string $device_code; // codigo del telefono usuario
   public object $suscription;
 
