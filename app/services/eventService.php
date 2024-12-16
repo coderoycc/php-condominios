@@ -84,7 +84,11 @@ class EventService {
     $logEvent->save();
     return $logEvent;
   }
-  public function all_logs() {
+  public function all_logs($seen) {
+    if ($seen == '0')
+      return Logevent::all(15, ['no_seen' => true]);
+    else if ($seen == '1')
+      return Logevent::all(15, ['seen' => true]);
     return Logevent::all();
   }
 }

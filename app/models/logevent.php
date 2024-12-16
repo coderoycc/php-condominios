@@ -81,6 +81,7 @@ class Logevent {
 
   public static function all($top = 15, $filters = []) {
     try {
+      logger()->debug(json_encode($filters));
       $where = isset($filters['no_seen']) ? 'WHERE seen = 0' : '';
       $where = isset($filters['seen']) ? 'WHERE seen = 1' : $where;
       $con = Database::getInstaceCondominios();

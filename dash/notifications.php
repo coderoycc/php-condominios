@@ -37,7 +37,7 @@ require_once("../helpers/middlewares/web_auth.php");
     <div id="layoutSidenav_content">
       <main>
         <div class="container-fluid px-4 pb-3">
-          <h2 class="mt-4">Notificaciones</h2>
+          <h2 class="mt-4">Notificaciones eventos</h2>
 
           <div class="row custom-padding">
             <div class="card border-0 px-4" id="notification_list"></div>

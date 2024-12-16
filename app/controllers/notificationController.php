@@ -12,6 +12,7 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Providers\logger;
 use function App\Services\event;
 
 class NotificationController {
@@ -44,8 +45,8 @@ class NotificationController {
     }
   }
   public function all($query)/*web*/ {
-    $notifications = event()->all_logs();
-
+    $seen = isset($query['seen']) ? $query['seen'] : '';
+    $notifications = event()->all_logs($seen);
     $tags = [
       'residents' => [
         'icon' => 'fa-user',
@@ -69,6 +70,6 @@ class NotificationController {
       ]
     ];
 
-    Render::view('notifications/list', ['notifications' => $notifications, 'tags' => $tags]);
+    Render::view('notifications/list', ['notifications' => $notifications, 'tags' => $tags, 'seen' => $seen]);
   }
 }
