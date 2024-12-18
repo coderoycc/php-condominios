@@ -83,6 +83,22 @@ function list_service_btn(type) {
     getAllServicesToPay()
   }
 }
+
+/*
+* Ordenamiento para tipo MES ascendente
+*/
+$.fn.dataTable.ext.type.order['mes-asc'] = function (a, b) {
+  var meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+  return meses.indexOf(a) - meses.indexOf(b);
+};
+
+/**
+ * Ordenamiento para tipo MES descendente
+ */
+$.fn.dataTable.ext.type.order['mes-desc'] = function (a, b) {
+  var meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+  return meses.indexOf(b) - meses.indexOf(a);
+};
 async function getAllServicesInProcess() {
   $("#type_list").html('Montos registrados')
   const res = await $.ajax({
@@ -97,7 +113,11 @@ async function getAllServicesInProcess() {
     info: false,
     scrollX: true,
     columnDefs: [
-      { orderable: false, targets: [5] }
+      { orderable: false, targets: [5] },
+      {
+        targets: 2,
+        type: 'mes'
+      }
     ],
   })
 }
@@ -241,6 +261,20 @@ async function edit_amount(year, month, sub_id, key) {
 }
 async function add_vouchers(e) {
   e.preventDefault();
+
+  /*const requiredFields = document.querySelectorAll('.required')
+  let allFieldsFilled = true;
+  requiredFields.forEach(field => {
+    if (!field.value) {
+      allFieldsFilled = false;
+      return;
+    }
+  });
+  if (!allFieldsFilled) {
+    toast('Complete todos los campos', '', 'error', 2090);
+    return;
+  }*/
+
   // enviar en un FormData el formulario
   const formData = new FormData(document.getElementById('pay_form'));
   const res = await $.ajax({

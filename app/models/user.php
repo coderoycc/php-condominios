@@ -167,6 +167,7 @@ class User {
       $ruta_archivo = $ruta_base . '/' . $nombre_archivo . '.' . $extension;
       $tmp_nombre = $file['tmp_name'];
       if (move_uploaded_file($tmp_nombre, $ruta_archivo)) {
+        $this->delete_photo($condominio_name, $prefix);
         $base_condominio = directory($condominio_name); // nombre de condominio
         $this->photo = $base_condominio . '/' . $prefix . '/' . $nombre_archivo . '.' . $extension;
         $this->save();
@@ -174,6 +175,15 @@ class User {
       }
     }
     return false;
+  }
+  public function delete_photo($condominio_name, $prefix) {
+    if ($this->photo != '') {
+      $ruta = directory($condominio_name);
+      $ruta .= '/' . $prefix . '/' . $this->photo;
+      if (file_exists($ruta)) {
+        unlink($ruta);
+      }
+    }
   }
   public function load($row) {
     $this->id_user = $row['id_user'];

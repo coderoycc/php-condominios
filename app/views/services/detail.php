@@ -27,7 +27,7 @@
               <?php if ($service['filename'] == null || $service['filename'] == ''): ?>
                 <td class="text-center">Sin comprobante asociado</td>
               <?php else: ?>
-                <td class="text-center"><a href="<?= $urlbase . $service['filename'] ?>" target="_blank" type="button" class="btn">Ver archivo</a></td>
+                <td class="text-center"><a href="<?= $urlbase . $service['filename'] ?>" target="_blank" type="button" class="btn btn-link">Ver archivo</a></td>
               <?php endif; ?>
             </tr>
           <?php endforeach; ?>

@@ -43,7 +43,7 @@
                 <td>
                   <input type="hidden" name="id_detail[]" value="<?= $service['id_service_detail'] ?? '' ?>" />
                   <input type="hidden" name="ids[]" value="<?= $service['id_service'] ?>">
-                  <input type="number" name="amounts[]" class="form-control service_amount text-end" placeholder="0.0" step="any" value="<?= $service['amount'] != null ? number_format($service['amount'], 2) : '' ?>">
+                  <input type="number" name="amounts[]" class="form-control service_amount text-end" placeholder="0.0" step="any" value="<?= $service['amount'] != null ? number_format($service['amount'], 2, '.', '') : '' ?>">
                 </td>
               </tr>
             <?php endforeach; ?>

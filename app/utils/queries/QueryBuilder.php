@@ -6,6 +6,8 @@ use App\Config\Database;
 use Exception;
 use PDO;
 
+use function App\Providers\logger;
+
 /**
  * Class QueryBuilder hace consultas a las bases de datos usando todas las bases de datos registradas en la base de datos master
  * @package App\Utils\Queries
@@ -127,6 +129,7 @@ class QueryBuilder {
       $sqls[] = $sqlCustom;
     }
     $sqlunion = join(" UNION ", $sqls);
+    logger()->debug($sqlunion);
     $stmt = $this->con->prepare($sqlunion);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

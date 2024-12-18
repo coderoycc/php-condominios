@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Config\Accesos;
 use App\Config\Database;
 use App\Models\Department;
 use App\Models\ServiceDetail;
@@ -265,10 +266,26 @@ class ServicesController {
 
     $key = $body['key'];
     $con = Database::getInstanceByPin($key);
-
-    $subscription = new Subscription($con, $body['id']);
-    var_dump($files['files']['name']);
-    var_dump($files['files']['tmp_name']);
-    var_dump($body['ids'][0]);
+    // $extensions_permitidos = ['png', 'jpg', 'jpeg', 'pdf']; 
+    // $subscription = new Subscription($con, $body['id']);
+    // var_dump($files['files']['name']);
+    // var_dump($files['files']['tmp_name']);
+    // var_dump($body['ids']);
+    $services_count = count($body['ids']);
+    $res_all = true;
+    for ($i = 0; $i < $services_count; $i++) {
+      $payService = new ServiceDetail($con, $body['ids'][$i]);
+      $file = ['tmp_name' => $files['files']['tmp_name'][$i], 'name' => $files['files']['name'][$i]];
+      $res = $payService->add_voucher_file($key, $file);
+      if (!$res) {
+        $res_all = false;
+        break;
+      }
+    }
+    if ($res_all) {
+      Response::success_json('Vouchers agregado', ['cantidad' => $services_count]);
+    } else {
+      Response::error_json(['message' => 'Error al agregar vouchers'], 200);
+    }
   }
 }

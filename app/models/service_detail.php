@@ -3,6 +3,11 @@
 namespace App\Models;
 
 use PDO;
+use Throwable;
+
+use function App\Providers\logger;
+use function App\Utils\directorio_publico_condominio;
+use function App\Utils\directory;
 
 /**
  * Esquematiza y trabaja con la tabla tblServiceDetailPerMonth
@@ -55,8 +60,8 @@ class ServiceDetail {
       $stmt->execute([$this->service_id, $this->amount, $this->month, $this->year]);
       $this->id_service_detail = $this->con->lastInsertId();
       return $this->id_service_detail;
-    } catch (\Throwable $th) {
-      //throw $th;
+    } catch (Throwable $th) {
+      logger()->error($th);
     }
     return -1;
   }
@@ -68,10 +73,45 @@ class ServiceDetail {
       $stmt = $this->con->prepare($sql);
       $stmt->execute([$this->service_id, $this->amount, $this->id_service_detail]);
       return $this->id_service_detail;
-    } catch (\Throwable $th) {
+    } catch (Throwable $th) {
       var_dump($th);
     }
     return -1;
+  }
+  public function add_voucher_file($pin, $file) {
+    if ($this->con) {
+      if ($this->filename != "") {
+        $this->del_voucher_file($pin);
+      }
+      $url = directorio_publico_condominio($pin, 'vouchers');
+      $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+      $filename = $this->id_service_detail . '_' . date('ymd_Hi') . $extension;
+      $filepath = $url . '\\' . $filename;
+      if (move_uploaded_file($file['tmp_name'], $filepath)) {
+        $sql = "UPDATE tblServiceDetailPerMonth SET filename = ? WHERE id_service_detail = ?";
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute([$filename, $this->id_service_detail]);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public function del_voucher_file($pin) {
+    try {
+      $url = directorio_publico_condominio($pin, 'vouchers');
+      $url .= '\\' . $this->filename;
+      if (file_exists($url)) {
+        unlink($url);
+      }
+      $sql = "UPDATE tblServiceDetailPerMonth SET filename = '' WHERE id_service_detail = ?";
+      $stmt = $this->con->prepare($sql);
+      $stmt->execute([$this->id_service_detail]);
+      return true;
+    } catch (Throwable $th) {
+      logger()->error($th);
+    }
+    return false;
   }
   public static function get_list() {
   }
@@ -95,8 +135,8 @@ class ServiceDetail {
       if ($row) {
         return true;
       }
-    } catch (\Throwable $th) {
-      var_dump($th);
+    } catch (Throwable $th) {
+      logger()->error($th);
     }
     return false;
   }
@@ -128,8 +168,8 @@ class ServiceDetail {
       $stmt->execute();
       $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $row;
-    } catch (\Throwable $th) {
-      var_dump($th);
+    } catch (Throwable $th) {
+      logger()->error($th);
     }
     return [];
   }

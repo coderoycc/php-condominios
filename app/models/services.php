@@ -212,11 +212,6 @@ class Services extends BaseModel {
       $statuswhere = $status == 'QR PAGADO' || $status == 'PAGADO' ? "WHERE b.status = '$status'" : "";
       $statuswhere = $status == 'SIN PAGO' ? "WHERE b.status IS NULL" : $statuswhere;
       $sql = "
-      WITH payments AS (
-        SELECT * 
-        FROM []tblPaymentsServices 
-        WHERE [year] = $year
-      )
       SELECT [*]y.dep_number, tmp.* FROM []tblSubscriptions x 
       INNER JOIN []tblDepartments y ON x.department_id = y.id_department
       INNER JOIN (
@@ -237,7 +232,11 @@ class Services extends BaseModel {
           WHERE d.[year] = $year
           GROUP BY s.subscription_id, d.[month]
         ) a
-        LEFT JOIN payments b ON a.subscription_id = b.subscription_id AND a.[month] = b.[month]
+        LEFT JOIN (
+          SELECT * 
+          FROM []tblPaymentsServices 
+          WHERE [year] = $year
+        ) b ON a.subscription_id = b.subscription_id AND a.[month] = b.[month]
         $statuswhere
       ) tmp 
       ON tmp.subscription_id = x.id_subscription
