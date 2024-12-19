@@ -58,7 +58,7 @@
                 </td>
                 <td>
                   <label for="hiddenBtn<?= $x ?>" class="choose-btn">Seleccionar</label>
-                  <input type="file" class="hiddenBtn required" name="files[]" id="hiddenBtn<?= $x ?>" accept="image/*">
+                  <input type="file" class="hiddenBtn required" name="files[]" id="hiddenBtn<?= $x ?>" accept=".jpg, .png, .jpeg">
                 </td>
               </tr>
             <?php

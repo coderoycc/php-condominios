@@ -7,6 +7,7 @@ use App\Config\Database;
 use App\Models\Department;
 use App\Models\ServiceDetail;
 use App\Models\Services;
+use App\Models\ServicesPay;
 use App\Models\Subscription;
 use App\Providers\DBAppProvider;
 use App\Providers\DBWebProvider;
@@ -14,6 +15,7 @@ use Helpers\Resources\Render;
 use Helpers\Resources\Request;
 use Helpers\Resources\Response;
 
+use function App\Providers\logger;
 use function App\Services\event;
 use function App\Utils\url_public_condominio;
 
@@ -245,6 +247,12 @@ class ServicesController {
 
     Render::view('services/detail', ['department' => $department, 'services' => $services, 'month' => $month, 'year' => $year, 'key' => $key, 'urlbase' => $url_name]);
   }
+
+  /**
+   * Formulario para pagar
+   * @param mixed $query
+   * @return void
+   */
   public function pay_voucher($query) {
     if (!Request::required(['id', 'month', 'year', 'key'], $query))
       Render::view('error_html', ['message' => 'Campos faltantes', 'message_deatail' => 'Parametros requeridos no identificados.']);
@@ -260,6 +268,13 @@ class ServicesController {
 
     Render::view('services/form_to_pay', ['department' => $department, 'services' => $services, 'month' => $month, 'year' => $year, 'key' => $key, 'subscription' => $subscription]);
   }
+
+  /**
+   * Registrar el pago de un mes de servicios
+   * @param mixed $body
+   * @param mixed $files
+   * @return void
+   */
   public function add_vouchers_payment($body, $files) {
     if (!Request::required(['key', 'id'], $body))
       Response::error_json(['message' => 'Campos faltantes'], 200);
@@ -268,22 +283,40 @@ class ServicesController {
     $con = Database::getInstanceByPin($key);
     // $extensions_permitidos = ['png', 'jpg', 'jpeg', 'pdf']; 
     // $subscription = new Subscription($con, $body['id']);
-    // var_dump($files['files']['name']);
-    // var_dump($files['files']['tmp_name']);
-    // var_dump($body['ids']);
-    $services_count = count($body['ids']);
+    $services_count = count($body['id_detail']);
     $res_all = true;
+    $month = null;
+    $year = null;
     for ($i = 0; $i < $services_count; $i++) {
-      $payService = new ServiceDetail($con, $body['ids'][$i]);
+      $id = $body['id_detail'][$i];
+      $payService = new ServiceDetail($con, $id);
+      if ($payService->id_service_detail == 0) {
+        $res_all = false;
+        break;
+      }
+
+      $month = $payService->month;
+      $year = $payService->year;
+
       $file = ['tmp_name' => $files['files']['tmp_name'][$i], 'name' => $files['files']['name'][$i]];
       $res = $payService->add_voucher_file($key, $file);
+
       if (!$res) {
         $res_all = false;
         break;
       }
     }
     if ($res_all) {
-      Response::success_json('Vouchers agregado', ['cantidad' => $services_count]);
+      // cambiar estado de servicio pagado
+      $pay = new ServicesPay($con);
+      if ($pay->find(null, $month, $year, $body['id'])) {
+        $pay->status = 'PAGADO';
+        // logger()->debug(json_encode($pay));
+        $pay->update_status();
+        Response::success_json('Vouchers agregado', ['cantidad' => $services_count]);
+      } else {
+        Response::error_json(['message' => 'Error al actualizar estado del pago'], 200);
+      }
     } else {
       Response::error_json(['message' => 'Error al agregar vouchers'], 200);
     }

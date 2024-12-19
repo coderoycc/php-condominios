@@ -10,7 +10,7 @@ use function App\Utils\directorio_publico_condominio;
 use function App\Utils\directory;
 
 /**
- * Esquematiza y trabaja con la tabla tblServiceDetailPerMonth
+ * Esquematiza y trabaja con la tabla tblServiceDetailPerMonth 
  */
 class ServiceDetail {
   private $con = null;
@@ -79,13 +79,15 @@ class ServiceDetail {
     return -1;
   }
   public function add_voucher_file($pin, $file) {
+    if (!isset($file['tmp_name']) || $file['tmp_name'] == "")
+      return true;
     if ($this->con) {
       if ($this->filename != "") {
         $this->del_voucher_file($pin);
       }
       $url = directorio_publico_condominio($pin, 'vouchers');
       $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-      $filename = $this->id_service_detail . '_' . date('ymd_Hi') . $extension;
+      $filename = $this->id_service_detail . '_' . date('ymd_Hi') . '.' . $extension;
       $filepath = $url . '\\' . $filename;
       if (move_uploaded_file($file['tmp_name'], $filepath)) {
         $sql = "UPDATE tblServiceDetailPerMonth SET filename = ? WHERE id_service_detail = ?";

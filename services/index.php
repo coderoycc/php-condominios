@@ -34,8 +34,8 @@ require_once("../helpers/middlewares/web_auth.php");
                   <div class="gap-3">
                     <a href="./?req=add" type="button" class="btn btn-outline-dark btn-menu" id="btn-add">Registrar pagos</a>
                     <a href="./?req=view" type="button" class="btn btn-outline-info btn-menu" id="btn-view">Últimos pagos Registrados</a>
-                    <a href="./?req=history" type="button" class="btn btn-outline-success btn-menu" id="btn-history">Historial</a>
                     <a href="./?req=topay" type="button" class="btn btn-outline-danger btn-menu" id="btn-topay">Para pagar</a>
+                    <a href="./?req=history" type="button" class="btn btn-outline-success btn-menu" id="btn-history">Historial</a>
                   </div>
                 </div>
               </div>

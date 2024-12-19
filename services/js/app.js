@@ -154,7 +154,11 @@ async function getAllServicesToPay() {
     info: false,
     scrollX: true,
     columnDefs: [
-      { orderable: false, targets: [5] }
+      { orderable: false, targets: [5] },
+      {
+        targets: 2,
+        type: 'mes'
+      }
     ],
   })
 }
@@ -172,7 +176,11 @@ async function getAllServicesHistory() {
     info: false,
     scrollX: true,
     columnDefs: [
-      { orderable: false, targets: [5] }
+      { orderable: false, targets: [5] },
+      {
+        targets: 2,
+        type: 'mes'
+      }
     ],
   })
 }
@@ -286,5 +294,11 @@ async function add_vouchers(e) {
     contentType: false,
     cache: false,
   });
-  console.log(res)
+  if (res.success) {
+    toast('Comprobantes Agregado', '', 'success', 2090);
+    $("#modal_pay_voucher").modal('hide');
+    getAllServicesHistory();
+  } else {
+    toast('Error al agregar comprobantes', res.message ?? '', 'error', 4300);
+  }
 }
